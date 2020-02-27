@@ -1,11 +1,11 @@
-package Djuno
+package config
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/app"
 )
 
-func desmosConfig(cfg *sdk.Config) {
+func DesmosConfig(cfg *sdk.Config) {
 	cfg.SetBech32PrefixForAccount(
 		app.Bech32MainPrefix,
 		app.Bech32MainPrefix+sdk.PrefixPublic,

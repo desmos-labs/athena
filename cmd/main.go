@@ -1,11 +1,14 @@
-package Djuno
+package main
 
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	setup "github.com/desmos-labs/Djuno/config"
+	"github.com/desmos-labs/Djuno/handlers"
 	"github.com/desmos-labs/desmos/app"
 	"github.com/desmos-labs/juno/config"
 	"github.com/desmos-labs/juno/db"
+	"github.com/desmos-labs/juno/db/postgresql"
 	"github.com/desmos-labs/juno/parse"
 	"github.com/desmos-labs/juno/parse/worker"
 	"github.com/desmos-labs/juno/types"
@@ -16,10 +19,10 @@ import (
 
 func main() {
 	// Register custom handlers
-	worker.RegisterMsgHandler(msgHandler)
+	worker.RegisterMsgHandler(handlers.MsgHandler)
 
 	// Build the executor
-	executor := BuildExecutor("juno", desmosConfig, app.MakeCodec, postgres.Builder)
+	executor := BuildExecutor("juno", setup.DesmosConfig, app.MakeCodec, postgresql.Builder)
 
 	// Run the commands and panic on any error
 	err := executor.Execute()
