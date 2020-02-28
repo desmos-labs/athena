@@ -14,7 +14,7 @@ func handleMsgCreatePost(postID uint64, msg posts.MsgCreatePost, db postgresql.D
 	postSqlStatement := `
 	INSERT INTO post (id, parent_id, message, created, allows_comments, subspace, creator)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-	RETURNING id
+	RETURNING id;
     `
 
 	err := db.Sql.QueryRow(
@@ -36,7 +36,7 @@ func handleMsgCreatePost(postID uint64, msg posts.MsgCreatePost, db postgresql.D
 	optionalDataSqlStatement := `
 	INSERT INTO optional_data (id, key, value)
 	VALUES ($1, $2, $3)
-	RETURNING id
+	RETURNING id;
 	`
 
 	for key, value := range msg.OptionalData {
@@ -57,6 +57,7 @@ func handleMsgCreatePost(postID uint64, msg posts.MsgCreatePost, db postgresql.D
 	mediasSqlStatement := `
 	INSERT INTO media (id, post_medias)
 	VALUES ($1, $2)
+	RETURNING id;
 	`
 
 	err = db.Sql.QueryRow(
@@ -74,6 +75,7 @@ func handleMsgCreatePost(postID uint64, msg posts.MsgCreatePost, db postgresql.D
 	pollDataSqlStatement := `
 	INSERT INTO poll_data (id, question, provided_answers, end_date, open, allows_multiple_answers, allows_answer_edits)
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id;
 	`
 
 	err = db.Sql.QueryRow(

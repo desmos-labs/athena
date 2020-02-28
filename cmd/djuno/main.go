@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	setup "github.com/desmos-labs/Djuno/config"
-	"github.com/desmos-labs/Djuno/handlers"
 	"github.com/desmos-labs/desmos/app"
+	setup "github.com/desmos-labs/djuno/config"
+	"github.com/desmos-labs/djuno/handlers"
 	"github.com/desmos-labs/juno/config"
 	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/db/postgresql"

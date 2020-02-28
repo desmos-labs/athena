@@ -9,23 +9,23 @@ all: ci-lint ci-test install
 # Build / Install
 ###############################################################################
 
-LD_FLAGS = -X github.com/desmos-labs/Djuno/version.Version=$(VERSION) \
-	-X github.com/desmos-labs/Djuno/version.Commit=$(COMMIT)
+LD_FLAGS = -X github.com/desmos-labs/djuno/version.Version=$(VERSION) \
+	-X github.com/desmos-labs/djuno/version.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
 
 build: go.sum
 ifeq ($(OS),Windows_NT)
-	@echo "building Djuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/Djuno.exe ./cmd/Djuno
+	@echo "building djuno binary..."
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/djuno.exe ./cmd/djuno
 else
-	@echo "building Djuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/Djuno ./cmd/Djuno
+	@echo "building djuno binary..."
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/djuno ./cmd/djuno
 endif
 
 install: go.sum
-	@echo "installing Djuno binary..."
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/Djuno
+	@echo "installing djuno binary..."
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/djuno
 
 ###############################################################################
 # Tests / CI
