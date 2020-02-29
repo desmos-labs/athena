@@ -8,8 +8,6 @@ import (
 func handleMsgEditPost(postID uint64, msg posts.MsgEditPost, db postgresql.Database) error {
 	var id uint64
 
-	// Editing Post
-
 	postSqlStatement := `
 	UPDATE post 
 	SET message = $1, last_edited = $2

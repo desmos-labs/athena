@@ -45,7 +45,21 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 		}
 	}
 
-	// TODO: Add other types as well
+	if editPostMsg, ok := msg.(posts.MsgEditPost); ok {
+
+	}
+
+	if addReactionMsg, ok := msg.(posts.MsgAddPostReaction); ok {
+
+	}
+
+	if removeReactionMsg, ok := msg.(posts.MsgRemovePostReaction); ok {
+
+	}
+
+	if answerPollMsg, ok := msg.(posts.MsgAnswerPoll); ok {
+
+	}
 
 	return nil
 }
