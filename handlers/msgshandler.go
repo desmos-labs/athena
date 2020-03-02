@@ -19,6 +19,11 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 		return nil
 	}
 
+	postgresqlDb, ok := db.(postgresql.Database)
+	if !ok {
+		return fmt.Errorf("database is not a PostgreSQL instance")
+	}
+
 	// MsgCreatePost
 	if createPostMsg, ok := msg.(posts.MsgCreatePost); ok {
 		log.Info().Str("tx_hash", tx.TxHash).Int("msg_index", index).Msg("Found MsgCreatePost")
@@ -35,30 +40,33 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 			}
 		}
 
-		postgrDb, ok := db.(postgresql.Database)
-		if !ok {
-			return fmt.Errorf("database is not a MongoDB instance")
-		}
-
-		if err := handleMsgCreatePost(postID, createPostMsg, postgrDb); err != nil {
+		if err := handleMsgCreatePost(postID, createPostMsg, postgresqlDb); err != nil {
 			return err
 		}
 	}
 
 	if editPostMsg, ok := msg.(posts.MsgEditPost); ok {
-
+		if err := handleMsgEditPost(editPostMsg, postgresqlDb); err != nil {
+			return err
+		}
 	}
 
 	if addReactionMsg, ok := msg.(posts.MsgAddPostReaction); ok {
-
+		if err := handleMsgAddPostReaction(addReactionMsg, postgresqlDb); err != nil {
+			return err
+		}
 	}
 
 	if removeReactionMsg, ok := msg.(posts.MsgRemovePostReaction); ok {
-
+		if err := handleMsgRemovePostReaction(removeReactionMsg, postgresqlDb); err != nil {
+			return err
+		}
 	}
 
 	if answerPollMsg, ok := msg.(posts.MsgAnswerPoll); ok {
-
+		if err := handleMsgAnswerPoll(answerPollMsg, postgresqlDb); err != nil {
+			return err
+		}
 	}
 
 	return nil

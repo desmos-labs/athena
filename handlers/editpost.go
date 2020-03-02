@@ -5,7 +5,7 @@ import (
 	"github.com/desmos-labs/juno/db/postgresql"
 )
 
-func handleMsgEditPost(postID uint64, msg posts.MsgEditPost, db postgresql.Database) error {
+func handleMsgEditPost(msg posts.MsgEditPost, db postgresql.Database) error {
 	var id uint64
 
 	postSqlStatement := `

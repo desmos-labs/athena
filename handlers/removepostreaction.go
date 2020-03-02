@@ -5,7 +5,7 @@ import (
 	"github.com/desmos-labs/juno/db/postgresql"
 )
 
-func handleMsgRemovePostReaction(postID uint64, msg posts.MsgRemovePostReaction, db postgresql.Database) error {
+func handleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db postgresql.Database) error {
 
 	removeRSqlStatement := `
 	DELETE FROM reaction

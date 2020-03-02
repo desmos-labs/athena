@@ -5,7 +5,7 @@ import (
 	"github.com/desmos-labs/juno/db/postgresql"
 )
 
-func handleMsgAnswerPoll(postID uint64, msg posts.MsgAnswerPoll, db postgresql.Database) error {
+func handleMsgAnswerPoll(msg posts.MsgAnswerPoll, db postgresql.Database) error {
 	var id uint64
 
 	addPollAnswersSqlStatement := `
