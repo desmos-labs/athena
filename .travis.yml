@@ -3,5 +3,8 @@ language: go
 go:
   - 1.13.x
 install: true
+env:
+  - GO111MODULE=on
 script:
-  - env GO111MODULE=on make ci-test install
+  - make install
+  - make ci-test install
