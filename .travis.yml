@@ -4,5 +4,4 @@ go:
   - 1.13.x
 install: true
 script:
-  - export GOFLAGS=
   - env GO111MODULE=on make ci-test install
