@@ -11,5 +11,4 @@ go:
 install: true
 
 script:
-  - golangci-lint run
   - make ci-test install
