@@ -1,6 +1,6 @@
 module github.com/desmos-labs/djuno
 
-go 1.14
+go 1.13
 
 require (
 	github.com/cosmos/cosmos-sdk v0.38.1
