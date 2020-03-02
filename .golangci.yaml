@@ -10,7 +10,7 @@ linters:
     - gocyclo
 linters-settings:
   gocyclo:
-    min-complexity: 11
+    min-complexity: 15
   errcheck:
     ignore: fmt:.*,io/ioutil:^Read.*,github.com/spf13/viper:BindPFlag
   golint:

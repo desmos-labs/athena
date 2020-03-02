@@ -3,10 +3,35 @@ package handlers
 import (
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/juno/db/postgresql"
+	"github.com/desmos-labs/juno/types"
+	"github.com/rs/zerolog/log"
+	"strconv"
 )
 
+func handleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db postgresql.Database) error {
+	log.Info().Str("tx_hash", tx.TxHash).Int("msg_index", index).Msg("Found MsgCreatePost")
+
+	var postID uint64
+
+	// Get the post id
+	// TODO: test with multiple MsgCreatePost
+	for _, ev := range tx.Logs[index].Events {
+		for _, attr := range ev.Attributes {
+			if attr.Key == "post_id" {
+				postID, _ = strconv.ParseUint(attr.Value, 10, 64)
+			}
+		}
+	}
+
+	if err := savePost(postID, msg, db); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // handleMsgCreatePost handles a MsgCreatePost and saves the post inside the database
-func handleMsgCreatePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) error {
+func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) error {
 	var id uint64
 
 	// Saving Post
