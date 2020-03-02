@@ -4,4 +4,4 @@ go:
   - 1.14.x
 install: true
 script:
-  - env GO111MODULE=on make install
+  - env GO111MODULE=on make zinstall
