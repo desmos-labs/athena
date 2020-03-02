@@ -2,6 +2,7 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT  := $(shell git log -1 --format='%H')
 
 export GO111MODULE = on
+export GOFLAGS=
 
 all: ci-lint ci-test install
 
