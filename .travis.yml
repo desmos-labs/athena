@@ -1,7 +1,21 @@
-dist: trusty
+# use the latest ubuntu environment (18.04) available on travis
+dist: bionic
+
 language: go
+
 go:
   - 1.13.x
+
+# Only clone the most recent commit.
+git:
+  depth: 1
+
+# Skip the install step. Don't `go get` dependencies.
+#  Only build with the code in vendor/
 install: true
+
+env: GO111MODULE=on GOFLAGS='-mod vendor'
+
 script:
-  - env GO111MODULE=on make ci-test install
+  - golangci-lint run
+  - make ci-test install
