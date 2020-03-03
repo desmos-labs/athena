@@ -24,25 +24,15 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 
 	switch desmosMsg := msg.(type) {
 	case posts.MsgCreatePost:
-		if err := handleMsgCreatePost(tx, index, desmosMsg, postgresqlDb); err != nil {
-			return err
-		}
+		return handleMsgCreatePost(tx, index, desmosMsg, postgresqlDb)
 	case posts.MsgEditPost:
-		if err := handleMsgEditPost(desmosMsg, postgresqlDb); err != nil {
-			return err
-		}
+		return handleMsgEditPost(desmosMsg, postgresqlDb)
 	case posts.MsgAddPostReaction:
-		if err := handleMsgAddPostReaction(desmosMsg, postgresqlDb); err != nil {
-			return err
-		}
+		return handleMsgAddPostReaction(desmosMsg, postgresqlDb)
 	case posts.MsgRemovePostReaction:
-		if err := handleMsgRemovePostReaction(desmosMsg, postgresqlDb); err != nil {
-			return err
-		}
+		return handleMsgRemovePostReaction(desmosMsg, postgresqlDb)
 	case posts.MsgAnswerPoll:
-		if err := handleMsgAnswerPoll(desmosMsg, postgresqlDb); err != nil {
-			return err
-		}
+		return handleMsgAnswerPoll(desmosMsg, postgresqlDb)
 	}
 
 	return nil
