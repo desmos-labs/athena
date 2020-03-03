@@ -22,7 +22,7 @@ func main() {
 	worker.RegisterMsgHandler(handlers.MsgHandler)
 
 	// Build the executor
-	executor := BuildExecutor("juno", setup.DesmosConfig, app.MakeCodec, postgresql.Builder)
+	executor := BuildExecutor("djuno", setup.DesmosConfig, app.MakeCodec, postgresql.Builder)
 
 	// Run the commands and panic on any error
 	err := executor.Execute()
