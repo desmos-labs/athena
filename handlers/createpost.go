@@ -19,6 +19,7 @@ func handleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db pos
 		for _, attr := range ev.Attributes {
 			if attr.Key == "post_id" {
 				postID, _ = strconv.ParseUint(attr.Value, 10, 64)
+				break
 			}
 		}
 	}
@@ -37,7 +38,7 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 	// Saving Post
 
 	postSqlStatement := `
-	INSERT INTO post (id, parent_id, message, created, allows_comments, subspace, creator)
+	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING id;
     `
@@ -48,9 +49,10 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 		msg.ParentID,
 		msg.Message,
 		msg.CreationDate,
+		msg.CreationDate,
 		msg.AllowsComments,
 		msg.Subspace,
-		msg.Creator,
+		msg.Creator.String(),
 	).Scan(&id)
 
 	if err != nil {
@@ -78,44 +80,67 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 	}
 
 	// Saving post's medias
-
 	mediasSqlStatement := `
-	INSERT INTO media (id, post_medias)
-	VALUES ($1, $2)
+	INSERT INTO media (id, uri, mime_type)
+	VALUES ($1, $2, $3)
 	RETURNING id;
 	`
 
-	err = db.Sql.QueryRow(
-		mediasSqlStatement,
-		postID,
-		msg.Medias,
-	).Scan(&id)
+	for _, media := range msg.Medias {
+		err = db.Sql.QueryRow(
+			mediasSqlStatement,
+			postID,
+			media.URI,
+			media.MimeType,
+		).Scan(&id)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+
 	}
 
 	// Saving post's poll data
 
 	pollDataSqlStatement := `
-	INSERT INTO poll_data (id, question, provided_answers, end_date, open, allows_multiple_answers, allows_answer_edits)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	INSERT INTO poll_data (id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
+	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING id;
 	`
 
-	err = db.Sql.QueryRow(
-		pollDataSqlStatement,
-		postID,
-		msg.PollData.Question,
-		msg.PollData.ProvidedAnswers,
-		msg.PollData.EndDate,
-		msg.PollData.Open,
-		msg.PollData.AllowsMultipleAnswers,
-		msg.PollData.AllowsAnswerEdits,
-	).Scan(&id)
+	if msg.PollData != nil {
+		err = db.Sql.QueryRow(
+			pollDataSqlStatement,
+			postID,
+			msg.PollData.Question,
+			msg.PollData.EndDate,
+			msg.PollData.Open,
+			msg.PollData.AllowsMultipleAnswers,
+			msg.PollData.AllowsAnswerEdits,
+		).Scan(&id)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+
+		addPollAnswersSqlStatement := `
+		INSERT INTO poll_data_answers(id, answer_id, answer_text)
+		VALUES($1, $2, $3)
+		RETURNING id;
+		`
+		for _, answer := range msg.PollData.ProvidedAnswers {
+			err := db.Sql.QueryRow(
+				addPollAnswersSqlStatement,
+				postID,
+				answer.ID,
+				answer.Text,
+			).Scan(&id)
+
+			if err != nil {
+				return err
+			}
+		}
+
 	}
 
 	return nil

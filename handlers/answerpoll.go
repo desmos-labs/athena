@@ -9,7 +9,7 @@ func handleMsgAnswerPoll(msg posts.MsgAnswerPoll, db postgresql.Database) error 
 	var id uint64
 
 	addPollAnswersSqlStatement := `
-	INSERT INTO poll_answers (id, answers, user)
+	INSERT INTO poll_answers (id, answers, "user")
 	VALUES ($1, $2, $3)
 	RETURNING id;
 	`
