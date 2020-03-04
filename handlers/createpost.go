@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/juno/db/postgresql"
 	"github.com/desmos-labs/juno/types"
@@ -35,13 +36,59 @@ func handleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db pos
 func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) error {
 	var id uint64
 
+	// Saving post's poll data before post to make possible the insertion of poll_id inside it
+
+	pollDataSqlStatement := `
+	INSERT INTO poll (id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
+	VALUES ($1, $2, $3, $4, $5, $6)
+	RETURNING id;
+	`
+
+	if msg.PollData != nil {
+		err := db.Sql.QueryRow(
+			pollDataSqlStatement,
+			postID,
+			msg.PollData.Question,
+			msg.PollData.EndDate,
+			msg.PollData.Open,
+			msg.PollData.AllowsMultipleAnswers,
+			msg.PollData.AllowsAnswerEdits,
+		).Scan(&id)
+
+		if err != nil {
+			return err
+		}
+
+		var answersId uint64
+		addPollAnswersSqlStatement := `
+		INSERT INTO poll_answer(poll_id, answer_id, answer_text)
+		VALUES($1, $2, $3)
+		RETURNING id;
+		`
+		for _, answer := range msg.PollData.ProvidedAnswers {
+			err := db.Sql.QueryRow(
+				addPollAnswersSqlStatement,
+				postID,
+				answer.ID,
+				answer.Text,
+			).Scan(&answersId)
+
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+
 	// Saving Post
 
 	postSqlStatement := `
-	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator, poll_id, optional_data)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	RETURNING id;
     `
+
+	jsonString, _ := json.Marshal(msg.OptionalData)
 
 	err := db.Sql.QueryRow(
 		postSqlStatement,
@@ -53,35 +100,16 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 		msg.AllowsComments,
 		msg.Subspace,
 		msg.Creator.String(),
+		id,
+		jsonString,
 	).Scan(&id)
 
 	if err != nil {
 		return err
 	}
-
-	// Saving post's optional data
-	optionalDataSqlStatement := `
-	INSERT INTO optional_data (id, key, value)
-	VALUES ($1, $2, $3)
-	RETURNING id;
-	`
-
-	for key, value := range msg.OptionalData {
-		err = db.Sql.QueryRow(
-			optionalDataSqlStatement,
-			postID,
-			key,
-			value,
-		).Scan(&id)
-
-		if err != nil {
-			return err
-		}
-	}
-
 	// Saving post's medias
 	mediasSqlStatement := `
-	INSERT INTO media (id, uri, mime_type)
+	INSERT INTO media (post_id, uri, mime_type)
 	VALUES ($1, $2, $3)
 	RETURNING id;
 	`
@@ -96,49 +124,6 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 
 		if err != nil {
 			return err
-		}
-
-	}
-
-	// Saving post's poll data
-
-	pollDataSqlStatement := `
-	INSERT INTO poll_data (id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
-	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING id;
-	`
-
-	if msg.PollData != nil {
-		err = db.Sql.QueryRow(
-			pollDataSqlStatement,
-			postID,
-			msg.PollData.Question,
-			msg.PollData.EndDate,
-			msg.PollData.Open,
-			msg.PollData.AllowsMultipleAnswers,
-			msg.PollData.AllowsAnswerEdits,
-		).Scan(&id)
-
-		if err != nil {
-			return err
-		}
-
-		addPollAnswersSqlStatement := `
-		INSERT INTO poll_data_answers(id, answer_id, answer_text)
-		VALUES($1, $2, $3)
-		RETURNING id;
-		`
-		for _, answer := range msg.PollData.ProvidedAnswers {
-			err := db.Sql.QueryRow(
-				addPollAnswersSqlStatement,
-				postID,
-				answer.ID,
-				answer.Text,
-			).Scan(&id)
-
-			if err != nil {
-				return err
-			}
 		}
 
 	}

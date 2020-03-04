@@ -20,7 +20,7 @@ func handleMsgEditPost(msg posts.MsgEditPost, db postgresql.Database) error {
 		msg.Message,
 		msg.EditDate,
 		msg.PostID,
-		msg.Editor,
+		msg.Editor.String(),
 	).Scan(&id)
 
 	if err != nil {

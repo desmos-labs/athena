@@ -9,7 +9,7 @@ func handleMsgAddPostReaction(msg posts.MsgAddPostReaction, db postgresql.Databa
 	var id uint64
 
 	addReactionSqlStatement := `
-	INSERT INTO reaction (id, owner, value)
+	INSERT INTO reaction (post_id, owner, val)
 	VALUES ($1, $2, $3)
 	RETURNING id;
 	`
@@ -17,7 +17,7 @@ func handleMsgAddPostReaction(msg posts.MsgAddPostReaction, db postgresql.Databa
 	err := db.Sql.QueryRow(
 		addReactionSqlStatement,
 		msg.PostID,
-		msg.User,
+		msg.User.String(),
 		msg.Value,
 	).Scan(&id)
 
