@@ -15,17 +15,11 @@ func handleMsgEditPost(msg posts.MsgEditPost, db postgresql.Database) error {
 	RETURNING id;
 	`
 
-	err := db.Sql.QueryRow(
+	return db.Sql.QueryRow(
 		postSqlStatement,
 		msg.Message,
 		msg.EditDate,
 		msg.PostID,
 		msg.Editor.String(),
 	).Scan(&id)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

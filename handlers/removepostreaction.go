@@ -9,7 +9,7 @@ func handleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db postgresql.
 
 	removeRSqlStatement := `
 	DELETE FROM reaction
-	WHERE post_id = $1 AND owner = $2 AND val = $3;
+	WHERE post_id = $1 AND owner = $2 AND value = $3;
 	`
 	_, err := db.Sql.Exec(
 		removeRSqlStatement,

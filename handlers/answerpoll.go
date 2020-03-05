@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/juno/db/postgresql"
+	"github.com/lib/pq"
 )
 
 func handleMsgAnswerPoll(msg posts.MsgAnswerPoll, db postgresql.Database) error {
@@ -14,16 +15,10 @@ func handleMsgAnswerPoll(msg posts.MsgAnswerPoll, db postgresql.Database) error 
 	RETURNING id;
 	`
 
-	err := db.Sql.QueryRow(
+	return db.Sql.QueryRow(
 		addPollAnswersSqlStatement,
 		msg.PostID,
-		msg.UserAnswers,
+		pq.Array(msg.UserAnswers),
 		msg.Answerer.String(),
 	).Scan(&id)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
