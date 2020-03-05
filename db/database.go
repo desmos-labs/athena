@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
+	"github.com/desmos-labs/juno/config"
+	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/db/postgresql"
 	"github.com/lib/pq"
 )
@@ -13,7 +16,19 @@ import (
 // DesmosDb represents a PostgreSQL database with expanded features.
 // so that it can properly store posts and other Desmos-related data.
 type DesmosDb struct {
-	*postgresql.Database
+	postgresql.Database
+}
+
+// Builder allows to create a new DesmosDb instance implementing the database.Builder type
+func Builder(cfg config.Config, codec *codec.Codec) (*db.Database, error) {
+	database, err := postgresql.Builder(cfg, codec)
+	if err != nil {
+		return nil, err
+	}
+
+	psqlDb, _ := (*database).(postgresql.Database)
+	var desmosDb db.Database = DesmosDb{Database: psqlDb}
+	return &desmosDb, nil
 }
 
 // SavePost allows to store the given post inside the database properly.
@@ -38,18 +53,13 @@ func (db DesmosDb) SavePost(post posts.Post) error {
 			return err
 		}
 
-		addPollAnswersSqlStatement := `
+		pollQuery := `
 		INSERT INTO poll_answer(poll_id, answer_id, answer_text)
 		VALUES($1, $2, $3)
-		RETURNING id;
 		`
 
 		for _, answer := range post.PollData.ProvidedAnswers {
-			err := db.Sql.QueryRow(
-				addPollAnswersSqlStatement,
-				pollID, answer.ID, answer.Text,
-			).Scan()
-
+			_, err := db.Sql.Exec(pollQuery, pollID, answer.ID, answer.Text)
 			if err != nil {
 				return err
 			}
@@ -61,33 +71,28 @@ func (db DesmosDb) SavePost(post posts.Post) error {
 	postSqlStatement := `
 	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator, poll_id, optional_data)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-	RETURNING id;
     `
 
 	// todo look how this is inserted in DB
 	jsonB, _ := json.Marshal(post.OptionalData)
 
-	err := db.Sql.QueryRow(
+	_, err := db.Sql.Exec(
 		postSqlStatement,
 		post.PostID, post.ParentID, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
 		post.Creator.String(), pollID, string(jsonB),
-	).Scan()
+	)
 	if err != nil {
 		return err
 	}
 
 	// Saving post's medias
-	mediasSqlStatement := `
+	mediaQuery := `
 	INSERT INTO media (post_id, uri, mime_type)
 	VALUES ($1, $2, $3)
-	RETURNING id;
 	`
 
 	for _, media := range post.Medias {
-		err = db.Sql.QueryRow(
-			mediasSqlStatement,
-			post.PostID, media.URI, media.MimeType,
-		).Scan()
+		_, err = db.Sql.Exec(mediaQuery, post.PostID, media.URI, media.MimeType)
 		if err != nil {
 			return err
 		}
@@ -103,21 +108,21 @@ func (db DesmosDb) EditPost(postID posts.PostID, message string, editDate time.T
 	UPDATE post 
 	SET message = $1, last_edited = $2 
 	WHERE id = $3
-	RETURNING id;
 	`
 
-	return db.Sql.QueryRow(statement, message, editDate, postID).Scan()
+	_, err := db.Sql.Exec(statement, message, editDate, postID)
+	return err
 }
 
 // SaveReaction allows to save a new reaction for the given postID having the specified value and user
-func (db DesmosDb) SaveReaction(postID posts.PostID, reaction string, user sdk.AccAddress) error {
+func (db DesmosDb) SaveReaction(postID posts.PostID, reaction posts.Reaction) error {
 	statement := `
 	INSERT INTO reaction (post_id, owner, value)
 	VALUES ($1, $2, $3)
-	RETURNING id;
 	`
 
-	return db.Sql.QueryRow(statement, postID, user.String(), reaction).Scan()
+	_, err := db.Sql.Exec(statement, postID, reaction.Owner.String(), reaction.Value)
+	return err
 }
 
 // RemoveReaction allows to remove an already existing reaction for the post having the given postID,
@@ -128,17 +133,18 @@ func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction string, user sdk
 	WHERE post_id = $1 AND owner = $2 AND reaction = $3;
 	`
 
-	return db.Sql.QueryRow(statement, postID, user.String(), reaction).Scan()
+	_, err := db.Sql.Exec(statement, postID, user.String(), reaction)
+	return err
 }
 
 // SavePollAnswer allows to save the given answers from the specified user for the poll
 // post having the specified postID.
-func (db DesmosDb) SavePollAnswer(postID posts.PostID, answers []posts.AnswerID, answerer sdk.AccAddress) error {
+func (db DesmosDb) SavePollAnswer(postID posts.PostID, answer posts.UserAnswer) error {
 	statement := `
 	INSERT INTO user_poll_answer (poll_id, answers, user_address)
 	VALUES ($1, $2, $3)
-	RETURNING id;
 	`
 
-	return db.Sql.QueryRow(statement, postID, pq.Array(answers), answerer.String()).Scan()
+	_, err := db.Sql.Exec(statement, postID, pq.Array(answer.Answers), answer.User.String())
+	return err
 }
