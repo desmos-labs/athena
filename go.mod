@@ -8,5 +8,6 @@ require (
 	github.com/desmos-labs/juno v0.0.0-20200305141213-2112825dc01d
 	github.com/lib/pq v1.3.0
 	github.com/rs/zerolog v1.18.0
+	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/tendermint v0.33.0
 )
