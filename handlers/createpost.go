@@ -34,20 +34,19 @@ func handleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db pos
 
 // handleMsgCreatePost handles a MsgCreatePost and saves the post inside the database
 func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) error {
-	var id uint64
+	var id *uint64
 
 	// Saving post's poll data before post to make possible the insertion of poll_id inside it
 
 	pollDataSqlStatement := `
-	INSERT INTO poll (id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
-	VALUES ($1, $2, $3, $4, $5, $6)
+	INSERT INTO poll (question, end_date, open, allows_multiple_answers, allows_answer_edits)
+	VALUES ($1, $2, $3, $4, $5)
 	RETURNING id;
 	`
 
 	if msg.PollData != nil {
 		err := db.Sql.QueryRow(
 			pollDataSqlStatement,
-			postID,
 			msg.PollData.Question,
 			msg.PollData.EndDate,
 			msg.PollData.Open,
@@ -59,19 +58,18 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 			return err
 		}
 
-		var answersId uint64
 		addPollAnswersSqlStatement := `
 		INSERT INTO poll_answer(poll_id, answer_id, answer_text)
 		VALUES($1, $2, $3)
 		RETURNING id;
 		`
 		for _, answer := range msg.PollData.ProvidedAnswers {
-			err := db.Sql.QueryRow(
+			_, err := db.Sql.Exec(
 				addPollAnswersSqlStatement,
-				postID,
+				id,
 				answer.ID,
 				answer.Text,
-			).Scan(&answersId)
+			)
 
 			if err != nil {
 				return err
@@ -88,7 +86,8 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 	RETURNING id;
     `
 
-	jsonString, _ := json.Marshal(msg.OptionalData)
+	// todo look how this is inserted in DB
+	jsonB, _ := json.Marshal(msg.OptionalData)
 
 	err := db.Sql.QueryRow(
 		postSqlStatement,
@@ -101,7 +100,7 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 		msg.Subspace,
 		msg.Creator.String(),
 		id,
-		jsonString,
+		string(jsonB),
 	).Scan(&id)
 
 	if err != nil {
