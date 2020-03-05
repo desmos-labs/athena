@@ -3,3 +3,6 @@ build/
 
 # configuration
 *.toml
+
+# coverage
+coverage.out
