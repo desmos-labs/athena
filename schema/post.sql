@@ -13,7 +13,7 @@ CREATE TABLE post (
     subspace text NOT NULL,
     creator character varying(45) NOT NULL,
     poll_id integer REFERENCES poll(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    optional_data json
+    optional_data jsonb NOT NULL DEFAULT '{}'::jsonb
 );
 
 -- Indices -------------------------------------------------------
