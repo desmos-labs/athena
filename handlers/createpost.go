@@ -63,6 +63,7 @@ func savePost(postID uint64, msg posts.MsgCreatePost, db postgresql.Database) er
 		VALUES($1, $2, $3)
 		RETURNING id;
 		`
+
 		for _, answer := range msg.PollData.ProvidedAnswers {
 			_, err := db.Sql.Exec(
 				addPollAnswersSqlStatement,

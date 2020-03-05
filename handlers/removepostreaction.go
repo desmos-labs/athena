@@ -6,21 +6,16 @@ import (
 )
 
 func handleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db postgresql.Database) error {
+	var id uint64
 
 	removeRSqlStatement := `
 	DELETE FROM reaction
 	WHERE post_id = $1 AND owner = $2 AND value = $3;
 	`
-	_, err := db.Sql.Exec(
+	return db.Sql.QueryRow(
 		removeRSqlStatement,
 		msg.PostID,
 		msg.User.String(),
 		msg.Reaction,
-	)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	).Scan(&id)
 }
