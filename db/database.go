@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/juno/db/postgresql"
+	"github.com/lib/pq"
 )
 
 // DesmosDb represents a PostgreSQL database with expanded features.
@@ -109,12 +110,35 @@ func (db DesmosDb) EditPost(postID posts.PostID, message string, editDate time.T
 }
 
 // SaveReaction allows to save a new reaction for the given postID having the specified value and user
-func (db DesmosDb) SaveReaction(postID posts.PostID, value string, user sdk.AccAddress) error {
+func (db DesmosDb) SaveReaction(postID posts.PostID, reaction string, user sdk.AccAddress) error {
 	statement := `
 	INSERT INTO reaction (post_id, owner, value)
 	VALUES ($1, $2, $3)
 	RETURNING id;
 	`
 
-	return db.Sql.QueryRow(statement, postID, user.String(), value).Scan()
+	return db.Sql.QueryRow(statement, postID, user.String(), reaction).Scan()
+}
+
+// RemoveReaction allows to remove an already existing reaction for the post having the given postID,
+// the given reaction and from the specified user.
+func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction string, user sdk.AccAddress) error {
+	statement := `
+	DELETE FROM reaction
+	WHERE post_id = $1 AND owner = $2 AND reaction = $3;
+	`
+
+	return db.Sql.QueryRow(statement, postID, user.String(), reaction).Scan()
+}
+
+// SavePollAnswer allows to save the given answers from the specified user for the poll
+// post having the specified postID.
+func (db DesmosDb) SavePollAnswer(postID posts.PostID, answers []posts.AnswerID, answerer sdk.AccAddress) error {
+	statement := `
+	INSERT INTO user_poll_answer (poll_id, answers, user_address)
+	VALUES ($1, $2, $3)
+	RETURNING id;
+	`
+
+	return db.Sql.QueryRow(statement, postID, pq.Array(answers), answerer.String()).Scan()
 }

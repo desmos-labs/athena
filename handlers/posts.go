@@ -6,9 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/djuno/db"
-	"github.com/desmos-labs/juno/db/postgresql"
 	"github.com/desmos-labs/juno/types"
-	"github.com/lib/pq"
 	"github.com/rs/zerolog/log"
 )
 
@@ -81,29 +79,12 @@ func HandleMsgAddPostReaction(msg posts.MsgAddPostReaction, db db.DesmosDb) erro
 
 // HandleMsgRemovePostReaction allows to properly handle a MsgRemovePostReaction by
 // deleting the specified reaction from the database.
-func HandleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db postgresql.Database) error {
-	statement := `
-	DELETE FROM reaction
-	WHERE post_id = $1 AND owner = $2 AND value = $3;
-	`
-
-	return db.Sql.QueryRow(
-		statement,
-		msg.PostID, msg.User.String(), msg.Reaction,
-	).Scan()
+func HandleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db db.DesmosDb) error {
+	return db.RemoveReaction(msg.PostID, msg.Reaction, msg.User)
 }
 
 // HandleMsgAnswerPoll allows to properly handle a MsgAnswerPoll message by
 // storing inside the database the new answer.
-func HandleMsgAnswerPoll(msg posts.MsgAnswerPoll, db postgresql.Database) error {
-	statement := `
-	INSERT INTO user_poll_answer (poll_id, answers, user_address)
-	VALUES ($1, $2, $3)
-	RETURNING id;
-	`
-
-	return db.Sql.QueryRow(
-		statement,
-		msg.PostID, msg.UserAnswers, pq.Array(msg.Answerer),
-	).Scan()
+func HandleMsgAnswerPoll(msg posts.MsgAnswerPoll, db db.DesmosDb) error {
+	return db.SavePollAnswer(msg.PostID, msg.UserAnswers, msg.Answerer)
 }
