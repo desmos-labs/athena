@@ -5,8 +5,10 @@ import (
 	setup "github.com/desmos-labs/djuno/config"
 	desmosdb "github.com/desmos-labs/djuno/db"
 	"github.com/desmos-labs/djuno/handlers"
+	"github.com/desmos-labs/juno/config"
 	"github.com/desmos-labs/juno/executor"
 	"github.com/desmos-labs/juno/parse/worker"
+	"github.com/desmos-labs/juno/version"
 )
 
 func main() {
@@ -15,7 +17,13 @@ func main() {
 	worker.RegisterMsgHandler(handlers.MsgHandler)
 
 	// Build the executor
-	command := executor.BuildExecutor("djuno", setup.DesmosConfig, app.MakeCodec, desmosdb.Builder)
+	rootCmd := executor.BuildRootCmd("djuno", setup.DesmosConfig)
+	rootCmd.AddCommand(
+		version.GetVersionCmd(),
+		GetDesmosParseCmd(app.MakeCodec(), desmosdb.Builder),
+	)
+
+	command := config.PrepareMainCmd(rootCmd)
 
 	// Run the commands and panic on any error
 	err := command.Execute()

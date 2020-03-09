@@ -18,22 +18,22 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 		return nil
 	}
 
-	desmosdDb, ok := db.(desmosdb.DesmosDb)
+	database, ok := db.(desmosdb.DesmosDb)
 	if !ok {
 		return fmt.Errorf("database is not a DesmosDb instance")
 	}
 
 	switch desmosMsg := msg.(type) {
 	case posts.MsgCreatePost:
-		return HandleMsgCreatePost(tx, index, desmosMsg, desmosdDb)
+		return HandleMsgCreatePost(tx, index, desmosMsg, database)
 	case posts.MsgEditPost:
-		return HandleMsgEditPost(desmosMsg, desmosdDb)
+		return HandleMsgEditPost(desmosMsg, database)
 	case posts.MsgAddPostReaction:
-		return HandleMsgAddPostReaction(desmosMsg, desmosdDb)
+		return HandleMsgAddPostReaction(desmosMsg, database)
 	case posts.MsgRemovePostReaction:
-		return HandleMsgRemovePostReaction(desmosMsg, desmosdDb)
+		return HandleMsgRemovePostReaction(desmosMsg, database)
 	case posts.MsgAnswerPoll:
-		return HandleMsgAnswerPoll(desmosMsg, desmosdDb)
+		return HandleMsgAnswerPoll(desmosMsg, database)
 	}
 
 	return nil
