@@ -1,19 +1,34 @@
 # Djuno
-
 [![Build Status](https://travis-ci.com/desmos-labs/djuno.svg?branch=master)](https://travis-ci.com/desmos-labs/djuno)
+[![Go Report Card](https://goreportcard.com/badge/github.com/desmos-labs/djuno)](https://goreportcard.com/report/github.com/desmos-labs/djuno)
 
-Djuno is the juno implementation for Desmos Network.  
-It provides handlers that manage every incoming desmos' message and saves the successful ones inside a postgreSQL database. 
+This project represents the [Juno](https://github.com/desmos-labs/juno) implementation for the [Desmos blockchain](https://github.com/desmos-labs/desmos).
+
+It extends the custom Juno behavior with custom message handlers for all the Desmos message types. This allows to store the needed data inside a [PostgreSQL](https://www.postgresql.org/) database on top of which [GraphQL](https://graphql.org/) APIs can then be created using [Hasura](https://hasura.io/) 
 
 ## Installation
-Djuno inherit the same simple configuration of [juno](https://github.com/desmos-labs/juno)
-
-To install the binary run `make install`.
+To install the binary simply run `make install`.
 
 **Note**: Requires [Go 1.13+](https://golang.org/dl/)
 
-### Working with PostgreSQL
-#### Config
+## Database
+Before running the parser, you need to: 
+
+1. Create a [PostgreSQL]() database.
+2. Run the SQL queries you find inside the [`schemes.sql` file](schema/schemes.sql) inside such database to create all the necessary tables.  
+
+## Running the parser
+To parse the chain state, you need to use the following command: 
+
+```shell
+djuno parse <path/to/config.toml>
+
+# Example
+# djuno parse config.toml 
+```
+
+The configuration must be a TOML file containing the following fields:
+
 ```toml
 rpc_node = "<rpc-ip/host>:<rpc-port>"
 client_node = "<client-ip/host>:<client-port>"
@@ -27,6 +42,16 @@ password = "<db-password>"
 ssl_mode = "<ssl-mode>"
 ```
 
-After you have installed the binary and config the `.toml` file you can run the following command:  
-`djuno parse <path/to/config.yml>`  
+Example of a configuration to parse the chain state from a local full-node: 
 
+```
+rpc_node = "http://localhost:26657"
+client_node = "http://localhost:1317"
+
+[database]
+host = "localhost"
+port = 5432
+name = "desmos"
+user = "<username>"
+password = "<password>"
+```

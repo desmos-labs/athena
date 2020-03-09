@@ -42,7 +42,7 @@ CREATE TABLE block
     timestamp        timestamp without time zone NOT NULL
 );
 
---- MOONCAKE ----------------------------------------------
+--- DESMOS ----------------------------------------------
 ​
 CREATE TABLE poll
 (
@@ -53,6 +53,7 @@ CREATE TABLE poll
     allows_multiple_answers boolean                  NOT NULL,
     allows_answer_edits     boolean                  NOT NULL
 );
+CREATE UNIQUE INDEX poll_pkey ON poll (id int4_ops);
 ​
 CREATE TABLE poll_answer
 (
@@ -61,6 +62,7 @@ CREATE TABLE poll_answer
     answer_id   integer NOT NULL,
     answer_text text    NOT NULL
 );
+CREATE UNIQUE INDEX poll_answer_pkey ON poll_answer (id int4_ops);
 ​
 CREATE TABLE user_poll_answer
 (
@@ -69,19 +71,20 @@ CREATE TABLE user_poll_answer
     answers      integer[]             NOT NULL,
     user_address character varying(45) NOT NULL
 );
-​
+CREATE UNIQUE INDEX user_poll_answer_pkey ON user_poll_answer (id int4_ops);
+
 CREATE TABLE post
 (
-    id integer PRIMARY KEY,
-    parent_id integer NOT NULL,
-    message text NOT NULL,
-    created timestamp with time zone NOT NULL,
-    last_edited timestamp with time zone NOT NULL,
-    allows_comments boolean NOT NULL,
-    subspace text NOT NULL,
-    creator character varying(45) NOT NULL,
-    poll_id integer REFERENCES poll(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    optional_data json
+    id              integer PRIMARY KEY,
+    parent_id       integer                  NOT NULL,
+    message         text                     NOT NULL,
+    created         timestamp with time zone NOT NULL,
+    last_edited     timestamp with time zone NOT NULL,
+    allows_comments boolean                  NOT NULL,
+    subspace        text                     NOT NULL,
+    creator         character varying(45)    NOT NULL,
+    optional_data   jsonb                    NOT NULL DEFAULT '{}'::jsonb,
+    poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 ​
 CREATE TABLE reaction
@@ -91,6 +94,7 @@ CREATE TABLE reaction
     owner   character varying(45) NOT NULL,
     value   text                  NOT NULL
 );
+CREATE UNIQUE INDEX reaction_pkey ON reaction (id int4_ops);
 ​​
 CREATE TABLE media
 (
@@ -99,3 +103,4 @@ CREATE TABLE media
     uri       text    NOT NULL,
     mime_type text    NOT NULL
 );
+CREATE UNIQUE INDEX media_pkey ON media (id int4_ops);
