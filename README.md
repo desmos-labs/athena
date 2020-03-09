@@ -14,7 +14,7 @@ To install the binary simply run `make install`.
 ## Database
 Before running the parser, you need to: 
 
-1. Create a [PostgreSQL]() database.
+1. Create a [PostgreSQL](https://www.postgresql.org/) database.
 2. Run the SQL queries you find inside the [`schemes.sql` file](schema/schemes.sql) inside such database to create all the necessary tables.  
 
 ## Running the parser
