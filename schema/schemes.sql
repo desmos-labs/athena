@@ -46,8 +46,8 @@ CREATE TABLE transaction
 ​
 CREATE TABLE "user"
 (
-    id         SERIAL PRIMARY KEY,
-    address    character varying(45) NOT NULL
+    id      SERIAL PRIMARY KEY,
+    address character varying(45) NOT NULL
 );
 
 
@@ -63,18 +63,18 @@ CREATE TABLE poll
 ​
 CREATE TABLE poll_answer
 (
-    id          SERIAL PRIMARY KEY,
     poll_id     integer NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
     answer_id   integer NOT NULL,
-    answer_text text    NOT NULL
+    answer_text text    NOT NULL,
+    UNIQUE (poll_id, answer_id)
 );
 ​
 CREATE TABLE user_poll_answer
 (
-    id      SERIAL PRIMARY KEY,
-    poll_id integer   NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    answers integer[] NOT NULL,
-    user_id integer   NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE
+    poll_id integer NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    answer  integer NOT NULL,
+    user_id integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE (poll_id, answer, user_id)
 );
 
 CREATE TABLE post
