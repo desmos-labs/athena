@@ -1,19 +1,5 @@
 --- COSMOS ----------------------------------------------
 
-CREATE TABLE transaction
-(
-    id         SERIAL PRIMARY KEY,
-    timestamp  timestamp without time zone NOT NULL,
-    gas_wanted integer                              DEFAULT 0,
-    gas_used   integer                              DEFAULT 0,
-    height     integer                     NOT NULL REFERENCES block (height),
-    txhash     character varying(64)       NOT NULL UNIQUE,
-    messages   jsonb                       NOT NULL DEFAULT '[]'::jsonb,
-    fee        jsonb                       NOT NULL DEFAULT '{}'::jsonb,
-    signatures jsonb                       NOT NULL DEFAULT '[]'::jsonb,
-    memo       character varying(256)
-);
-
 CREATE TABLE validator
 (
     id               SERIAL PRIMARY KEY,
@@ -42,8 +28,29 @@ CREATE TABLE block
     timestamp        timestamp without time zone NOT NULL
 );
 
+CREATE TABLE transaction
+(
+    id         SERIAL PRIMARY KEY,
+    timestamp  timestamp without time zone NOT NULL,
+    gas_wanted integer                              DEFAULT 0,
+    gas_used   integer                              DEFAULT 0,
+    height     integer                     NOT NULL REFERENCES block (height),
+    txhash     character varying(64)       NOT NULL UNIQUE,
+    messages   jsonb                       NOT NULL DEFAULT '[]'::jsonb,
+    fee        jsonb                       NOT NULL DEFAULT '{}'::jsonb,
+    signatures jsonb                       NOT NULL DEFAULT '[]'::jsonb,
+    memo       character varying(256)
+);
+
 --- DESMOS ----------------------------------------------
 ​
+CREATE TABLE "user"
+(
+    id         SERIAL PRIMARY KEY,
+    address    character varying(45) NOT NULL
+);
+
+
 CREATE TABLE poll
 (
     id                      SERIAL PRIMARY KEY,
@@ -53,7 +60,6 @@ CREATE TABLE poll
     allows_multiple_answers boolean                  NOT NULL,
     allows_answer_edits     boolean                  NOT NULL
 );
-CREATE UNIQUE INDEX poll_pkey ON poll (id int4_ops);
 ​
 CREATE TABLE poll_answer
 (
@@ -62,16 +68,14 @@ CREATE TABLE poll_answer
     answer_id   integer NOT NULL,
     answer_text text    NOT NULL
 );
-CREATE UNIQUE INDEX poll_answer_pkey ON poll_answer (id int4_ops);
 ​
 CREATE TABLE user_poll_answer
 (
-    id           SERIAL PRIMARY KEY,
-    poll_id      integer               NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    answers      integer[]             NOT NULL,
-    user_address character varying(45) NOT NULL
+    id      SERIAL PRIMARY KEY,
+    poll_id integer   NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    answers integer[] NOT NULL,
+    user_id integer   NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-CREATE UNIQUE INDEX user_poll_answer_pkey ON user_poll_answer (id int4_ops);
 
 CREATE TABLE post
 (
@@ -82,19 +86,18 @@ CREATE TABLE post
     last_edited     timestamp with time zone NOT NULL,
     allows_comments boolean                  NOT NULL,
     subspace        text                     NOT NULL,
-    creator         character varying(45)    NOT NULL,
+    creator_id      integer                  NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
     optional_data   jsonb                    NOT NULL DEFAULT '{}'::jsonb,
     poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 ​
 CREATE TABLE reaction
 (
-    id      SERIAL PRIMARY KEY,
-    post_id integer               NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    owner   character varying(45) NOT NULL,
-    value   text                  NOT NULL
+    id       SERIAL PRIMARY KEY,
+    post_id  integer NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    owner_id integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    value    text    NOT NULL
 );
-CREATE UNIQUE INDEX reaction_pkey ON reaction (id int4_ops);
 ​​
 CREATE TABLE media
 (
@@ -103,4 +106,3 @@ CREATE TABLE media
     uri       text    NOT NULL,
     mime_type text    NOT NULL
 );
-CREATE UNIQUE INDEX media_pkey ON media (id int4_ops);

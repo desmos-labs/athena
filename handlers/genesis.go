@@ -47,7 +47,8 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 		}
 
 		for _, reaction := range reactions {
-			if err := db.SaveReaction(postID, reaction); err != nil {
+			_, err := db.SaveReaction(postID, reaction)
+			if err != nil {
 				return err
 			}
 		}

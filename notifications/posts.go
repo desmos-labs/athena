@@ -9,13 +9,24 @@ import (
 )
 
 const (
-	PostIDKey = "post_id"
+	LikeReactionValue = ":heart:"
 
+	NotificationTypeKey = "type"
+	TypeComment         = "comment"
+	TypeReaction        = "reaction"
+	TypeLike            = "like"
+
+	NotificationActionKey = "action"
+	ActionOpenPost        = "open_post"
+
+	PostIDKey      = "post_id"
 	PostMessageKey = "post_message"
 	PostCreatorKey = "post_creator"
 
 	PostReactionValueKey = "post_reaction_value"
 	PostReactionOwnerKey = "post_reaction_owner"
+
+	PostLikeUserKey = "like_user"
 )
 
 // SendPostNotifications takes the given post and, upon having performed the necessary checks, sends
@@ -29,7 +40,19 @@ func SendPostNotifications(post posts.Post, db db.DesmosDb) error {
 		return err
 	}
 
-	// No parent, simply return
+	// Send the notification as it's a comment
+	if err := sendCommentNotification(post, parent); err != nil {
+		return err
+	}
+
+	// TODO: Send mention notification
+	// TODO: Send tag notification
+
+	return nil
+}
+
+func sendCommentNotification(post posts.Post, parent *posts.Post) error {
+	// Not a comment, skip
 	if parent == nil {
 		return nil
 	}
@@ -40,12 +63,14 @@ func SendPostNotifications(post posts.Post, db db.DesmosDb) error {
 	}
 
 	// Build the notification
-	// TODO: Improve the messages here
 	notification := messaging.Notification{
-		Title: "New post!",
-		Body:  "A new post has been created!",
+		Title: "Someone commented one of your posts! 💬",
+		Body:  fmt.Sprintf("%s commented on your post: %s", post.Creator.String(), post.Message),
 	}
 	data := map[string]string{
+		NotificationTypeKey:   TypeComment,
+		NotificationActionKey: ActionOpenPost,
+
 		PostIDKey:      post.PostID.String(),
 		PostMessageKey: post.Message,
 		PostCreatorKey: post.Creator.String(),
@@ -69,15 +94,46 @@ func SendReactionNotifications(postID posts.PostID, reaction posts.Reaction, db 
 		return nil
 	}
 
+	if reaction.Value == LikeReactionValue {
+		return sendLikeNotification(post, reaction)
+	}
+	return sendGenericReactionNotification(post, reaction)
+}
+
+// sendGenericReactionNotification allows to send a notification for a generic given reaction
+// that has been added to the specified post
+func sendGenericReactionNotification(post *posts.Post, reaction posts.Reaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone added a new reaction! 🎉",
 		Body:  fmt.Sprintf("%s added a new reaction to your post: %s", reaction.Owner.String(), reaction.Value),
 	}
 	data := map[string]string{
-		PostIDKey:            postID.String(),
+		NotificationTypeKey:   TypeReaction,
+		NotificationActionKey: ActionOpenPost,
+
+		PostIDKey:            post.PostID.String(),
 		PostReactionValueKey: reaction.Value,
 		PostReactionOwnerKey: reaction.Owner.String(),
+	}
+
+	// Send a notification to the post creator
+	return SendNotification(post.Creator.String(), &notification, data)
+}
+
+// sendLikeNotification sends a push notification telling that a like has been added to the given post
+func sendLikeNotification(post *posts.Post, reaction posts.Reaction) error {
+	// Build the notification
+	notification := messaging.Notification{
+		Title: "Someone like one of your posts ❤️",
+		Body:  fmt.Sprintf("%s like your post!", reaction.Owner.String()),
+	}
+	data := map[string]string{
+		NotificationTypeKey:   TypeLike,
+		NotificationActionKey: ActionOpenPost,
+
+		PostIDKey:       post.PostID.String(),
+		PostLikeUserKey: reaction.Owner.String(),
 	}
 
 	// Send a notification to the post creator

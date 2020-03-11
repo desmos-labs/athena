@@ -5,7 +5,7 @@ go 1.13
 require (
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.38.1
-	github.com/desmos-labs/desmos v0.3.1-0.20200228154348-af73c32e0a26
+	github.com/desmos-labs/desmos v0.3.1-0.20200309151340-f00fc46e3a7a
 	github.com/desmos-labs/juno v0.0.0-20200309082600-751f771a4fab
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.3.0

@@ -118,7 +118,7 @@ func HandleMsgAddPostReaction(msg posts.MsgAddPostReaction, db db.DesmosDb) erro
 // HandleMsgRemovePostReaction allows to properly handle a MsgRemovePostReaction by
 // deleting the specified reaction from the database.
 func HandleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db db.DesmosDb) error {
-	return db.RemoveReaction(msg.PostID, msg.Reaction, msg.User)
+	return db.RemoveReaction(msg.PostID, posts.NewReaction(msg.Reaction, msg.User))
 }
 
 // ____________________________________
