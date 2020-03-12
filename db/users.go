@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// PostRow represents a single PostgreSQL row containing the data of a Post
+// UserRow represents a single PostgreSQL row containing the data of a user
 type UserRow struct {
 	Id      *uint64 `db:"id"`
 	Address string  `db:"address"`

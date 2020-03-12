@@ -22,6 +22,7 @@ type PostRow struct {
 	OptionalData   string    `db:"optional_data"`
 }
 
+// ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
 func ConvertPostRow(postRow PostRow, userRow *UserRow) (*posts.Post, error) {
 
 	// Parse the post id

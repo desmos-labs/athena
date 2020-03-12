@@ -7,6 +7,7 @@ import (
 	"github.com/desmos-labs/desmos/x/posts"
 )
 
+// PollRow represents a single PostgreSQL row containing the details of a poll
 type PollRow struct {
 	Id                    uint64    `db:"id"`
 	Question              string    `db:"question"`
@@ -16,6 +17,8 @@ type PollRow struct {
 	AllowsAnswerEdits     bool      `db:"allows_answer_edits"`
 }
 
+// GetPollByPostID returns the poll row associated to the post having the specified id.
+// If the post with the same id has no poll associated to it, nil is returned instead.
 func (db DesmosDb) GetPollByPostID(postID posts.PostID) (*PollRow, error) {
 	sqlStmt := `SELECT * from poll WHERE id = (SELECT post.poll_id FROM post WHERE post.id = $1)`
 
@@ -32,6 +35,9 @@ func (db DesmosDb) GetPollByPostID(postID posts.PostID) (*PollRow, error) {
 	return &rows[0], nil
 }
 
+// SavePollData allows to properly store the given poll inside the database, returning the
+// id of the newly created (or updated) row inside the database itself.
+// If the given poll is nil, it will not be inserted and nil will be returned as the id.
 func (db DesmosDb) SavePollData(poll *posts.PollData) (pollID *uint64, err error) {
 	// Nil data, do nothing
 	if poll == nil {
