@@ -79,8 +79,8 @@ CREATE TABLE user_poll_answer
 
 CREATE TABLE post
 (
-    id              integer PRIMARY KEY,
-    parent_id       integer                  NOT NULL,
+    id              text PRIMARY KEY,
+    parent_id       text REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
     message         text                     NOT NULL,
     created         timestamp with time zone NOT NULL,
     last_edited     timestamp with time zone NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE post
 CREATE TABLE reaction
 (
     id       SERIAL PRIMARY KEY,
-    post_id  integer NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    post_id  text    NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
     owner_id integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
     value    text    NOT NULL
 );
@@ -102,7 +102,7 @@ CREATE TABLE reaction
 CREATE TABLE media
 (
     id        SERIAL PRIMARY KEY,
-    post_id   integer NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    uri       text    NOT NULL,
-    mime_type text    NOT NULL
+    post_id   text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    uri       text NOT NULL,
+    mime_type text NOT NULL
 );

@@ -25,6 +25,6 @@ func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction posts.Reaction) 
 	}
 
 	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner_id = $2 AND reaction = $3;`
-	_, err = db.Sql.Exec(statement, postID, owner.Id, reaction)
+	_, err = db.Sql.Exec(statement, postID.String(), owner.Id, reaction)
 	return err
 }

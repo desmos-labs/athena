@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"encoding/json"
 	"time"
 
@@ -10,16 +11,16 @@ import (
 
 // PostRow represents a single PostgreSQL row containing the data of a Post
 type PostRow struct {
-	PostID         string    `db:"id"`
-	ParentID       string    `db:"parent_id"`
-	Message        string    `db:"message"`
-	Created        time.Time `db:"created"`
-	LastEdited     time.Time `db:"last_edited"`
-	AllowsComments bool      `db:"allows_comments"`
-	Subspace       string    `db:"subspace"`
-	CreatorID      *uint64   `db:"creator_id"`
-	PollID         *uint64   `db:"poll_id"`
-	OptionalData   string    `db:"optional_data"`
+	PostID         string         `db:"id"`
+	ParentID       sql.NullString `db:"parent_id"`
+	Message        string         `db:"message"`
+	Created        time.Time      `db:"created"`
+	LastEdited     time.Time      `db:"last_edited"`
+	AllowsComments bool           `db:"allows_comments"`
+	Subspace       string         `db:"subspace"`
+	CreatorID      *uint64        `db:"creator_id"`
+	PollID         *uint64        `db:"poll_id"`
+	OptionalData   string         `db:"optional_data"`
 }
 
 // ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
@@ -32,9 +33,13 @@ func ConvertPostRow(postRow PostRow, userRow *UserRow) (*posts.Post, error) {
 	}
 
 	// Parse the parent id
-	parentID, err := posts.ParsePostID(postRow.ParentID)
-	if err != nil {
-		return nil, err
+
+	var parentID posts.PostID
+	if postRow.ParentID.Valid {
+		parentID, err = posts.ParsePostID(postRow.ParentID.String)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Parse the creator
@@ -119,9 +124,15 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_id, poll_id, optional_data)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     `
+	var parentId *string
+	if post.ParentID.Valid() {
+		parentIdString := post.ParentID.String()
+		parentId = &parentIdString
+	}
+
 	_, err = db.Sql.Exec(
 		postSqlStatement,
-		post.PostID, post.ParentID, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
+		post.PostID.String(), parentId, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
 		userID, pollID, string(optionalDataBz),
 	)
 	return err
@@ -132,7 +143,7 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 func (db DesmosDb) saveMedias(postID posts.PostID, medias posts.PostMedias) error {
 	mediaQuery := `INSERT INTO media (post_id, uri, mime_type) VALUES ($1, $2, $3)`
 	for _, media := range medias {
-		_, err := db.Sql.Exec(mediaQuery, postID, media.URI, media.MimeType)
+		_, err := db.Sql.Exec(mediaQuery, postID.String(), media.URI, media.MimeType)
 		if err != nil {
 			return err
 		}
