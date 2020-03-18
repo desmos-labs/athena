@@ -80,7 +80,7 @@ CREATE TABLE user_poll_answer
 CREATE TABLE post
 (
     id              text PRIMARY KEY,
-    parent_id       text REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    parent_id       text,
     message         text                     NOT NULL,
     created         timestamp with time zone NOT NULL,
     last_edited     timestamp with time zone NOT NULL,
