@@ -65,6 +65,8 @@ github.com/desmos-labs/desmos v0.3.1-0.20200228154348-af73c32e0a26 h1:cE4goFokTK
 github.com/desmos-labs/desmos v0.3.1-0.20200228154348-af73c32e0a26/go.mod h1:0FPGFXOPAn1xV41PQVnmoo9cJBYVYetjH4oNjQeoWaI=
 github.com/desmos-labs/desmos v0.3.1-0.20200309151340-f00fc46e3a7a h1:5OZue3uneQC5pn/GjRAv4yGMZMRjIcku+Y+Q1FRVNA8=
 github.com/desmos-labs/desmos v0.3.1-0.20200309151340-f00fc46e3a7a/go.mod h1:0FPGFXOPAn1xV41PQVnmoo9cJBYVYetjH4oNjQeoWaI=
+github.com/desmos-labs/desmos v0.3.1-0.20200317061721-e91fa60024b3 h1:90Up1mCrJIe4X/FhCwyeadZeKy9mAckTGAyUhHDO0a4=
+github.com/desmos-labs/desmos v0.3.1-0.20200317061721-e91fa60024b3/go.mod h1:1F1eKF59QruYSwoqMek8eu8wGeZVvleB7aAWVAaqcV4=
 github.com/desmos-labs/juno v0.0.0-20200309082600-751f771a4fab h1:WeM3HuorOnTH9V8zU5X2VFKC+oVGytJWY029JZx2Db4=
 github.com/desmos-labs/juno v0.0.0-20200309082600-751f771a4fab/go.mod h1:8T7pEixDeb7z9quSHdQlCmNxxEY89+Dj6fckmOoWvV4=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
