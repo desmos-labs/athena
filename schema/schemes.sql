@@ -81,13 +81,13 @@ CREATE TABLE post
 (
     id              text PRIMARY KEY,
     parent_id       text,
-    message         text                     NOT NULL,
+    message         text                        NOT NULL,
     created         timestamp without time zone NOT NULL,
     last_edited     timestamp without time zone NOT NULL,
-    allows_comments boolean                  NOT NULL,
-    subspace        text                     NOT NULL,
-    creator_id      integer                  NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    optional_data   jsonb                    NOT NULL DEFAULT '{}'::jsonb,
+    allows_comments boolean                     NOT NULL,
+    subspace        text                        NOT NULL,
+    creator_id      integer                     NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    optional_data   jsonb                       NOT NULL DEFAULT '{}'::jsonb,
     poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 ​

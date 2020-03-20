@@ -51,15 +51,18 @@ func SendNotification(topic string, notification *messaging.Notification, data m
 	data[ClickActionKey] = ClickActionValue
 
 	// Build the Android config
-	android := &messaging.AndroidConfig{
-		Notification: &messaging.AndroidNotification{ChannelID: AndroidChannelID},
+	var androidConfig *messaging.AndroidConfig
+	if notification != nil {
+		androidConfig = &messaging.AndroidConfig{
+			Notification: &messaging.AndroidNotification{ChannelID: AndroidChannelID},
+		}
 	}
 
 	// Build the message
 	message := messaging.Message{
 		Data:         data,
 		Notification: notification,
-		Android:      android,
+		Android:      androidConfig,
 		Topic:        topic,
 	}
 

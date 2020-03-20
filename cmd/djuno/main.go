@@ -14,6 +14,7 @@ import (
 func main() {
 	// Register custom handlers
 	worker.RegisterGenesisHandler(handlers.GenesisHandler)
+	worker.RegisterTxHandler(handlers.TxHandler)
 	worker.RegisterMsgHandler(handlers.MsgHandler)
 
 	// Build the executor
