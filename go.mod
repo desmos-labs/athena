@@ -3,6 +3,8 @@ module github.com/desmos-labs/djuno
 go 1.13
 
 require (
+	cloud.google.com/go v0.55.0 // indirect
+	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.38.1
 	github.com/desmos-labs/desmos v0.3.1-0.20200317061721-e91fa60024b3
@@ -13,7 +15,9 @@ require (
 	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/tendermint v0.33.0
-	go.opencensus.io v0.22.3 // indirect
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
+	golang.org/x/net v0.0.0-20200320220750-118fecf932d8 // indirect
+	golang.org/x/sys v0.0.0-20200321134203-328b4cd54aae // indirect
+	golang.org/x/tools v0.0.0-20200321224714-0d839f3cf2ed // indirect
 	google.golang.org/api v0.20.0
+	google.golang.org/genproto v0.0.0-20200319113533-08878b785e9c // indirect
 )
