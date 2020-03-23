@@ -6,7 +6,7 @@ require (
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.38.1
 	github.com/desmos-labs/desmos v0.3.1-0.20200317061721-e91fa60024b3
-	github.com/desmos-labs/juno v0.0.0-20200309082600-751f771a4fab
+	github.com/desmos-labs/juno v0.0.0-20200323071554-b9ce6365fc20
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.3.0
 	github.com/rs/zerolog v1.18.0

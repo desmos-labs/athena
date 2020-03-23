@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
+	"github.com/rs/zerolog/log"
 )
 
 // PostRow represents a single PostgreSQL row containing the data of a Post
@@ -92,6 +93,8 @@ func (db DesmosDb) GetPostByID(id posts.PostID) (*posts.Post, error) {
 
 // SavePost allows to store the given post inside the database properly.
 func (db DesmosDb) SavePost(post posts.Post) error {
+	log.Debug().Str("post_id", post.PostID.String()).Msg("saving post")
+
 	user, err := db.SaveUserIfNotExisting(post.Creator)
 	if err != nil {
 		return err

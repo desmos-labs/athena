@@ -8,7 +8,6 @@ import (
 	"github.com/desmos-labs/djuno/db"
 	"github.com/desmos-labs/djuno/notifications"
 	"github.com/desmos-labs/juno/types"
-	"github.com/rs/zerolog/log"
 )
 
 // ____________________________________
@@ -29,8 +28,6 @@ func HandleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db db.
 // database the post that has been created with such message.
 // After the post has been saved, it is returned for other uses.
 func CreateAndStorePostFromMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db db.DesmosDb) (*posts.Post, error) {
-	log.Info().Str("tx_hash", tx.TxHash).Int("msg_index", index).Msg("Found MsgCreatePost")
-
 	// Get the post id
 	event, err := FindCreationEvent(tx, index)
 	if err != nil {

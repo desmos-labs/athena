@@ -12,6 +12,8 @@ import (
 )
 
 func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
+	log.Info().Str("tx_hash", tx.TxHash).Int("msg_index", index).Str("msg_type", msg.Type()).Msg("found message")
+
 	if len(tx.Logs) == 0 {
 		log.Info().Msg(fmt.Sprintf("Skipping message at index %d of tx hash %s as it was not successull",
 			index, tx.TxHash))
