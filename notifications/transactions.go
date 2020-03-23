@@ -1,8 +1,6 @@
 package notifications
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
@@ -24,9 +22,7 @@ func SendTransactionResultNotification(tx types.Tx, user sdk.AccAddress) error {
 	if tx.Code != tmtypes.CodeTypeOK {
 		result = TypeTransactionFailed
 	}
-
-	log.Info().Msg(fmt.Sprintf("Sending failed tx notification to %s for tx with hash %s, result: %s",
-		user, tx.TxHash, result))
+	log.Info().Str("recipient", user.String()).Str("tx_hash", tx.TxHash).Str("tx_result", result).Msg("sending notification")
 
 	data := map[string]string{
 		NotificationTypeKey: result,

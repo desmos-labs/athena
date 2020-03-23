@@ -93,7 +93,7 @@ func (db DesmosDb) GetPostByID(id posts.PostID) (*posts.Post, error) {
 
 // SavePost allows to store the given post inside the database properly.
 func (db DesmosDb) SavePost(post posts.Post) error {
-	log.Debug().Str("post_id", post.PostID.String()).Msg("saving post")
+	log.Info().Str("post_id", post.PostID.String()).Msg("saving post")
 
 	user, err := db.SaveUserIfNotExisting(post.Creator)
 	if err != nil {
