@@ -110,6 +110,11 @@ func (db DesmosDb) SavePost(post posts.Post) error {
 		return err
 	}
 
+	err = db.saveComment(post)
+	if err != nil {
+		return err
+	}
+
 	// Save medias
 	return db.saveMedias(post.PostID, post.Medias)
 }
@@ -128,7 +133,8 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     `
 	var parentId *string
-	if post.ParentID.Valid() {
+	// TODO: Remove the second part of the check once the invariants have been implemented
+	if post.ParentID.Valid() && post.ParentID < post.PostID {
 		parentIdString := post.ParentID.String()
 		parentId = &parentIdString
 	}
@@ -138,6 +144,17 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 		post.PostID.String(), parentId, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
 		userID, pollID, string(optionalDataBz),
 	)
+	return err
+}
+
+func (db DesmosDb) saveComment(post posts.Post) error {
+	// TODO: Remove the second part of the check once the invariants have been implemented
+	if !post.ParentID.Valid() || post.ParentID > post.PostID {
+		return nil
+	}
+
+	commentSqlStatement := `INSERT INTO comment (post_id, comment_id) VALUES ($1, $2)`
+	_, err := db.Sql.Exec(commentSqlStatement, post.ParentID.String(), post.PostID.String())
 	return err
 }
 

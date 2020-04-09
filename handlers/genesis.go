@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/desmos-labs/desmos/x/posts"
@@ -32,8 +33,15 @@ func GenesisHandler(codec *codec.Codec, _ *tmtypes.GenesisDoc, appState map[stri
 
 // handlePostsGenesis allows to properly handle the genesis state of the posts module
 func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error {
+	// Order the posts based on the ids
+	genPosts := genState.Posts
+	sort.SliceStable(genPosts, func(i, j int) bool {
+		first, second := genPosts[i], genPosts[j]
+		return first.PostID < second.PostID
+	})
+
 	// Save the posts
-	for _, post := range genState.Posts {
+	for _, post := range genPosts {
 		if err := db.SavePost(post); err != nil {
 			return err
 		}

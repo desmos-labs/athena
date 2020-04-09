@@ -43,7 +43,7 @@ CREATE TABLE transaction
 );
 
 --- DESMOS ----------------------------------------------
-​
+
 CREATE TABLE "user"
 (
     id      SERIAL PRIMARY KEY,
@@ -60,7 +60,7 @@ CREATE TABLE poll
     allows_multiple_answers boolean                  NOT NULL,
     allows_answer_edits     boolean                  NOT NULL
 );
-​
+
 CREATE TABLE poll_answer
 (
     poll_id     integer NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -68,7 +68,7 @@ CREATE TABLE poll_answer
     answer_text text    NOT NULL,
     UNIQUE (poll_id, answer_id)
 );
-​
+
 CREATE TABLE user_poll_answer
 (
     poll_id integer NOT NULL REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -80,7 +80,7 @@ CREATE TABLE user_poll_answer
 CREATE TABLE post
 (
     id              text PRIMARY KEY,
-    parent_id       text,
+    parent_id       text REFERENCES post (id),
     message         text                        NOT NULL,
     created         timestamp without time zone NOT NULL,
     last_edited     timestamp without time zone NOT NULL,
@@ -90,7 +90,13 @@ CREATE TABLE post
     optional_data   jsonb                       NOT NULL DEFAULT '{}'::jsonb,
     poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-​
+
+CREATE TABLE comment
+(
+    post_id    text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    comment_id text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE reaction
 (
     id       SERIAL PRIMARY KEY,
@@ -98,7 +104,7 @@ CREATE TABLE reaction
     owner_id integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
     value    text    NOT NULL
 );
-​​
+
 CREATE TABLE media
 (
     id        SERIAL PRIMARY KEY,
