@@ -10,7 +10,6 @@ require (
 	github.com/desmos-labs/desmos v0.3.1-0.20200317061721-e91fa60024b3
 	github.com/desmos-labs/juno v0.0.0-20200409104702-9c984c907bd1
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/lib/pq v1.3.0
 	github.com/rs/zerolog v1.18.0
 	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/testify v1.4.0
