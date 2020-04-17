@@ -88,7 +88,8 @@ CREATE TABLE post
     subspace        text                        NOT NULL,
     creator_id      integer                     NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
     optional_data   jsonb                       NOT NULL DEFAULT '{}'::jsonb,
-    poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE
+    poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    hidden          BOOLEAN                     NOT NULL DEFAULT false
 );
 
 CREATE TABLE comment

@@ -22,6 +22,7 @@ type PostRow struct {
 	CreatorID      *uint64        `db:"creator_id"`
 	PollID         *uint64        `db:"poll_id"`
 	OptionalData   string         `db:"optional_data"`
+	Hidden         bool           `db:"hidden"`
 }
 
 // ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
@@ -129,8 +130,9 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 
 	// Saving Post
 	postSqlStatement := `
-	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_id, poll_id, optional_data)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, 
+	                  creator_id, poll_id, optional_data, hidden)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     `
 	var parentId *string
 	// TODO: Remove the second part of the check once the invariants have been implemented
@@ -142,7 +144,7 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 	_, err = db.Sql.Exec(
 		postSqlStatement,
 		post.PostID.String(), parentId, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
-		userID, pollID, string(optionalDataBz),
+		userID, pollID, string(optionalDataBz), false,
 	)
 	return err
 }
