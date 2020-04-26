@@ -47,9 +47,20 @@ CREATE TABLE transaction
 CREATE TABLE "user"
 (
     id      SERIAL PRIMARY KEY,
-    address character varying(45) NOT NULL
+    address character varying(45) UNIQUE NOT NULL,
+    moniker text,
+    name    text,
+    surname text,
+    bio     text
 );
 
+CREATE TABLE user_pictures
+(
+    id          SERIAL PRIMARY KEY,
+    user_id     integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    profile_pic text,
+    cover_pic   text
+);
 
 CREATE TABLE poll
 (
@@ -100,10 +111,20 @@ CREATE TABLE comment
 
 CREATE TABLE reaction
 (
-    id       SERIAL PRIMARY KEY,
-    post_id  text    NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    owner_id integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    value    text    NOT NULL
+    id         SERIAL PRIMARY KEY,
+    post_id    text    NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    owner_id   integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    short_code text    NOT NULL,
+    value      text    NOT NULL
+);
+
+CREATE TABLE registered_reactions
+(
+    id         SERIAL PRIMARY KEY,
+    owner_id   integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    short_code text    NOT NULL,
+    value      text    NOT NULL,
+    subspace   text    NOT NULL
 );
 
 CREATE TABLE media

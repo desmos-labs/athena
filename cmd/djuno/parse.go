@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/desmos-labs/djuno/flags"
 	"github.com/desmos-labs/djuno/notifications"
 	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/parse"
@@ -26,6 +27,7 @@ will be used to send push notifications when parsing the messages that might req
 		},
 	}
 
+	cmd.Flags().Bool(flags.FlagEnableNotifications, true, "Enabled the sending of push notifications")
 	return parse.SetupFlags(cmd)
 }
 

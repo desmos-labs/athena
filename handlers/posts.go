@@ -102,7 +102,7 @@ func HandleMsgEditPost(msg posts.MsgEditPost, db db.DesmosDb) error {
 // HandleMsgAddPostReaction allows to properly handle a MsgAddPostReaction by storing the newly created
 // reaction inside the database and sending out push notifications to whoever might be interested in this event.
 func HandleMsgAddPostReaction(msg posts.MsgAddPostReaction, db db.DesmosDb) error {
-	reaction, err := db.SaveReaction(msg.PostID, posts.NewReaction(msg.Value, msg.User))
+	reaction, err := db.SaveReaction(msg.PostID, posts.NewPostReaction(msg.Reaction, msg.User))
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func HandleMsgAddPostReaction(msg posts.MsgAddPostReaction, db db.DesmosDb) erro
 // HandleMsgRemovePostReaction allows to properly handle a MsgRemovePostReaction by
 // deleting the specified reaction from the database.
 func HandleMsgRemovePostReaction(msg posts.MsgRemovePostReaction, db db.DesmosDb) error {
-	return db.RemoveReaction(msg.PostID, posts.NewReaction(msg.Reaction, msg.User))
+	return db.RemoveReaction(msg.PostID, posts.NewPostReaction(msg.Reaction, msg.User))
 }
 
 // ____________________________________

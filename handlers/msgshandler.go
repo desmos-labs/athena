@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
+	"github.com/desmos-labs/desmos/x/profile"
 	desmosdb "github.com/desmos-labs/djuno/db"
 	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/types"
@@ -26,6 +27,7 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 	}
 
 	switch desmosMsg := msg.(type) {
+	// Posts
 	case posts.MsgCreatePost:
 		return HandleMsgCreatePost(tx, index, desmosMsg, database)
 	case posts.MsgEditPost:
@@ -36,6 +38,14 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 		return HandleMsgRemovePostReaction(desmosMsg, database)
 	case posts.MsgAnswerPoll:
 		return HandleMsgAnswerPoll(desmosMsg, database)
+
+	// Users
+	case profile.MsgCreateProfile:
+		return HandleMsgCreateProfile(desmosMsg, database)
+	case profile.MsgEditProfile:
+		return HandleMsgEditProfile(desmosMsg, database)
+	case profile.MsgDeleteProfile:
+		return HandleMsgDeleteProfile(desmosMsg, database)
 	}
 
 	return nil

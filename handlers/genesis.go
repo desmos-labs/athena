@@ -47,8 +47,15 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 		}
 	}
 
+	// Save the registered reactions
+	for _, reaction := range genState.RegisteredReactions {
+		if _, err := db.RegisterReactionIfNotPresent(reaction); err != nil {
+			return err
+		}
+	}
+
 	// Save the reactions
-	for postIDKey, reactions := range genState.Reactions {
+	for postIDKey, reactions := range genState.PostReactions {
 		postID, err := posts.ParsePostID(postIDKey)
 		if err != nil {
 			return err
@@ -63,7 +70,7 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 	}
 
 	// Save poll answers
-	for postIDKey, answers := range genState.PollAnswers {
+	for postIDKey, answers := range genState.UsersPollAnswers {
 		postID, err := posts.ParsePostID(postIDKey)
 		if err != nil {
 			return err
