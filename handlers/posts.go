@@ -8,6 +8,7 @@ import (
 	"github.com/desmos-labs/djuno/db"
 	"github.com/desmos-labs/djuno/notifications"
 	"github.com/desmos-labs/juno/types"
+	"github.com/rs/zerolog/log"
 )
 
 // ____________________________________
@@ -49,6 +50,8 @@ func CreateAndStorePostFromMsgCreatePost(tx types.Tx, index int, msg posts.MsgCr
 	if msg.PollData != nil {
 		post = post.WithPollData(*msg.PollData)
 	}
+
+	log.Info().Str("id", postID.String()).Str("owner", post.Creator.String()).Msg("saving post")
 
 	// Save the post
 	err = db.SavePost(post)
