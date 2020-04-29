@@ -91,7 +91,7 @@ CREATE TABLE user_poll_answer
 CREATE TABLE post
 (
     id              text PRIMARY KEY,
-    parent_id       text REFERENCES post (id),
+    parent_id       text,
     message         text                        NOT NULL,
     created         timestamp without time zone NOT NULL,
     last_edited     timestamp without time zone NOT NULL,
@@ -101,12 +101,6 @@ CREATE TABLE post
     optional_data   jsonb                       NOT NULL DEFAULT '{}'::jsonb,
     poll_id         integer REFERENCES poll (id) ON DELETE CASCADE ON UPDATE CASCADE,
     hidden          BOOLEAN                     NOT NULL DEFAULT false
-);
-
-CREATE TABLE comment
-(
-    post_id    text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    comment_id text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE reaction

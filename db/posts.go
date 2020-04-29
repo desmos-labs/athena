@@ -135,8 +135,7 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     `
 	var parentId *string
-	// TODO: Remove the second part of the check once the invariants have been implemented
-	if post.ParentID.Valid() && post.ParentID < post.PostID {
+	if post.ParentID.Valid() {
 		parentIdString := post.ParentID.String()
 		parentId = &parentIdString
 	}
@@ -150,8 +149,7 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 }
 
 func (db DesmosDb) saveComment(post posts.Post) error {
-	// TODO: Remove the second part of the check once the invariants have been implemented
-	if !post.ParentID.Valid() || post.ParentID > post.PostID {
+	if !post.ParentID.Valid() {
 		return nil
 	}
 
