@@ -111,11 +111,6 @@ func (db DesmosDb) SavePost(post posts.Post) error {
 		return err
 	}
 
-	err = db.saveComment(post)
-	if err != nil {
-		return err
-	}
-
 	// Save medias
 	return db.saveMedias(post.PostID, post.Medias)
 }
@@ -145,16 +140,6 @@ func (db DesmosDb) savePostContent(post posts.Post, userID *uint64, pollID *uint
 		post.PostID.String(), parentId, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
 		userID, pollID, string(optionalDataBz), false,
 	)
-	return err
-}
-
-func (db DesmosDb) saveComment(post posts.Post) error {
-	if !post.ParentID.Valid() {
-		return nil
-	}
-
-	commentSqlStatement := `INSERT INTO comment (post_id, comment_id) VALUES ($1, $2)`
-	_, err := db.Sql.Exec(commentSqlStatement, post.ParentID.String(), post.PostID.String())
 	return err
 }
 

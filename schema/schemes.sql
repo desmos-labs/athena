@@ -103,12 +103,6 @@ CREATE TABLE post
     hidden          BOOLEAN                     NOT NULL DEFAULT false
 );
 
-CREATE TABLE comment
-(
-    post_id    text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    comment_id text NOT NULL REFERENCES post (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE reaction
 (
     id         SERIAL PRIMARY KEY,
