@@ -37,7 +37,7 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 	genPosts := genState.Posts
 	sort.SliceStable(genPosts, func(i, j int) bool {
 		first, second := genPosts[i], genPosts[j]
-		return first.PostID < second.PostID
+		return first.Created.Before(second.Created)
 	})
 
 	// Save the posts
