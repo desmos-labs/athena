@@ -55,19 +55,21 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 	}
 
 	// Save the reactions
-	for postIDKey, reactions := range genState.PostReactions {
-		postID, err := posts.ParsePostID(postIDKey)
-		if err != nil {
-			return err
-		}
-
-		for _, reaction := range reactions {
-			_, err := db.SaveReaction(postID, reaction)
-			if err != nil {
-				return err
-			}
-		}
-	}
+	// TODO: Re-implement once the Desmos issue has been implemented
+	// https://github.com/desmos-labs/desmos/issues/157
+	//for postIDKey, reactions := range genState.PostReactions {
+	//	postID, err := posts.ParsePostID(postIDKey)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	for _, reaction := range reactions {
+	//		err := db.SaveReaction(reaction)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
+	//}
 
 	// Save poll answers
 	for postIDKey, answers := range genState.UsersPollAnswers {

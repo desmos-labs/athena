@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/djuno/db"
+	"github.com/desmos-labs/djuno/types"
 )
 
 const (
@@ -27,8 +28,9 @@ const (
 	PostMessageKey = "post_message"
 	PostCreatorKey = "post_creator"
 
-	PostReactionValueKey = "post_reaction_value"
-	PostReactionOwnerKey = "post_reaction_owner"
+	PostReactionValueKey     = "post_reaction_value"
+	PostReactionShortCodeKey = "post_reaction_shortcode"
+	PostReactionOwnerKey     = "post_reaction_owner"
 
 	PostLikeUserKey = "like_user"
 
@@ -173,14 +175,14 @@ func sendMentionNotification(post posts.Post, user sdk.AccAddress) error {
 // SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
 // For example, a push notification is send to the user that has created the post.
-func SendReactionNotifications(postID posts.PostID, reaction posts.PostReaction, db db.DesmosDb) error {
-	post, err := db.GetPostByID(postID)
+func SendReactionNotifications(reaction *types.PostReaction, db db.DesmosDb) error {
+	post, err := db.GetPostByID(reaction.PostID)
 	if err != nil {
 		return err
 	}
 
 	// The post creator and the reaction owner are the same person, just return
-	if post.Creator.Equals(reaction.Owner) {
+	if post.Creator.Equals(reaction.User) {
 		return nil
 	}
 
@@ -192,19 +194,20 @@ func SendReactionNotifications(postID posts.PostID, reaction posts.PostReaction,
 
 // sendGenericReactionNotification allows to send a notification for a generic given reaction
 // that has been added to the specified post
-func sendGenericReactionNotification(post *posts.Post, reaction posts.PostReaction) error {
+func sendGenericReactionNotification(post *posts.Post, reaction *types.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone added a new reaction to one of your posts 🎉",
-		Body:  fmt.Sprintf("%s added a new reaction to your post: %s", reaction.Owner.String(), reaction.Value),
+		Body:  fmt.Sprintf("%s added a new reaction to your post: %s", reaction.User.String(), reaction.Value),
 	}
 	data := map[string]string{
 		NotificationTypeKey:   TypeReaction,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:            post.PostID.String(),
-		PostReactionValueKey: reaction.Value,
-		PostReactionOwnerKey: reaction.Owner.String(),
+		PostIDKey:                post.PostID.String(),
+		PostReactionValueKey:     reaction.Value,
+		PostReactionShortCodeKey: reaction.ShortCode,
+		PostReactionOwnerKey:     reaction.User.String(),
 	}
 
 	// Send a notification to the post creator
@@ -212,18 +215,18 @@ func sendGenericReactionNotification(post *posts.Post, reaction posts.PostReacti
 }
 
 // sendLikeNotification sends a push notification telling that a like has been added to the given post
-func sendLikeNotification(post *posts.Post, reaction posts.PostReaction) error {
+func sendLikeNotification(post *posts.Post, reaction *types.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone like one of your posts ❤️",
-		Body:  fmt.Sprintf("%s like your post!", reaction.Owner.String()),
+		Body:  fmt.Sprintf("%s like your post!", reaction.User.String()),
 	}
 	data := map[string]string{
 		NotificationTypeKey:   TypeLike,
 		NotificationActionKey: ActionOpenPost,
 
 		PostIDKey:       post.PostID.String(),
-		PostLikeUserKey: reaction.Owner.String(),
+		PostLikeUserKey: reaction.User.String(),
 	}
 
 	// Send a notification to the post creator

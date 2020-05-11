@@ -33,11 +33,17 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 	case posts.MsgEditPost:
 		return HandleMsgEditPost(desmosMsg, database)
 	case posts.MsgAddPostReaction:
-		return HandleMsgAddPostReaction(desmosMsg, database)
+		return HandleMsgAddPostReaction(tx, index, database)
 	case posts.MsgRemovePostReaction:
-		return HandleMsgRemovePostReaction(desmosMsg, database)
+		return HandleMsgRemovePostReaction(tx, index, database)
+
+	// Polls
 	case posts.MsgAnswerPoll:
 		return HandleMsgAnswerPoll(desmosMsg, database)
+
+	// Reactions
+	case posts.MsgRegisterReaction:
+		return HandleMsgRegisterReaction(desmosMsg, database)
 
 	// Users
 	case profile.MsgCreateProfile:
