@@ -6,8 +6,11 @@ import (
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	emoji "github.com/desmos-labs/Go-Emoji-Utils"
 	"github.com/desmos-labs/desmos/x/posts"
+	"github.com/desmos-labs/desmos/x/profile"
 	desmosdb "github.com/desmos-labs/djuno/db"
+	"github.com/desmos-labs/djuno/types"
 	"github.com/desmos-labs/juno/db"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -26,7 +29,13 @@ func GenesisHandler(codec *codec.Codec, _ *tmtypes.GenesisDoc, appState map[stri
 		return err
 	}
 
-	// TODO: Add other modules here
+	var profileGenState profile.GenesisState
+	codec.MustUnmarshalJSON(appState[profile.ModuleName], &profileGenState)
+	if err := handleProfilesGenesis(desmosDb, profileGenState); err != nil {
+		return err
+	}
+
+	// TODO: Add other modules
 
 	return nil
 }
@@ -55,21 +64,34 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 	}
 
 	// Save the reactions
-	// TODO: Re-implement once the Desmos issue has been implemented
+	// TODO: Change once the Desmos issue has been implemented
 	// https://github.com/desmos-labs/desmos/issues/157
-	//for postIDKey, reactions := range genState.PostReactions {
-	//	postID, err := posts.ParsePostID(postIDKey)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	for _, reaction := range reactions {
-	//		err := db.SaveReaction(reaction)
-	//		if err != nil {
-	//			return err
-	//		}
-	//	}
-	//}
+	for postIDKey, reactions := range genState.PostReactions {
+		postID, err := posts.ParsePostID(postIDKey)
+		if err != nil {
+			return err
+		}
+
+		for _, reaction := range reactions {
+			var reactShortCode, reactValue string
+			if emojiReact, err := emoji.LookupEmojiByCode(reaction.Value); err == nil {
+				reactShortCode = emojiReact.Shortcodes[0]
+				reactValue = emojiReact.Value
+			} else if emojiReact, err := emoji.LookupEmoji(reaction.Value); err == nil {
+				reactShortCode = emojiReact.Shortcodes[0]
+				reactValue = emojiReact.Value
+			} else if registeredReact, err := lookupRegisteredReaction(reaction.Value, genState.RegisteredReactions); err == nil {
+				reactShortCode = registeredReact.ShortCode
+				reactValue = registeredReact.Value
+			}
+
+			postReact := types.NewPostReaction(postID, reactShortCode, reactValue, reaction.Owner)
+			err := db.SaveReaction(&postReact)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	// Save poll answers
 	for postIDKey, answers := range genState.UsersPollAnswers {
@@ -82,6 +104,31 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 			if err := db.SavePollAnswer(postID, answer); err != nil {
 				return err
 			}
+		}
+	}
+
+	return nil
+}
+
+// lookupRegisteredReaction allows to look into the given reactions slice to find the one that has
+// either its value or shortcode equals to the reactValue given. If no reaction could be found, an
+// error is returned instead.
+func lookupRegisteredReaction(reactValue string, reactions []posts.Reaction) (posts.Reaction, error) {
+	for _, react := range reactions {
+		if react.Value == reactValue || react.ShortCode == reactValue {
+			return react, nil
+		}
+	}
+
+	return posts.Reaction{}, fmt.Errorf("no reaction found with value %s", reactValue)
+}
+
+// handleProfilesGenesis handles the genesis state of the profile module, allowing to properly store
+// each present profile inside the database.
+func handleProfilesGenesis(db desmosdb.DesmosDb, genState profile.GenesisState) error {
+	for _, prof := range genState.Profiles {
+		if _, err := db.UpsertProfile(prof); err != nil {
+			return err
 		}
 	}
 
