@@ -9,12 +9,14 @@ import (
 
 // UserRow represents a single PostgreSQL row containing the data of a user
 type UserRow struct {
-	Id      *uint64        `db:"id"`
-	Address string         `db:"address"`
-	Moniker sql.NullString `db:"moniker"`
-	Name    sql.NullString `db:"name"`
-	Surname sql.NullString `db:"surname"`
-	Bio     sql.NullString `db:"bio"`
+	Id         *uint64        `db:"id"`
+	Address    string         `db:"address"`
+	Moniker    sql.NullString `db:"moniker"`
+	Name       sql.NullString `db:"name"`
+	Surname    sql.NullString `db:"surname"`
+	Bio        sql.NullString `db:"bio"`
+	ProfilePic sql.NullString `db:"profile_pic"`
+	CoverPic   sql.NullString `db:"cover_pic"`
 }
 
 // GetUserById returns the user having the specified id. If not found returns nil instead.
@@ -71,8 +73,8 @@ func (db DesmosDb) SaveUserIfNotExisting(address sdk.AccAddress) (*UserRow, erro
 
 // UpsertProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db DesmosDb) UpsertProfile(profile profile.Profile) (*UserRow, error) {
-	row, err := db.GetUserByAddress(profile.Creator)
+func (db DesmosDb) UpsertProfile(account profile.Profile) (*UserRow, error) {
+	row, err := db.GetUserByAddress(account.Creator)
 	if err != nil {
 		return nil, err
 	}
@@ -81,22 +83,33 @@ func (db DesmosDb) UpsertProfile(profile profile.Profile) (*UserRow, error) {
 		// If a row already exists, and some fields are null, we are going to replace them
 		// with the existing values to avoid any unwanted overwrite
 
-		if profile.Name == nil && row.Name.Valid {
-			profile.Name = &row.Name.String
+		if account.Name == nil && row.Name.Valid {
+			account.Name = &row.Name.String
 		}
 
-		if profile.Surname == nil && row.Surname.Valid {
-			profile.Surname = &row.Surname.String
+		if account.Surname == nil && row.Surname.Valid {
+			account.Surname = &row.Surname.String
 		}
 
-		if profile.Bio == nil && row.Bio.Valid {
-			profile.Bio = &row.Bio.String
+		if account.Bio == nil && row.Bio.Valid {
+			account.Bio = &row.Bio.String
+		}
+
+		pictures := account.Pictures
+		if pictures == nil {
+			pictures = &profile.Pictures{Profile: nil, Cover: nil}
+		}
+
+		if pictures.Profile == nil && row.ProfilePic.Valid {
+			pictures.Profile = &row.ProfilePic.String
+		}
+
+		if pictures.Cover == nil && row.CoverPic.Valid {
+			pictures.Cover = &row.CoverPic.String
 		}
 	}
 
-	// TODO: Save the pictures
-
-	return db.saveProfile(profile)
+	return db.saveProfile(account)
 }
 
 // saveProfile saves the given profile by replacing any existing data about it, or creating
@@ -109,10 +122,12 @@ func (db DesmosDb) saveProfile(profile profile.Profile) (*UserRow, error) {
 
 	// Create if not exists
 	if row == nil {
-		sqlStmt := `INSERT INTO "user" (address, moniker, name, surname, bio) VALUES ($1, $2, $3, $4, $5)`
+		sqlStmt := `INSERT INTO "user" (address, moniker, name, surname, bio, profile_pic, cover_pic) 
+					VALUES ($1, $2, $3, $4, $5, $6, $7)`
 		_, err := db.Sql.Exec(
 			sqlStmt,
 			profile.Creator.String(), profile.Moniker, profile.Name, profile.Surname, profile.Bio,
+			profile.Pictures.Profile, profile.Pictures.Cover,
 		)
 		if err != nil {
 			return nil, err

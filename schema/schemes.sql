@@ -46,18 +46,12 @@ CREATE TABLE transaction
 
 CREATE TABLE "user"
 (
-    id      SERIAL PRIMARY KEY,
-    address character varying(45) UNIQUE NOT NULL,
-    moniker text,
-    name    text,
-    surname text,
-    bio     text
-);
-
-CREATE TABLE user_pictures
-(
     id          SERIAL PRIMARY KEY,
-    user_id     integer NOT NULL REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    address     character varying(45) UNIQUE NOT NULL,
+    moniker     text,
+    name        text,
+    surname     text,
+    bio         text,
     profile_pic text,
     cover_pic   text
 );
@@ -91,7 +85,7 @@ CREATE TABLE user_poll_answer
 CREATE TABLE post
 (
     id              text PRIMARY KEY,
-    parent_id       text,
+    parent_id       text REFERENCES post (id),
     message         text                        NOT NULL,
     created         timestamp without time zone NOT NULL,
     last_edited     timestamp without time zone NOT NULL,
