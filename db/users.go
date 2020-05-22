@@ -139,7 +139,7 @@ func (db DesmosDb) saveProfile(profile profile.Profile) (*UserRow, error) {
 	// Update
 	sqlStmt := `UPDATE "user" 
 				SET moniker = $1, name = $2, surname = $3, bio = $4, profile_pic = $5, cover_pic = $6
-				WHERE address = $5`
+				WHERE address = $7`
 	_, err = db.Sql.Exec(sqlStmt,
 		profile.Moniker, profile.Name, profile.Surname, profile.Bio, profile.Pictures.Profile, profile.Pictures.Cover,
 		profile.Creator.String())
