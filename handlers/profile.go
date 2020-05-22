@@ -36,7 +36,11 @@ func HandleMsgEditProfile(msg profile.MsgEditProfile, database desmosdb.DesmosDb
 	newProfile := profile.NewProfile(moniker, msg.Creator).
 		WithName(msg.Name).
 		WithSurname(msg.Surname).
-		WithBio(msg.Bio)
+		WithBio(msg.Bio).
+		WithPictures(&profile.Pictures{
+			Profile: msg.ProfilePic,
+			Cover:   msg.ProfileCov,
+		})
 	_, err = database.UpsertProfile(newProfile)
 	return err
 }
