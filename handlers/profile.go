@@ -19,11 +19,25 @@ func HandleMsgCreateProfile(msg profile.MsgCreateProfile, database desmosdb.Desm
 // HandleMsgEditProfile handles a MsgEditProfile updating the profile information that are already stored
 // inside the database
 func HandleMsgEditProfile(msg profile.MsgEditProfile, database desmosdb.DesmosDb) error {
-	newProfile := profile.NewProfile("", msg.Creator).
+	user, err := database.GetUserByAddress(msg.Creator)
+	if err != nil {
+		return err
+	}
+
+	var moniker string
+	if user != nil && user.Moniker.Valid {
+		moniker = user.Moniker.String
+	}
+
+	if msg.NewMoniker != nil {
+		moniker = *msg.NewMoniker
+	}
+
+	newProfile := profile.NewProfile(moniker, msg.Creator).
 		WithName(msg.Name).
 		WithSurname(msg.Surname).
 		WithBio(msg.Bio)
-	_, err := database.UpsertProfile(newProfile)
+	_, err = database.UpsertProfile(newProfile)
 	return err
 }
 
