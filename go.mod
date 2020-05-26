@@ -8,7 +8,7 @@ require (
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.38.3
 	github.com/desmos-labs/Go-Emoji-Utils v1.1.1-0.20200427052739-7137e1030ec2
-	github.com/desmos-labs/desmos v0.5.1
+	github.com/desmos-labs/desmos v0.5.2
 	github.com/desmos-labs/juno v0.0.0-20200417104809-f00f004c35a1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/rs/zerolog v1.18.0

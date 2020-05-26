@@ -121,10 +121,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/desmos-labs/Go-Emoji-Utils v1.1.1-0.20200427052739-7137e1030ec2 h1:p9MYYYlBC2LcqVkLGqhKhg3BPMfFWmiZzLyQ6It2vGY=
 github.com/desmos-labs/Go-Emoji-Utils v1.1.1-0.20200427052739-7137e1030ec2/go.mod h1:5TMhouV+kDGQZZrBK+rzBP+Jmeyu0V7WvrBHqukiTv8=
-github.com/desmos-labs/desmos v0.5.0 h1:pYodugkEiGdxLDEBN+8ewomU+FdnUOeRWJ0SRkqo9yM=
-github.com/desmos-labs/desmos v0.5.0/go.mod h1:Urkn5gs0qSEq7SrIblIEv0woP1yhupkCUGoziiwZsEg=
-github.com/desmos-labs/desmos v0.5.1 h1:Qzw6rq9DKKJDFKtHRPCe4h9kAvd2AIc8iRk4qyjUIfE=
-github.com/desmos-labs/desmos v0.5.1/go.mod h1:Urkn5gs0qSEq7SrIblIEv0woP1yhupkCUGoziiwZsEg=
+github.com/desmos-labs/desmos v0.5.2 h1:8AQyK4StlkrubDSrjWgQ60gl6FGyNDdw201qU/oTymA=
+github.com/desmos-labs/desmos v0.5.2/go.mod h1:Urkn5gs0qSEq7SrIblIEv0woP1yhupkCUGoziiwZsEg=
 github.com/desmos-labs/juno v0.0.0-20200417104809-f00f004c35a1 h1:LMwhaFBkia9wjYaW2WrrCYAnuFD5A580NUCzTh2HrGA=
 github.com/desmos-labs/juno v0.0.0-20200417104809-f00f004c35a1/go.mod h1:vO/rzafpCjazuhsTl/HN9z08pHdY8E/YxQnyizXbAr8=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
