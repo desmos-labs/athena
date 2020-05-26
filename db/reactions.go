@@ -3,7 +3,7 @@ package db
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
-	"github.com/desmos-labs/djuno/types"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -31,40 +31,40 @@ func ConvertReactionRow(reactionRow RegisteredReactionRow, userRow *UserRow) (*p
 }
 
 // SaveReaction allows to save the given reaction into the database.
-func (db DesmosDb) SaveReaction(reaction *types.PostReaction) error {
-	owner, err := db.SaveUserIfNotExisting(reaction.User)
+func (db DesmosDb) SaveReaction(postID posts.PostID, reaction *posts.PostReaction) error {
+	owner, err := db.SaveUserIfNotExisting(reaction.Owner)
 	if err != nil {
 		return err
 	}
 
 	log.Info().
-		Str("post_id", reaction.PostID.String()).
+		Str("post_id", postID.String()).
 		Str("value", reaction.Value).
-		Str("short_code", reaction.ShortCode).
-		Str("user", reaction.User.String()).
+		Str("short_code", reaction.Shortcode).
+		Str("user", reaction.Owner.String()).
 		Msg("saving reaction")
 
 	statement := `INSERT INTO reaction (post_id, owner_id, short_code, value) VALUES ($1, $2, $3, $4)`
-	_, err = db.Sql.Exec(statement, reaction.PostID, owner.Id, reaction.ShortCode, reaction.Value)
+	_, err = db.Sql.Exec(statement, postID.String(), owner.Id, reaction.Shortcode, reaction.Value)
 	return err
 }
 
 // RemoveReaction allows to remove an already existing reaction from the database.
-func (db DesmosDb) RemoveReaction(reaction *types.PostReaction) error {
-	owner, err := db.SaveUserIfNotExisting(reaction.User)
+func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction *posts.PostReaction) error {
+	owner, err := db.SaveUserIfNotExisting(reaction.Owner)
 	if err != nil {
 		return err
 	}
 
 	log.Info().
-		Str("post_id", reaction.PostID.String()).
+		Str("post_id", postID.String()).
 		Str("value", reaction.Value).
-		Str("short_code", reaction.ShortCode).
-		Str("user", reaction.User.String()).
+		Str("short_code", reaction.Shortcode).
+		Str("user", reaction.Owner.String()).
 		Msg("removing reaction")
 
 	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner_id = $2 AND short_code = $3`
-	_, err = db.Sql.Exec(statement, reaction.PostID.String(), owner.Id, reaction.ShortCode)
+	_, err = db.Sql.Exec(statement, postID.String(), owner.Id, reaction.Shortcode)
 	return err
 }
 

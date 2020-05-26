@@ -152,7 +152,7 @@ func (db DesmosDb) saveProfile(profile profile.Profile) (*UserRow, error) {
 
 // DeleteProfile allows to delete the profile of the user having the given address
 func (db DesmosDb) DeleteProfile(address sdk.AccAddress) error {
-	updatedProfile := profile.NewProfile("", address)
+	updatedProfile := profile.NewProfile(address)
 	_, err := db.UpsertProfile(updatedProfile)
 	return err
 }

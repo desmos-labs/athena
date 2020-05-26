@@ -6,11 +6,9 @@ import (
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	emoji "github.com/desmos-labs/Go-Emoji-Utils"
 	"github.com/desmos-labs/desmos/x/posts"
 	"github.com/desmos-labs/desmos/x/profile"
 	desmosdb "github.com/desmos-labs/djuno/db"
-	"github.com/desmos-labs/djuno/types"
 	"github.com/desmos-labs/juno/db"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -64,8 +62,6 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 	}
 
 	// Save the reactions
-	// TODO: Change once the Desmos issue has been implemented
-	// https://github.com/desmos-labs/desmos/issues/157
 	for postIDKey, reactions := range genState.PostReactions {
 		postID, err := posts.ParsePostID(postIDKey)
 		if err != nil {
@@ -73,21 +69,7 @@ func handlePostsGenesis(db desmosdb.DesmosDb, genState posts.GenesisState) error
 		}
 
 		for _, reaction := range reactions {
-			var reactShortCode, reactValue string
-			if emojiReact, err := emoji.LookupEmojiByCode(reaction.Value); err == nil {
-				reactShortCode = emojiReact.Shortcodes[0]
-				reactValue = emojiReact.Value
-			} else if emojiReact, err := emoji.LookupEmoji(reaction.Value); err == nil {
-				reactShortCode = emojiReact.Shortcodes[0]
-				reactValue = emojiReact.Value
-			} else if registeredReact, err := lookupRegisteredReaction(reaction.Value, genState.RegisteredReactions); err == nil {
-				reactShortCode = registeredReact.ShortCode
-				reactValue = registeredReact.Value
-			}
-
-			postReact := types.NewPostReaction(postID, reactShortCode, reactValue, reaction.Owner)
-			err := db.SaveReaction(&postReact)
-			if err != nil {
+			if err := db.SaveReaction(postID, &reaction); err != nil {
 				return err
 			}
 		}

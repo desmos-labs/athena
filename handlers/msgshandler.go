@@ -46,10 +46,8 @@ func MsgHandler(tx types.Tx, index int, msg sdk.Msg, db db.Database) error {
 		return HandleMsgRegisterReaction(desmosMsg, database)
 
 	// Users
-	case profile.MsgCreateProfile:
-		return HandleMsgCreateProfile(desmosMsg, database)
-	case profile.MsgEditProfile:
-		return HandleMsgEditProfile(desmosMsg, database)
+	case profile.MsgSaveProfile:
+		return HandleMsgSaveProfile(desmosMsg, database)
 	case profile.MsgDeleteProfile:
 		return HandleMsgDeleteProfile(desmosMsg, database)
 	}

@@ -5,43 +5,15 @@ import (
 	desmosdb "github.com/desmos-labs/djuno/db"
 )
 
-// HandleMsgCreateProfile handles a MsgCreateProfile and properly stores the new profile inside the database
-func HandleMsgCreateProfile(msg profile.MsgCreateProfile, database desmosdb.DesmosDb) error {
-	newProfile := profile.NewProfile(msg.Moniker, msg.Creator).
+// HandleMsgSaveProfile handles a MsgCreateProfile and properly stores the new profile inside the database
+func HandleMsgSaveProfile(msg profile.MsgSaveProfile, database desmosdb.DesmosDb) error {
+	newProfile := profile.NewProfile(msg.Creator).
+		WithMoniker(msg.Moniker).
 		WithName(msg.Name).
 		WithSurname(msg.Surname).
 		WithBio(msg.Bio).
-		WithPictures(msg.Pictures)
+		WithPictures(msg.ProfileCov, msg.ProfileCov)
 	_, err := database.UpsertProfile(newProfile)
-	return err
-}
-
-// HandleMsgEditProfile handles a MsgEditProfile updating the profile information that are already stored
-// inside the database
-func HandleMsgEditProfile(msg profile.MsgEditProfile, database desmosdb.DesmosDb) error {
-	user, err := database.GetUserByAddress(msg.Creator)
-	if err != nil {
-		return err
-	}
-
-	var moniker string
-	if user != nil && user.Moniker.Valid {
-		moniker = user.Moniker.String
-	}
-
-	if msg.NewMoniker != nil {
-		moniker = *msg.NewMoniker
-	}
-
-	newProfile := profile.NewProfile(moniker, msg.Creator).
-		WithName(msg.Name).
-		WithSurname(msg.Surname).
-		WithBio(msg.Bio).
-		WithPictures(&profile.Pictures{
-			Profile: msg.ProfilePic,
-			Cover:   msg.ProfileCov,
-		})
-	_, err = database.UpsertProfile(newProfile)
 	return err
 }
 
