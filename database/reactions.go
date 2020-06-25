@@ -1,8 +1,9 @@
-package db
+package database
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
+	dbtypes "github.com/desmos-labs/djuno/database/types"
 
 	"github.com/rs/zerolog/log"
 )
@@ -16,8 +17,8 @@ type RegisteredReactionRow struct {
 	Subspace   string  `db:"subspace"`
 }
 
-// ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
-func ConvertReactionRow(reactionRow RegisteredReactionRow, userRow *UserRow) (*posts.Reaction, error) {
+// convertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
+func ConvertReactionRow(reactionRow RegisteredReactionRow, userRow *dbtypes.ProfileRow) (*posts.Reaction, error) {
 
 	// Parse the creator
 	creator, err := sdk.AccAddressFromBech32(userRow.Address)
@@ -32,26 +33,27 @@ func ConvertReactionRow(reactionRow RegisteredReactionRow, userRow *UserRow) (*p
 
 // SaveReaction allows to save the given reaction into the database.
 func (db DesmosDb) SaveReaction(postID posts.PostID, reaction *posts.PostReaction) error {
-	owner, err := db.SaveUserIfNotExisting(reaction.Owner)
+	_, err := db.SaveUserIfNotExisting(reaction.Owner)
 	if err != nil {
 		return err
 	}
 
 	log.Info().
+		Str("module", "posts").
 		Str("post_id", postID.String()).
 		Str("value", reaction.Value).
 		Str("short_code", reaction.Shortcode).
 		Str("user", reaction.Owner.String()).
 		Msg("saving reaction")
 
-	statement := `INSERT INTO reaction (post_id, owner_id, short_code, value) VALUES ($1, $2, $3, $4)`
-	_, err = db.Sql.Exec(statement, postID.String(), owner.Id, reaction.Shortcode, reaction.Value)
+	statement := `INSERT INTO reaction (post_id, owner, short_code, value) VALUES ($1, $2, $3, $4)`
+	_, err = db.Sql.Exec(statement, postID.String(), reaction.Owner.String(), reaction.Shortcode, reaction.Value)
 	return err
 }
 
 // RemoveReaction allows to remove an already existing reaction from the database.
 func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction *posts.PostReaction) error {
-	owner, err := db.SaveUserIfNotExisting(reaction.Owner)
+	_, err := db.SaveUserIfNotExisting(reaction.Owner)
 	if err != nil {
 		return err
 	}
@@ -63,8 +65,8 @@ func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction *posts.PostReact
 		Str("user", reaction.Owner.String()).
 		Msg("removing reaction")
 
-	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner_id = $2 AND short_code = $3`
-	_, err = db.Sql.Exec(statement, postID.String(), owner.Id, reaction.Shortcode)
+	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner = $2 AND short_code = $3`
+	_, err = db.Sql.Exec(statement, postID.String(), reaction.Owner.String(), reaction.Shortcode)
 	return err
 }
 
@@ -108,7 +110,7 @@ func (db DesmosDb) RegisterReactionIfNotPresent(reaction posts.Reaction) (*posts
 	}
 
 	// Save the owner
-	owner, err := db.SaveUserIfNotExisting(reaction.Creator)
+	_, err = db.SaveUserIfNotExisting(reaction.Creator)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +122,7 @@ func (db DesmosDb) RegisterReactionIfNotPresent(reaction posts.Reaction) (*posts
 		Msg("registering reaction")
 
 	// Save the reaction
-	statement := `INSERT INTO registered_reactions (owner_id, short_code, value, subspace) VALUES ($1, $2, $3, $4)`
-	_, err = db.Sql.Exec(statement, owner.Id, reaction.ShortCode, reaction.Value, reaction.Subspace)
+	statement := `INSERT INTO registered_reactions (owner, short_code, value, subspace) VALUES ($1, $2, $3, $4)`
+	_, err = db.Sql.Exec(statement, reaction.Creator.String(), reaction.ShortCode, reaction.Value, reaction.Subspace)
 	return &reaction, err
 }

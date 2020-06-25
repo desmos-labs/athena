@@ -4,7 +4,7 @@
 
 This project represents the [Juno](https://github.com/desmos-labs/juno) implementation for the [Desmos blockchain](https://github.com/desmos-labs/desmos).
 
-It extends the custom Juno behavior with custom message handlers for all the Desmos message types. This allows to store the needed data inside a [PostgreSQL](https://www.postgresql.org/) database on top of which [GraphQL](https://graphql.org/) APIs can then be created using [Hasura](https://hasura.io/) 
+It extends the custom Juno behavior with custom message handlers for all the Desmos messagejuno. This allows to store the needed data inside a [PostgreSQL](https://www.postgresql.org/) database on top of which [GraphQL](https://graphql.org/) APIs can then be created using [Hasura](https://hasura.io/) 
 
 ## Installation
 To install the binary simply run `make install`.
@@ -15,7 +15,7 @@ To install the binary simply run `make install`.
 Before running the parser, you need to: 
 
 1. Create a [PostgreSQL](https://www.postgresql.org/) database.
-2. Run the SQL queries you find inside the [`schemes.sql` file](schema/schemes.sql) inside such database to create all the necessary tables.  
+2. Run the SQL queries you find inside the `*.sql` files in the [schema folder](schema) inside such database to create all the necessary tables.  
 
 ## Running the parser
 To parse the chain state, you need to use the following command: 

@@ -2,19 +2,17 @@ package handlers
 
 import (
 	"github.com/desmos-labs/desmos/x/posts"
-	"github.com/desmos-labs/djuno/db"
+	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/notifications"
-	"github.com/desmos-labs/juno/types"
+	juno "github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
 )
-
-// ____________________________________
 
 // HandleMsgCreatePost allows to properly handle the given msg present inside the specified tx at the specific
 // index. It creates a new Post object from it, stores it inside the database and later sends out any
 // push notification using Firebase Cloud Messaging.
-func HandleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db db.DesmosDb) error {
-	post, err := CreateAndStorePostFromMsgCreatePost(tx, index, msg, db)
+func HandleMsgCreatePost(tx juno.Tx, index int, msg posts.MsgCreatePost, db database.DesmosDb) error {
+	post, err := createAndStorePostFromMsgCreatePost(tx, index, msg, db)
 	if err != nil {
 		return err
 	}
@@ -22,16 +20,18 @@ func HandleMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db db.
 	return notifications.SendPostNotifications(*post, db)
 }
 
-// CreateAndStorePostFromMsgCreatePost allows to properly handle a MsgCreatePostEvent by storing inside the
+// createAndStorePostFromMsgCreatePost allows to properly handle a MsgCreatePostEvent by storing inside the
 // database the post that has been created with such message.
 // After the post has been saved, it is returned for other uses.
-func CreateAndStorePostFromMsgCreatePost(tx types.Tx, index int, msg posts.MsgCreatePost, db db.DesmosDb) (*posts.Post, error) {
+func createAndStorePostFromMsgCreatePost(
+	tx juno.Tx, index int, msg posts.MsgCreatePost, db database.DesmosDb,
+) (*posts.Post, error) {
 	// Get the post id
-	event, err := FindEventByType(tx, index, "post_created")
+	event, err := tx.FindEventByType(index, "post_created")
 	if err != nil {
 		return nil, err
 	}
-	postIDStr, err := FindAttributeByKey(tx, event, "post_id")
+	postIDStr, err := tx.FindAttributeByKey(event, "post_id")
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +67,6 @@ func CreateAndStorePostFromMsgCreatePost(tx types.Tx, index int, msg posts.MsgCr
 
 // HandleMsgEditPost allows to properly handle a MsgEditPost by updating the post inside
 // the database as well.
-func HandleMsgEditPost(msg posts.MsgEditPost, db db.DesmosDb) error {
+func HandleMsgEditPost(msg posts.MsgEditPost, db database.DesmosDb) error {
 	return db.EditPost(msg.PostID, msg.Message, msg.EditDate)
 }

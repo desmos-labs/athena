@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/desmos-labs/djuno/flags"
+	"github.com/desmos-labs/djuno/cmd/djuno/flags"
 	"github.com/desmos-labs/djuno/notifications"
 	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/parse"
@@ -39,5 +39,5 @@ func parseCmdHandler(codec *codec.Codec, dbBuilder db.Builder, args []string) er
 		return err
 	}
 
-	return parse.ParseCmdHandler(codec, dbBuilder, args[0])
+	return parse.ParseCmdHandler(codec, dbBuilder, args[0], nil)
 }
