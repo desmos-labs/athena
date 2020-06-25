@@ -2,7 +2,7 @@ package notifications
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/juno/types"
+	juno "github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
 	tmtypes "github.com/tendermint/tendermint/abci/types"
 )
@@ -17,7 +17,7 @@ const (
 
 // SendTransactionResultNotification sends to the given user a notification telling him
 // that the specified transaction has either succeeded or failed
-func SendTransactionResultNotification(tx types.Tx, user sdk.AccAddress) error {
+func SendTransactionResultNotification(tx juno.Tx, user sdk.AccAddress) error {
 	result := TypeTransactionSuccess
 	if tx.Code != tmtypes.CodeTypeOK {
 		result = TypeTransactionFailed

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/desmos-labs/desmos/x/profile"
-	desmosdb "github.com/desmos-labs/djuno/db"
+	desmosdb "github.com/desmos-labs/djuno/database"
 )
 
 // HandleMsgSaveProfile handles a MsgCreateProfile and properly stores the new profile inside the database

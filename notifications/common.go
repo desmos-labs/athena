@@ -6,7 +6,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
-	"github.com/desmos-labs/djuno/flags"
+	"github.com/desmos-labs/djuno/cmd/djuno/flags"
 	"github.com/spf13/viper"
 	"google.golang.org/api/option"
 )

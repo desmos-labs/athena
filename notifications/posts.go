@@ -8,7 +8,7 @@ import (
 	"firebase.google.com/go/messaging"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
-	"github.com/desmos-labs/djuno/db"
+	"github.com/desmos-labs/djuno/database"
 )
 
 const (
@@ -45,7 +45,7 @@ var (
 // a push notification to the people that might somehow be interested into the creation of the post.
 // For example, if the post is a comment to another post, the creator of the latter will be notified
 // that a new comment has been added.
-func SendPostNotifications(post posts.Post, db db.DesmosDb) error {
+func SendPostNotifications(post posts.Post, db database.DesmosDb) error {
 	// Get the post parent
 	parent, err := db.GetPostByID(post.ParentID)
 	if err != nil {
@@ -174,7 +174,7 @@ func sendMentionNotification(post posts.Post, user sdk.AccAddress) error {
 // SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
 // For example, a push notification is send to the user that has created the post.
-func SendReactionNotifications(postID posts.PostID, reaction *posts.PostReaction, db db.DesmosDb) error {
+func SendReactionNotifications(postID posts.PostID, reaction *posts.PostReaction, db database.DesmosDb) error {
 	post, err := db.GetPostByID(postID)
 	if err != nil {
 		return err
