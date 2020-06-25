@@ -56,6 +56,10 @@ func (suite *DbTestSuite) SetupTest() {
 	dirPath := "../schema"
 	dir, err := ioutil.ReadDir(dirPath)
 	for _, fileInfo := range dir {
+		if !strings.HasSuffix(fileInfo.Name(), ".sql") {
+			continue
+		}
+
 		file, err := ioutil.ReadFile(filepath.Join(dirPath, fileInfo.Name()))
 		suite.Require().NoError(err)
 
