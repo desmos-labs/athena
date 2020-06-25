@@ -7,7 +7,7 @@ CREATE TABLE post
     last_edited     timestamp without time zone NOT NULL,
     allows_comments boolean                     NOT NULL,
     subspace        TEXT                        NOT NULL,
-    creator         TEXT                        NOT NULL REFERENCES profile (address),
+    creator_address TEXT                        NOT NULL REFERENCES profile (address),
     optional_data   jsonb                       NOT NULL DEFAULT '{}'::jsonb,
     hidden          BOOLEAN                     NOT NULL DEFAULT false
 );

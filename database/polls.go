@@ -56,7 +56,7 @@ func (db DesmosDb) SavePollAnswer(postID posts.PostID, answer posts.UserAnswer) 
 		return fmt.Errorf("post with id %s has no poll associated to it", postID)
 	}
 
-	statement := `INSERT INTO user_poll_answer (poll_id, answer, answerer) VALUES ($1, $2, $3)`
+	statement := `INSERT INTO user_poll_answer (poll_id, answer, answerer_address) VALUES ($1, $2, $3)`
 	for _, answerText := range answer.Answers {
 		_, err = db.Sql.Exec(statement, poll.Id, answerText, answer.User.String())
 		if err != nil {

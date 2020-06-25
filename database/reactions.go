@@ -46,7 +46,7 @@ func (db DesmosDb) SaveReaction(postID posts.PostID, reaction *posts.PostReactio
 		Str("user", reaction.Owner.String()).
 		Msg("saving reaction")
 
-	statement := `INSERT INTO reaction (post_id, owner, short_code, value) VALUES ($1, $2, $3, $4)`
+	statement := `INSERT INTO reaction (post_id, owner_address, short_code, value) VALUES ($1, $2, $3, $4)`
 	_, err = db.Sql.Exec(statement, postID.String(), reaction.Owner.String(), reaction.Shortcode, reaction.Value)
 	return err
 }
@@ -65,7 +65,7 @@ func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction *posts.PostReact
 		Str("user", reaction.Owner.String()).
 		Msg("removing reaction")
 
-	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner = $2 AND short_code = $3`
+	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner_address = $2 AND short_code = $3`
 	_, err = db.Sql.Exec(statement, postID.String(), reaction.Owner.String(), reaction.Shortcode)
 	return err
 }
@@ -122,7 +122,7 @@ func (db DesmosDb) RegisterReactionIfNotPresent(reaction posts.Reaction) (*posts
 		Msg("registering reaction")
 
 	// Save the reaction
-	statement := `INSERT INTO registered_reactions (owner, short_code, value, subspace) VALUES ($1, $2, $3, $4)`
+	statement := `INSERT INTO registered_reactions (owner_address, short_code, value, subspace) VALUES ($1, $2, $3, $4)`
 	_, err = db.Sql.Exec(statement, reaction.Creator.String(), reaction.ShortCode, reaction.Value, reaction.Subspace)
 	return &reaction, err
 }

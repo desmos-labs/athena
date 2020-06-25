@@ -19,8 +19,8 @@ CREATE TABLE poll_answer
 
 CREATE TABLE user_poll_answer
 (
-    poll_id  INTEGER NOT NULL REFERENCES poll (id),
-    answer   INTEGER NOT NULL,
-    answerer TEXT    NOT NULL REFERENCES profile (address),
-    UNIQUE (poll_id, answer, answerer)
+    poll_id          INTEGER NOT NULL REFERENCES poll (id),
+    answer           INTEGER NOT NULL,
+    answerer_address TEXT    NOT NULL REFERENCES profile (address),
+    UNIQUE (poll_id, answer, answerer_address)
 );

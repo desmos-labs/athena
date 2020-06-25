@@ -95,7 +95,7 @@ func (db DesmosDb) savePostContent(post posts.Post) error {
 
 	// Save the post
 	postSqlStatement := `
-	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator, optional_data, hidden)
+	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, optional_data, hidden)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	var parentId *string

@@ -37,7 +37,7 @@ coverage:
 
 stop-docker-test:
 	@echo "Stopping Docker container..."
-	@docker stop bdjuno-test-db || true && docker rm bdjuno-test-db || true
+	@docker stop juno-test-db || true && docker rm juno-test-db || true
 
 start-docker-test: stop-docker-test
 	@echo "Starting Docker container..."
