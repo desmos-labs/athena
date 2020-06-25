@@ -13,7 +13,7 @@ func HandleMsgSaveProfile(msg profile.MsgSaveProfile, database desmosdb.DesmosDb
 		WithSurname(msg.Surname).
 		WithBio(msg.Bio).
 		WithPictures(msg.ProfileCov, msg.ProfileCov)
-	_, err := database.UpsertProfile(newProfile)
+	_, err := database.SaveProfile(newProfile)
 	return err
 }
 
