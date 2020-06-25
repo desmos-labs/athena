@@ -12,12 +12,6 @@ CREATE TABLE post
     hidden          BOOLEAN                     NOT NULL DEFAULT false
 );
 
-CREATE TABLE comment
-(
-    parent_id  TEXT NOT NULL REFERENCES post (id),
-    comment_id TEXT NOT NULL REFERENCES post (id)
-);
-
 CREATE TABLE media
 (
     post_id   TEXT NOT NULL REFERENCES post (id),
