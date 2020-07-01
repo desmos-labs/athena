@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/desmos-labs/desmos/x/profile"
+	"github.com/desmos-labs/desmos/x/profiles"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/juno/parse/worker"
 	tmtypes "github.com/tendermint/tendermint/types"

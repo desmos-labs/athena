@@ -2,7 +2,7 @@ package database_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profile"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles"
 )
 
 func newStrPtr(value string) *string {

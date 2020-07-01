@@ -7,9 +7,8 @@ import (
 // ProfileRow represents a single PostgreSQL row containing the data of a profile
 type ProfileRow struct {
 	Address    string         `db:"address"`
+	DTag       sql.NullString `db:"dtag"`
 	Moniker    sql.NullString `db:"moniker"`
-	Name       sql.NullString `db:"name"`
-	Surname    sql.NullString `db:"surname"`
 	Bio        sql.NullString `db:"bio"`
 	ProfilePic sql.NullString `db:"profile_pic"`
 	CoverPic   sql.NullString `db:"cover_pic"`

@@ -3,7 +3,7 @@ package notifications
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/desmos/x/posts"
-	"github.com/desmos-labs/desmos/x/profile"
+	"github.com/desmos-labs/desmos/x/profiles"
 	"github.com/desmos-labs/djuno/notifications"
 	"github.com/desmos-labs/juno/parse/worker"
 	juno "github.com/desmos-labs/juno/types"

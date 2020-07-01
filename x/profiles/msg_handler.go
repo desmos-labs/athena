@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/profile"
+	"github.com/desmos-labs/desmos/x/profiles"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x/profiles/handlers"
 	"github.com/desmos-labs/juno/parse/worker"
