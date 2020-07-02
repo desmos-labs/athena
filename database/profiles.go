@@ -2,7 +2,7 @@ package database
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	profilesTypes "github.com/desmos-labs/desmos/x/profiles"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"github.com/rs/zerolog/log"
 )
@@ -23,7 +23,7 @@ func (db DesmosDb) SaveUserIfNotExisting(address sdk.AccAddress) (*dbtypes.Profi
 
 // SaveProfile saves the given profilesTypes into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db DesmosDb) SaveProfile(profile profilesTypes.Profile) (*dbtypes.ProfileRow, error) {
+func (db DesmosDb) SaveProfile(profile profilestypes.Profile) (*dbtypes.ProfileRow, error) {
 	log.Info().
 		Str("module", "profiles").
 		Str("dtag", profile.DTag).
@@ -31,7 +31,7 @@ func (db DesmosDb) SaveProfile(profile profilesTypes.Profile) (*dbtypes.ProfileR
 		Msg("saving profilesTypes")
 
 	sqlStmt := `INSERT INTO profile (address, dtag, moniker, bio, profile_pic, cover_pic, creation_date) 
-				VALUES ($1, $2, $3, $4, $5, $6) 
+				VALUES ($1, $2, $3, $4, $5, $6, $7) 
 				ON CONFLICT (address) DO UPDATE 
 				    SET address = excluded.address, 
 				        dtag = excluded.dtag,
@@ -48,7 +48,7 @@ func (db DesmosDb) SaveProfile(profile profilesTypes.Profile) (*dbtypes.ProfileR
 	}
 
 	_, err := db.Sql.Exec(sqlStmt,
-		profile.Creator.String(), profile.DTag, profile.Moniker, profile.Bio, profilePic, coverPic)
+		profile.Creator.String(), profile.DTag, profile.Moniker, profile.Bio, profilePic, coverPic, profile.CreationDate)
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +87,11 @@ func (db DesmosDb) ExecuteQueryAndGetFirstUserRow(query string, args ...interfac
 
 // GetUserById returns the user having the specified id. If not found returns nil instead.
 func (db DesmosDb) GetUserById(id *uint64) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profilesTypes WHERE id = $1`, id)
+	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE id = $1`, id)
 }
 
 // GetUserByAddress returns the user row having the given address.
 // If the user does not exist yet, returns nil instead.
 func (db DesmosDb) GetUserByAddress(address sdk.AccAddress) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profilesTypes WHERE address = $1`, address.String())
+	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address.String())
 }

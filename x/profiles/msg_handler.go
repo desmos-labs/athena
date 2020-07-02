@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/profiles"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x/profiles/handlers"
 	"github.com/desmos-labs/juno/parse/worker"
@@ -30,9 +30,9 @@ func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
 	switch desmosMsg := msg.(type) {
 
 	// Users
-	case profile.MsgSaveProfile:
-		return handlers.HandleMsgSaveProfile(desmosMsg, database)
-	case profile.MsgDeleteProfile:
+	case profilestypes.MsgSaveProfile:
+		return handlers.HandleMsgSaveProfile(tx, index, desmosMsg, database)
+	case profilestypes.MsgDeleteProfile:
 		return handlers.HandleMsgDeleteProfile(desmosMsg, database)
 	}
 
