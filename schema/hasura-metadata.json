@@ -106,7 +106,15 @@
         {
           "name": "creator",
           "using": {
-            "foreign_key_constraint_on": "creator_address"
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "profile"
+              },
+              "column_mapping": {
+                "creator_address": "address"
+              }
+            }
           }
         },
         {
@@ -190,18 +198,6 @@
       },
       "array_relationships": [
         {
-          "name": "posts",
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "creator_address",
-              "table": {
-                "schema": "public",
-                "name": "post"
-              }
-            }
-          }
-        },
-        {
           "name": "reactions",
           "using": {
             "foreign_key_constraint_on": {
@@ -221,18 +217,6 @@
               "table": {
                 "schema": "public",
                 "name": "registered_reactions"
-              }
-            }
-          }
-        },
-        {
-          "name": "user_poll_answers",
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "answerer_address",
-              "table": {
-                "schema": "public",
-                "name": "user_poll_answer"
               }
             }
           }
@@ -266,7 +250,7 @@
       },
       "object_relationships": [
         {
-          "name": "profile",
+          "name": "user",
           "using": {
             "foreign_key_constraint_on": "owner_address"
           }
@@ -302,7 +286,15 @@
         {
           "name": "user",
           "using": {
-            "foreign_key_constraint_on": "answerer_address"
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "profile"
+              },
+              "column_mapping": {
+                "answerer_address": "address"
+              }
+            }
           }
         }
       ]

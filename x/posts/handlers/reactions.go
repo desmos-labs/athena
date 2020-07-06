@@ -16,7 +16,7 @@ func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.Pos
 		return nil, nil, err
 	}
 
-	postIDStr, err := tx.FindAttributeByKey(event, "post_id")
+	postIDStr, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -25,7 +25,7 @@ func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.Pos
 		return nil, nil, err
 	}
 
-	userStr, err := tx.FindAttributeByKey(event, "reaction_user")
+	userStr, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostReactionOwner)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -34,12 +34,12 @@ func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.Pos
 		return nil, nil, err
 	}
 
-	value, err := tx.FindAttributeByKey(event, "reaction_value")
+	value, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostReactionValue)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	shortCode, err := tx.FindAttributeByKey(event, "reaction_shortcode")
+	shortCode, err := tx.FindAttributeByKey(event, posts.AttributeKeyReactionShortCode)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -53,7 +53,7 @@ func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.Pos
 // HandleMsgAddPostReaction allows to properly handle the adding of a reaction by storing the newly created
 // reaction inside the database and sending out push notifications to whoever might be interested in this event.
 func HandleMsgAddPostReaction(tx juno.Tx, index int, db database.DesmosDb) error {
-	postID, reaction, err := GetReactionFromTxEvent(tx, index, "post_reaction_added")
+	postID, reaction, err := GetReactionFromTxEvent(tx, index, posts.EventTypePostReactionAdded)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func HandleMsgAddPostReaction(tx juno.Tx, index int, db database.DesmosDb) error
 // HandleMsgRemovePostReaction allows to properly handle the removal of a reaction from a post by
 // deleting the specified reaction from the database.
 func HandleMsgRemovePostReaction(tx juno.Tx, index int, db database.DesmosDb) error {
-	postID, reaction, err := GetReactionFromTxEvent(tx, index, "post_reaction_removed")
+	postID, reaction, err := GetReactionFromTxEvent(tx, index, posts.EventTypePostReactionRemoved)
 	if err != nil {
 		return err
 	}

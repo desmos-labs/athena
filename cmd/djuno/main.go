@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	desmosapp "github.com/desmos-labs/desmos/app"
 	desmosdb "github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/x/bank"
 	"github.com/desmos-labs/djuno/x/notifications"
 	"github.com/desmos-labs/djuno/x/posts"
 	"github.com/desmos-labs/djuno/x/profiles"
@@ -57,6 +58,7 @@ func SetupModules() {
 	worker.RegisterTxHandler(notifications.TxHandler)
 
 	// Register message handlers
+	worker.RegisterMsgHandler(bank.MsgHandler)
 	worker.RegisterMsgHandler(posts.MsgHandler)
 	worker.RegisterMsgHandler(profiles.MsgHandler)
 }

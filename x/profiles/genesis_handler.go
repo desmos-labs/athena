@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/desmos-labs/desmos/x/profile"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/juno/parse/worker"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -20,8 +20,8 @@ func GenesisHandler(
 		return fmt.Errorf("database is not a DesmosDB instance")
 	}
 
-	var genState profile.GenesisState
-	codec.MustUnmarshalJSON(appState[profile.ModuleName], &genState)
+	var genState profilestypes.GenesisState
+	codec.MustUnmarshalJSON(appState[profilestypes.ModuleName], &genState)
 
 	// Save the profiles
 	for _, prof := range genState.Profiles {

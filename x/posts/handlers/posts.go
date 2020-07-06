@@ -27,11 +27,11 @@ func createAndStorePostFromMsgCreatePost(
 	tx juno.Tx, index int, msg posts.MsgCreatePost, db database.DesmosDb,
 ) (*posts.Post, error) {
 	// Get the post id
-	event, err := tx.FindEventByType(index, "post_created")
+	event, err := tx.FindEventByType(index, posts.EventTypePostCreated)
 	if err != nil {
 		return nil, err
 	}
-	postIDStr, err := tx.FindAttributeByKey(event, "post_id")
+	postIDStr, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,10 @@ func createAndStorePostFromMsgCreatePost(
 		post = post.WithPollData(*msg.PollData)
 	}
 
-	log.Info().Str("id", postID.String()).Str("owner", post.Creator.String()).Msg("saving post")
+	log.Info().
+		Str("id", postID.String()).
+		Str("owner", post.Creator.String()).
+		Msg("saving post")
 
 	// Save the post
 	err = db.SavePost(post)
