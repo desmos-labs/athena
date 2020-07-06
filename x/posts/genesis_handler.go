@@ -33,21 +33,48 @@ func GenesisHandler(
 	})
 
 	// Save the posts
+	if err := savePosts(genPosts, db); err != nil {
+		return err
+	}
+
+	// Save the registered reactions
+	if err := saveRegisteredReactions(genState.RegisteredReactions, db); err != nil {
+		return err
+	}
+
+	// Save the reactions
+	if err := savePostReactions(genState.PostReactions, db); err != nil {
+		return err
+	}
+
+	// Save poll answers
+	if err := savePollAnswers(genState.UsersPollAnswers, db); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func savePosts(genPosts posts.Posts, db desmosdb.DesmosDb) error {
 	for _, post := range genPosts {
 		if err := db.SavePost(post); err != nil {
 			return err
 		}
 	}
+	return nil
+}
 
-	// Save the registered reactions
-	for _, reaction := range genState.RegisteredReactions {
+func saveRegisteredReactions(reactions posts.Reactions, db desmosdb.DesmosDb) error {
+	for _, reaction := range reactions {
 		if _, err := db.RegisterReactionIfNotPresent(reaction); err != nil {
 			return err
 		}
 	}
+	return nil
+}
 
-	// Save the reactions
-	for postIDKey, reactions := range genState.PostReactions {
+func savePostReactions(reactions map[string]posts.PostReactions, db desmosdb.DesmosDb) error {
+	for postIDKey, reactions := range reactions {
 		postID, err := posts.ParsePostID(postIDKey)
 		if err != nil {
 			return err
@@ -59,9 +86,11 @@ func GenesisHandler(
 			}
 		}
 	}
+	return nil
+}
 
-	// Save poll answers
-	for postIDKey, answers := range genState.UsersPollAnswers {
+func savePollAnswers(userAnswers map[string]posts.UserAnswers, db desmosdb.DesmosDb) error {
+	for postIDKey, answers := range userAnswers {
 		postID, err := posts.ParsePostID(postIDKey)
 		if err != nil {
 			return err
