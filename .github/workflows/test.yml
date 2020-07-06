@@ -1,4 +1,4 @@
-name:  DJuno
+name:  Go
 on:
   push:
     branches:
