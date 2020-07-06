@@ -15,7 +15,7 @@ func HandleMsgSaveProfile(tx juno.Tx, index int, msg profilestypes.MsgSaveProfil
 	if err != nil {
 		return err
 	}
-	creationDateStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeProfileCreator) // TODO: Replace this with correct attribute
+	creationDateStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeProfileCreationTime)
 	if err != nil {
 		return err
 	}
