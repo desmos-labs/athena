@@ -111,6 +111,7 @@ github.com/coreos/go-systemd v0.0.0-20180511133405-39ca1b05acc7/go.mod h1:F5haX7
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
+github.com/cosmos/cosmos-sdk v0.38.4/go.mod h1:rzWOofbKfRt3wxiylmYWEFHnxxGj0coyqgWl2I9obAw=
 github.com/cosmos/cosmos-sdk v0.38.5 h1:hLSrm4pvhqbA+zhyY+ltEfpynjLGeKFefctK8kHG6TE=
 github.com/cosmos/cosmos-sdk v0.38.5/go.mod h1:o5V2eXScgPWh8BkKr2Z2Zq+NEt1RFW8l1HBk87JG+PY=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
@@ -130,8 +131,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/desmos-labs/Go-Emoji-Utils v1.1.1-0.20200515063516-9c493b11de3e h1:hGcgtbuXVwaFx6Hf3KzlrG2elBkijzFqQkWYluo/EZw=
 github.com/desmos-labs/Go-Emoji-Utils v1.1.1-0.20200515063516-9c493b11de3e/go.mod h1:5TMhouV+kDGQZZrBK+rzBP+Jmeyu0V7WvrBHqukiTv8=
-github.com/desmos-labs/desmos v0.8.0 h1:kzymlHRuv+DgDKp7eXA9hFsdEY3aigwUH1xYINrmyWE=
-github.com/desmos-labs/desmos v0.8.0/go.mod h1:bd9TDAzppsU3ydz0YXcQ4hYn/ccjxWQ6Fm9S4g+P3Ng=
+github.com/desmos-labs/desmos v0.8.1 h1:gnp6FAtoI6+8CDI4Wg4RijaRreqMllvaGCbm8e07yzI=
+github.com/desmos-labs/desmos v0.8.1/go.mod h1:Fwcq1y+51nMU86exnhZx1QCGVFadeByEb4JCHeX7y+0=
+github.com/desmos-labs/desmos v0.8.2-0.20200709050752-759e7eb2a1ff h1:ojts3g2WnZWfewrZOq/ySvXCZu23kYmOJJMLhn7Yptg=
+github.com/desmos-labs/desmos v0.8.2-0.20200709050752-759e7eb2a1ff/go.mod h1:bd9TDAzppsU3ydz0YXcQ4hYn/ccjxWQ6Fm9S4g+P3Ng=
 github.com/desmos-labs/juno v0.0.0-20200706074258-15a37786a810 h1:WxzSwA+uzfXyC9JENDGyPSuEp+vLRPL6ipfexzyQjXI=
 github.com/desmos-labs/juno v0.0.0-20200706074258-15a37786a810/go.mod h1:HYhix3Iu0s1DJDD3QdHv/JyWVGqDTBZi7verMd2LQm0=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
@@ -562,6 +565,7 @@ github.com/tendermint/go-amino v0.15.1/go.mod h1:TQU0M1i/ImAo+tYpZi73AU3V/dKeCoM
 github.com/tendermint/iavl v0.13.2 h1:O1m08/Ciy53l9IYmf75uIRVvrNsfjEbre8u/yCu/oqk=
 github.com/tendermint/iavl v0.13.2/go.mod h1:vE1u0XAGXYjHykd4BLp8p/yivrw2PF1TuoljBcsQoGA=
 github.com/tendermint/tendermint v0.33.2/go.mod h1:25DqB7YvV1tN3tHsjWoc2vFtlwICfrub9XO6UBO+4xk=
+github.com/tendermint/tendermint v0.33.3/go.mod h1:25DqB7YvV1tN3tHsjWoc2vFtlwICfrub9XO6UBO+4xk=
 github.com/tendermint/tendermint v0.33.6 h1:W4UOsXY4ROJZ3TLLGVVv71VXD4WK2gJRb3gzeced+mg=
 github.com/tendermint/tendermint v0.33.6/go.mod h1:0yUs9eIuuDq07nQql9BmI30FtYGcEC60Tu5JzB5IezM=
 github.com/tendermint/tm-db v0.4.1/go.mod h1:JsJ6qzYkCGiGwm5GHl/H5GLI9XLb6qZX7PRe425dHAY=
