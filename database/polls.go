@@ -18,20 +18,23 @@ func (db DesmosDb) SavePollData(postID posts.PostID, poll *posts.PollData) error
 
 	// Saving the poll data
 	var pollID *uint64
-	statement := `INSERT INTO poll (post_id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
-				  VALUES ($1, $2, $3, $4, $5, $6)
-				  RETURNING id`
+	stmt := `INSERT INTO poll (post_id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
+			 VALUES ($1, $2, $3, $4, $5, $6)
+			 RETURNING id`
 
-	err := db.Sql.QueryRow(statement,
+	err := db.Sql.QueryRow(stmt,
 		postID.String(), poll.Question, poll.EndDate, poll.Open, poll.AllowsMultipleAnswers, poll.AllowsAnswerEdits,
 	).Scan(&pollID)
 	if err != nil {
 		return err
 	}
 
-	pollQuery := `INSERT INTO poll_answer(poll_id, answer_id, answer_text) VALUES($1, $2, $3)`
+	stmt = `INSERT INTO poll_answer(poll_id, answer_id, answer_text) 
+			VALUES($1, $2, $3)
+			ON CONFLICT ON CONSTRAINT answer_unique DO NOTHING`
+
 	for _, answer := range poll.ProvidedAnswers {
-		_, err = db.Sql.Exec(pollQuery, pollID, answer.ID, answer.Text)
+		_, err = db.Sql.Exec(stmt, pollID, answer.ID, answer.Text)
 		if err != nil {
 			return err
 		}
@@ -40,11 +43,10 @@ func (db DesmosDb) SavePollData(postID posts.PostID, poll *posts.PollData) error
 	return nil
 }
 
-// SavePollAnswer allows to save the given answers from the specified user for the poll
+// SaveUserPollAnswer allows to save the given answers from the specified user for the poll
 // post having the specified postID.
-func (db DesmosDb) SavePollAnswer(postID posts.PostID, answer posts.UserAnswer) error {
-	_, err := db.SaveUserIfNotExisting(answer.User)
-	if err != nil {
+func (db DesmosDb) SaveUserPollAnswer(postID posts.PostID, answer posts.UserAnswer) error {
+	if err := db.SaveUserIfNotExisting(answer.User); err != nil {
 		return err
 	}
 
@@ -56,9 +58,18 @@ func (db DesmosDb) SavePollAnswer(postID posts.PostID, answer posts.UserAnswer) 
 		return fmt.Errorf("post with id %s has no poll associated to it", postID)
 	}
 
-	statement := `INSERT INTO user_poll_answer (poll_id, answer, answerer_address) VALUES ($1, $2, $3)`
+	// Remove any existing answer to make sure that when replacing we do not get double answers
+	stmt := `DELETE FROM user_poll_answer WHERE poll_id = $1 AND answerer_address = $2`
+	_, err = db.Sql.Exec(stmt, poll.Id, answer.User.String())
+	if err != nil {
+		return err
+	}
+
+	stmt = `INSERT INTO user_poll_answer (poll_id, answer, answerer_address) 
+  			VALUES ($1, $2, $3)`
+
 	for _, answerText := range answer.Answers {
-		_, err = db.Sql.Exec(statement, poll.Id, answerText, answer.User.String())
+		_, err = db.Sql.Exec(stmt, poll.Id, answerText, answer.User.String())
 		if err != nil {
 			return err
 		}
@@ -70,10 +81,10 @@ func (db DesmosDb) SavePollAnswer(postID posts.PostID, answer posts.UserAnswer) 
 // GetPollByPostID returns the poll row associated to the post having the specified id.
 // If the post with the same id has no poll associated to it, nil is returned instead.
 func (db DesmosDb) GetPollByPostID(postID posts.PostID) (*dbtypes.PollRow, error) {
-	sqlStmt := `SELECT * FROM poll WHERE post_id = ?`
+	sqlStmt := `SELECT * FROM poll WHERE post_id = $1`
 
 	var rows []dbtypes.PollRow
-	err := db.sqlx.Select(&rows, sqlStmt, postID)
+	err := db.Sqlx.Select(&rows, sqlStmt, postID)
 	if err != nil {
 		return nil, err
 	}

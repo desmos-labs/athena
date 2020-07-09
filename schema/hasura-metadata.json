@@ -109,7 +109,7 @@
             "manual_configuration": {
               "remote_table": {
                 "schema": "public",
-                "name": "user"
+                "name": "profile"
               },
               "column_mapping": {
                 "creator_address": "address"
@@ -242,7 +242,7 @@
     {
       "table": {
         "schema": "public",
-        "name": "user"
+        "name": "profile"
       },
       "array_relationships": [
         {
@@ -313,7 +313,7 @@
             "manual_configuration": {
               "remote_table": {
                 "schema": "public",
-                "name": "user"
+                "name": "profile"
               },
               "column_mapping": {
                 "answerer_address": "address"

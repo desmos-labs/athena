@@ -1,6 +1,7 @@
 package database_test
 
 import (
+	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,16 +16,18 @@ func (suite *DbTestSuite) TestDesmosDb_SaveUserIfNotExisting() {
 	addr, err := sdk.AccAddressFromBech32("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
 	suite.Require().NoError(err)
 
-	user, err := suite.database.SaveUserIfNotExisting(addr)
+	err = suite.database.SaveUserIfNotExisting(addr)
 	suite.Require().NoError(err, "storing of address should return no error")
 
-	otherUser, err := suite.database.SaveUserIfNotExisting(addr)
+	err = suite.database.SaveUserIfNotExisting(addr)
 	suite.Require().NoError(err, "storing address second time should return no error")
-	suite.Require().Equal(user, otherUser)
 
-	storedAddr, err := sdk.AccAddressFromBech32(user.Address)
+	var rows []dbtypes.ProfileRow
+	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM profile")
 	suite.Require().NoError(err)
-	suite.Require().True(storedAddr.Equals(addr))
+	suite.Require().Len(rows, 1)
+
+	suite.Require().Equal(addr.String(), rows[0].Address)
 }
 
 func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
@@ -38,7 +41,10 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 		WithMoniker(newStrPtr("profile-moniker"))
 
 	// Save data
-	stored, err := suite.database.SaveProfile(profile)
+	err = suite.database.SaveProfile(profile)
+	suite.Require().NoError(err)
+
+	stored, err := suite.database.GetUserByAddress(profile.Creator)
 	suite.Require().NoError(err)
 	suite.Require().Equal(profile.DTag, stored.DTag.String)
 	suite.Require().Equal(*profile.Moniker, stored.Moniker.String)
@@ -50,10 +56,13 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 		WithBio(newStrPtr("biography")).
 		WithPictures(nil, newStrPtr("cover-picture"))
 
-	overridden, err := suite.database.SaveProfile(changedProfile)
+	err = suite.database.SaveProfile(changedProfile)
 	suite.Require().NoError(err, "overriding profile should return no error")
 
 	// Verify the storing
+	overridden, err := suite.database.GetUserByAddress(profile.Creator)
+	suite.Require().NoError(err)
+
 	suite.Require().Equal(profile.DTag, overridden.DTag.String)
 	suite.Require().Equal(*changedProfile.Moniker, overridden.Moniker.String)
 	suite.Require().Equal(*changedProfile.Bio, overridden.Bio.String)

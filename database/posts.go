@@ -58,7 +58,9 @@ func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*post
 
 // SavePost allows to store the given post inside the database properly.
 func (db DesmosDb) SavePost(post posts.Post) error {
-	log.Info().Str("module", "posts").Str("post_id", post.PostID.String()).Msg("saving post")
+	log.Info().Str("module", "posts").
+		Str("post_id", post.PostID.String()).
+		Msg("saving post")
 
 	err := db.savePostContent(post)
 	if err != nil {
@@ -66,12 +68,6 @@ func (db DesmosDb) SavePost(post posts.Post) error {
 	}
 
 	err = db.SavePollData(post.PostID, post.PollData)
-	if err != nil {
-		return err
-	}
-
-	// Save comments
-	err = db.saveComment(post)
 	if err != nil {
 		return err
 	}
@@ -88,15 +84,15 @@ func (db DesmosDb) savePostContent(post posts.Post) error {
 	}
 
 	// Save the user
-	_, err = db.SaveUserIfNotExisting(post.Creator)
-	if err != nil {
+	if err := db.SaveUserIfNotExisting(post.Creator); err != nil {
 		return err
 	}
 
 	// Save the post
 	postSqlStatement := `
 	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, optional_data, hidden)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+	ON CONFLICT (id) DO NOTHING`
 
 	var parentId *string
 	if post.ParentID.Valid() {
@@ -112,23 +108,15 @@ func (db DesmosDb) savePostContent(post posts.Post) error {
 	return err
 }
 
-// saveComment saves the given post as a comment to its parent
-func (db DesmosDb) saveComment(post posts.Post) error {
-	if !post.ParentID.Valid() {
-		return nil
-	}
-
-	commentSqlStatement := `INSERT INTO comment (parent_id, comment_id) VALUES ($1, $2)`
-	_, err := db.Sql.Exec(commentSqlStatement, post.ParentID.String(), post.PostID.String())
-	return err
-}
-
 // saveMedias allows to save the specified medias that are associated
 // to the post having the given postID
 func (db DesmosDb) saveMedias(postID posts.PostID, medias posts.PostMedias) error {
-	mediaQuery := `INSERT INTO media (post_id, uri, mime_type) VALUES ($1, $2, $3)`
+	stmt := `INSERT INTO media (post_id, uri, mime_type) 
+			 VALUES ($1, $2, $3) 
+			 ON CONFLICT ON CONSTRAINT unique_post_media DO NOTHING`
+
 	for _, media := range medias {
-		_, err := db.Sql.Exec(mediaQuery, postID.String(), media.URI, media.MimeType)
+		_, err := db.Sql.Exec(stmt, postID.String(), media.URI, media.MimeType)
 		if err != nil {
 			return err
 		}
@@ -152,7 +140,7 @@ func (db DesmosDb) GetPostByID(id posts.PostID) (*posts.Post, error) {
 	postSqlStatement := `SELECT * FROM post WHERE id = $1`
 
 	var rows []dbtypes.PostRow
-	err := db.sqlx.Select(&rows, postSqlStatement, id)
+	err := db.Sqlx.Select(&rows, postSqlStatement, id)
 	if err != nil {
 		return nil, err
 	}

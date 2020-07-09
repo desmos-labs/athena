@@ -40,13 +40,13 @@ func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
 
 func handleMsgMultiSend(cosmosMsg bank.MsgMultiSend, database desmosdb.DesmosDb) error {
 	for _, input := range cosmosMsg.Inputs {
-		if _, err := database.SaveUserIfNotExisting(input.Address); err != nil {
+		if err := database.SaveUserIfNotExisting(input.Address); err != nil {
 			return err
 		}
 	}
 
 	for _, output := range cosmosMsg.Outputs {
-		if _, err := database.SaveUserIfNotExisting(output.Address); err != nil {
+		if err := database.SaveUserIfNotExisting(output.Address); err != nil {
 			return err
 		}
 	}
@@ -55,11 +55,9 @@ func handleMsgMultiSend(cosmosMsg bank.MsgMultiSend, database desmosdb.DesmosDb)
 }
 
 func handleMsgSend(cosmosMsg bank.MsgSend, database desmosdb.DesmosDb) error {
-	_, err := database.SaveUserIfNotExisting(cosmosMsg.FromAddress)
-	if err != nil {
+	if err := database.SaveUserIfNotExisting(cosmosMsg.FromAddress); err != nil {
 		return err
 	}
 
-	_, err = database.SaveUserIfNotExisting(cosmosMsg.ToAddress)
-	return err
+	return database.SaveUserIfNotExisting(cosmosMsg.ToAddress)
 }

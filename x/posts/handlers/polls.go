@@ -8,5 +8,5 @@ import (
 // HandleMsgAnswerPoll allows to properly handle a MsgAnswerPoll message by
 // storing inside the database the new answer.
 func HandleMsgAnswerPoll(msg posts.MsgAnswerPoll, db database.DesmosDb) error {
-	return db.SavePollAnswer(msg.PostID, posts.NewUserAnswer(msg.UserAnswers, msg.Answerer))
+	return db.SaveUserPollAnswer(msg.PostID, posts.NewUserAnswer(msg.UserAnswers, msg.Answerer))
 }

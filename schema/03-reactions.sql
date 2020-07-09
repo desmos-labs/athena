@@ -4,7 +4,7 @@ CREATE TABLE reaction
     owner_address TEXT NOT NULL REFERENCES profile (address),
     short_code    TEXT NOT NULL,
     value         TEXT NOT NULL,
-    PRIMARY KEY (post_id, owner_address, short_code)
+    CONSTRAINT react_unique UNIQUE (post_id, owner_address, short_code)
 );
 
 CREATE TABLE registered_reactions
@@ -13,5 +13,5 @@ CREATE TABLE registered_reactions
     short_code    TEXT NOT NULL,
     value         TEXT NOT NULL,
     subspace      TEXT NOT NULL,
-    PRIMARY KEY (short_code, subspace)
+    CONSTRAINT registered_react_unique UNIQUE (short_code, subspace)
 );

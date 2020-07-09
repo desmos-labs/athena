@@ -14,7 +14,7 @@ import (
 // so that it can properly store posts and other Desmos-related data.
 type DesmosDb struct {
 	postgresql.Database
-	sqlx *sqlx.DB
+	Sqlx *sqlx.DB
 }
 
 // Builder allows to create a new DesmosDb instance implementing the database.Builder type
@@ -33,7 +33,7 @@ func Builder(cfg config.Config, codec *codec.Codec) (*db.Database, error) {
 	psqlDb, _ := (*database).(postgresql.Database)
 	var desmosDb db.Database = DesmosDb{
 		Database: psqlDb,
-		sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
+		Sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
 	}
 
 	return &desmosDb, nil

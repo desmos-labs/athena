@@ -25,7 +25,7 @@ func GenesisHandler(
 
 	// Save the profiles
 	for _, prof := range genState.Profiles {
-		if _, err := db.SaveProfile(prof); err != nil {
+		if err := db.SaveProfile(prof); err != nil {
 			return err
 		}
 	}

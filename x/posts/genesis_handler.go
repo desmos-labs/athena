@@ -66,7 +66,7 @@ func savePosts(genPosts posts.Posts, db desmosdb.DesmosDb) error {
 
 func saveRegisteredReactions(reactions posts.Reactions, db desmosdb.DesmosDb) error {
 	for _, reaction := range reactions {
-		if _, err := db.RegisterReactionIfNotPresent(reaction); err != nil {
+		if _, err := db.SaveRegisteredReactionIfNotPresent(reaction); err != nil {
 			return err
 		}
 	}
@@ -97,7 +97,7 @@ func savePollAnswers(userAnswers map[string]posts.UserAnswers, db desmosdb.Desmo
 		}
 
 		for _, answer := range answers {
-			if err := db.SavePollAnswer(postID, answer); err != nil {
+			if err := db.SaveUserPollAnswer(postID, answer); err != nil {
 				return err
 			}
 		}

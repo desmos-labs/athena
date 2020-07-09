@@ -29,8 +29,7 @@ func HandleMsgSaveProfile(tx juno.Tx, index int, msg profilestypes.MsgSaveProfil
 		WithMoniker(msg.Moniker).
 		WithBio(msg.Bio).
 		WithPictures(msg.ProfilePic, msg.CoverPic)
-	_, err = database.SaveProfile(newProfile)
-	return err
+	return database.SaveProfile(newProfile)
 }
 
 // HandleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database

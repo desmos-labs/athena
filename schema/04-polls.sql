@@ -13,14 +13,13 @@ CREATE TABLE poll_answer
 (
     poll_id     INTEGER NOT NULL REFERENCES poll (id),
     answer_id   INTEGER NOT NULL,
-    answer_TEXT TEXT    NOT NULL,
-    UNIQUE (poll_id, answer_id)
+    answer_text TEXT    NOT NULL,
+    CONSTRAINT answer_unique UNIQUE (poll_id, answer_id)
 );
 
 CREATE TABLE user_poll_answer
 (
     poll_id          INTEGER NOT NULL REFERENCES poll (id),
     answer           INTEGER NOT NULL,
-    answerer_address TEXT    NOT NULL REFERENCES profile (address),
-    UNIQUE (poll_id, answer, answerer_address)
+    answerer_address TEXT    NOT NULL REFERENCES profile (address)
 );

@@ -84,6 +84,6 @@ func HandleMsgRemovePostReaction(tx juno.Tx, index int, db database.DesmosDb) er
 // HandleMsgRegisterReaction handles a MsgRegisterReaction by storing the new reaction inside the database.
 func HandleMsgRegisterReaction(msg posts.MsgRegisterReaction, db database.DesmosDb) error {
 	reaction := posts.NewReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace)
-	_, err := db.RegisterReactionIfNotPresent(reaction)
+	_, err := db.SaveRegisteredReactionIfNotPresent(reaction)
 	return err
 }

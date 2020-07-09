@@ -10,25 +10,26 @@ import (
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
-func (db DesmosDb) SaveUserIfNotExisting(address sdk.AccAddress) (*dbtypes.ProfileRow, error) {
+func (db DesmosDb) SaveUserIfNotExisting(address sdk.AccAddress) error {
 	// Insert the user
 	sqlStmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
-	_, err := db.sqlx.Exec(sqlStmt, address.String())
+	_, err := db.Sqlx.Exec(sqlStmt, address.String())
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return db.GetUserByAddress(address)
+	_, err = db.GetUserByAddress(address)
+	return err
 }
 
 // SaveProfile saves the given profilesTypes into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db DesmosDb) SaveProfile(profile profilestypes.Profile) (*dbtypes.ProfileRow, error) {
+func (db DesmosDb) SaveProfile(profile profilestypes.Profile) error {
 	log.Info().
 		Str("module", "profiles").
 		Str("dtag", profile.DTag).
 		Str("creator", profile.Creator.String()).
-		Msg("saving profilesTypes")
+		Msg("saving profile")
 
 	sqlStmt := `INSERT INTO profile (address, dtag, moniker, bio, profile_pic, cover_pic, creation_date) 
 				VALUES ($1, $2, $3, $4, $5, $6, $7) 
@@ -50,10 +51,11 @@ func (db DesmosDb) SaveProfile(profile profilestypes.Profile) (*dbtypes.ProfileR
 	_, err := db.Sql.Exec(sqlStmt,
 		profile.Creator.String(), profile.DTag, profile.Moniker, profile.Bio, profilePic, coverPic, profile.CreationDate)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return db.GetUserByAddress(profile.Creator)
+	_, err = db.GetUserByAddress(profile.Creator)
+	return err
 }
 
 // DeleteProfile allows to delete the profilesTypes of the user having the given address
@@ -68,11 +70,11 @@ func (db DesmosDb) DeleteProfile(address sdk.AccAddress) error {
 
 // ______________________________________
 
-// ExecuteQueryAndGetFirstUserRow executes the given query with the specified arguments
+// executeQueryAndGetFirstUserRow executes the given query with the specified arguments
 // and returns the first matched row.
-func (db DesmosDb) ExecuteQueryAndGetFirstUserRow(query string, args ...interface{}) (*dbtypes.ProfileRow, error) {
+func (db DesmosDb) executeQueryAndGetFirstUserRow(query string, args ...interface{}) (*dbtypes.ProfileRow, error) {
 	var rows []dbtypes.ProfileRow
-	err := db.sqlx.Select(&rows, query, args...)
+	err := db.Sqlx.Select(&rows, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +87,8 @@ func (db DesmosDb) ExecuteQueryAndGetFirstUserRow(query string, args ...interfac
 	return &rows[0], nil
 }
 
-// GetUserById returns the user having the specified id. If not found returns nil instead.
-func (db DesmosDb) GetUserById(id *uint64) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE id = $1`, id)
-}
-
 // GetUserByAddress returns the user row having the given address.
 // If the user does not exist yet, returns nil instead.
 func (db DesmosDb) GetUserByAddress(address sdk.AccAddress) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address.String())
+	return db.executeQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address.String())
 }
