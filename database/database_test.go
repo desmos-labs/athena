@@ -2,7 +2,7 @@ package database_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
@@ -26,7 +26,7 @@ type DbTestSuite struct {
 }
 
 type TestData struct {
-	post posts.Post
+	post poststypes.Post
 }
 
 func (suite *DbTestSuite) SetupTest() {
@@ -94,7 +94,7 @@ func (suite *DbTestSuite) setupTestData() {
 	suite.Require().NoError(err)
 
 	suite.testData = TestData{
-		post: posts.NewPost(
+		post: poststypes.NewPost(
 			"979cc7397c87be773dd04fd219cdc031482efc9ed5443b7b636de1aff0179fc4",
 			"",
 			"Post message",

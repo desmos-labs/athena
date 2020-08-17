@@ -1,7 +1,7 @@
 package database_test
 
 import (
-	poststypes "github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"time"
 )
 

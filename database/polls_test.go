@@ -2,7 +2,7 @@ package database_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"time"
 )

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 )
 
 func newStrPtr(value string) *string {
