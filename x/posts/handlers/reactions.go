@@ -2,7 +2,7 @@ package handlers
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/notifications"
 	juno "github.com/desmos-labs/juno/types"
@@ -10,22 +10,22 @@ import (
 
 // GetReactionFromTxEvent creates a new PostReaction object from the event having the given type and associated
 // to the message having the given inside the inside the given tx.
-func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.PostID, *posts.PostReaction, error) {
+func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*poststypes.PostID, *poststypes.PostReaction, error) {
 	event, err := tx.FindEventByType(index, eventType)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	postIDStr, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostID)
+	postIDStr, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostID)
 	if err != nil {
 		return nil, nil, err
 	}
-	postID, err := posts.ParsePostID(postIDStr)
+	postID, err := poststypes.ParsePostID(postIDStr)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	userStr, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostReactionOwner)
+	userStr, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostReactionOwner)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -34,17 +34,17 @@ func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.Pos
 		return nil, nil, err
 	}
 
-	value, err := tx.FindAttributeByKey(event, posts.AttributeKeyPostReactionValue)
+	value, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostReactionValue)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	shortCode, err := tx.FindAttributeByKey(event, posts.AttributeKeyReactionShortCode)
+	shortCode, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyReactionShortCode)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	reaction := posts.NewPostReaction(shortCode, value, user)
+	reaction := poststypes.NewPostReaction(shortCode, value, user)
 	return &postID, &reaction, nil
 }
 
@@ -53,7 +53,7 @@ func GetReactionFromTxEvent(tx juno.Tx, index int, eventType string) (*posts.Pos
 // HandleMsgAddPostReaction allows to properly handle the adding of a reaction by storing the newly created
 // reaction inside the database and sending out push notifications to whoever might be interested in this event.
 func HandleMsgAddPostReaction(tx juno.Tx, index int, db database.DesmosDb) error {
-	postID, reaction, err := GetReactionFromTxEvent(tx, index, posts.EventTypePostReactionAdded)
+	postID, reaction, err := GetReactionFromTxEvent(tx, index, poststypes.EventTypePostReactionAdded)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func HandleMsgAddPostReaction(tx juno.Tx, index int, db database.DesmosDb) error
 // HandleMsgRemovePostReaction allows to properly handle the removal of a reaction from a post by
 // deleting the specified reaction from the database.
 func HandleMsgRemovePostReaction(tx juno.Tx, index int, db database.DesmosDb) error {
-	postID, reaction, err := GetReactionFromTxEvent(tx, index, posts.EventTypePostReactionRemoved)
+	postID, reaction, err := GetReactionFromTxEvent(tx, index, poststypes.EventTypePostReactionRemoved)
 	if err != nil {
 		return err
 	}
@@ -82,8 +82,8 @@ func HandleMsgRemovePostReaction(tx juno.Tx, index int, db database.DesmosDb) er
 // ____________________________________
 
 // HandleMsgRegisterReaction handles a MsgRegisterReaction by storing the new reaction inside the database.
-func HandleMsgRegisterReaction(msg posts.MsgRegisterReaction, db database.DesmosDb) error {
-	reaction := posts.NewReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace)
+func HandleMsgRegisterReaction(msg poststypes.MsgRegisterReaction, db database.DesmosDb) error {
+	reaction := poststypes.NewReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace)
 	_, err := db.SaveRegisteredReactionIfNotPresent(reaction)
 	return err
 }

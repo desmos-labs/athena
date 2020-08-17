@@ -2,14 +2,14 @@ package database
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 
 	"github.com/rs/zerolog/log"
 )
 
 // convertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
-func convertReactionRow(reactionRow dbtypes.RegisteredReactionRow, userRow *dbtypes.ProfileRow) (*posts.Reaction, error) {
+func convertReactionRow(reactionRow dbtypes.RegisteredReactionRow, userRow *dbtypes.ProfileRow) (*poststypes.Reaction, error) {
 
 	// Parse the creator
 	creator, err := sdk.AccAddressFromBech32(userRow.Address)
@@ -18,13 +18,13 @@ func convertReactionRow(reactionRow dbtypes.RegisteredReactionRow, userRow *dbty
 	}
 
 	// Create the reaction
-	reaction := posts.NewReaction(creator, reactionRow.ShortCode, reactionRow.Value, reactionRow.Subspace)
+	reaction := poststypes.NewReaction(creator, reactionRow.ShortCode, reactionRow.Value, reactionRow.Subspace)
 	return &reaction, nil
 }
 
 // GetRegisteredReactionByCodeOrValue allows to get a registered reaction by its shortcode or
 // value and the subspace for which it has been registered.
-func (db DesmosDb) GetRegisteredReactionByCodeOrValue(codeOrValue string, subspace string) (*posts.Reaction, error) {
+func (db DesmosDb) GetRegisteredReactionByCodeOrValue(codeOrValue string, subspace string) (*poststypes.Reaction, error) {
 	postSqlStatement := `SELECT * FROM registered_reactions WHERE (short_code = $1 OR value = $1) AND subspace = $2`
 
 	var rows []dbtypes.RegisteredReactionRow
@@ -57,13 +57,13 @@ func (db DesmosDb) GetRegisteredReactionByCodeOrValue(codeOrValue string, subspa
 // ______________________________________________
 
 // SaveReaction allows to save the given reaction into the database.
-func (db DesmosDb) SaveReaction(postID posts.PostID, reaction *posts.PostReaction) error {
+func (db DesmosDb) SaveReaction(postID poststypes.PostID, reaction *poststypes.PostReaction) error {
 	if err := db.SaveUserIfNotExisting(reaction.Owner); err != nil {
 		return err
 	}
 
 	log.Info().
-		Str("module", "posts").
+		Str("module", "poststypes").
 		Str("post_id", postID.String()).
 		Str("value", reaction.Value).
 		Str("short_code", reaction.Shortcode).
@@ -82,7 +82,7 @@ func (db DesmosDb) SaveReaction(postID posts.PostID, reaction *posts.PostReactio
 }
 
 // RegisterReaction allows to register into the database the given reaction.
-func (db DesmosDb) SaveRegisteredReactionIfNotPresent(reaction posts.Reaction) (*posts.Reaction, error) {
+func (db DesmosDb) SaveRegisteredReactionIfNotPresent(reaction poststypes.Reaction) (*poststypes.Reaction, error) {
 	react, err := db.GetRegisteredReactionByCodeOrValue(reaction.ShortCode, reaction.Subspace)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (db DesmosDb) SaveRegisteredReactionIfNotPresent(reaction posts.Reaction) (
 // ______________________________________________
 
 // RemoveReaction allows to remove an already existing reaction from the database.
-func (db DesmosDb) RemoveReaction(postID posts.PostID, reaction *posts.PostReaction) error {
+func (db DesmosDb) RemoveReaction(postID poststypes.PostID, reaction *poststypes.PostReaction) error {
 	if err := db.SaveUserIfNotExisting(reaction.Owner); err != nil {
 		return err
 	}

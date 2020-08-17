@@ -3,14 +3,14 @@ package database
 import (
 	"fmt"
 
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 
 // SavePollData allows to properly store the given poll inside the database, returning the
 // id of the newly created (or updated) row inside the database itself.
 // If the given poll is nil, it will not be inserted and nil will be returned as the id.
-func (db DesmosDb) SavePollData(postID posts.PostID, poll *posts.PollData) error {
+func (db DesmosDb) SavePollData(postID poststypes.PostID, poll *poststypes.PollData) error {
 	// Nil data, do nothing
 	if poll == nil {
 		return nil
@@ -45,7 +45,7 @@ func (db DesmosDb) SavePollData(postID posts.PostID, poll *posts.PollData) error
 
 // SaveUserPollAnswer allows to save the given answers from the specified user for the poll
 // post having the specified postID.
-func (db DesmosDb) SaveUserPollAnswer(postID posts.PostID, answer posts.UserAnswer) error {
+func (db DesmosDb) SaveUserPollAnswer(postID poststypes.PostID, answer poststypes.UserAnswer) error {
 	if err := db.SaveUserIfNotExisting(answer.User); err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (db DesmosDb) SaveUserPollAnswer(postID posts.PostID, answer posts.UserAnsw
 
 // GetPollByPostID returns the poll row associated to the post having the specified id.
 // If the post with the same id has no poll associated to it, nil is returned instead.
-func (db DesmosDb) GetPollByPostID(postID posts.PostID) (*dbtypes.PollRow, error) {
+func (db DesmosDb) GetPollByPostID(postID poststypes.PostID) (*dbtypes.PollRow, error) {
 	sqlStmt := `SELECT * FROM poll WHERE post_id = $1`
 
 	var rows []dbtypes.PollRow

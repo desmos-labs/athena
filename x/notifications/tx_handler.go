@@ -2,8 +2,8 @@ package notifications
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/posts"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	notificationstypes "github.com/desmos-labs/djuno/notifications"
 	"github.com/desmos-labs/juno/parse/worker"
 	juno "github.com/desmos-labs/juno/types"

@@ -6,13 +6,13 @@ import (
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/juno/parse/worker"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-// GenesisHandler allows to properly handle the genesis state for the posts module
+// GenesisHandler allows to properly handle the genesis state for the poststypes module
 func GenesisHandler(
 	codec *codec.Codec, _ *tmtypes.GenesisDoc, appState map[string]json.RawMessage, w worker.Worker,
 ) error {
@@ -21,18 +21,18 @@ func GenesisHandler(
 		return fmt.Errorf("database is not a DesmosDB instance")
 	}
 
-	// Get the posts state
-	var genState posts.GenesisState
-	codec.MustUnmarshalJSON(appState[posts.ModuleName], &genState)
+	// Get the poststypes state
+	var genState poststypes.GenesisState
+	codec.MustUnmarshalJSON(appState[poststypes.ModuleName], &genState)
 
-	// Order the posts based on the ids
+	// Order the poststypes based on the ids
 	genPosts := genState.Posts
 	sort.SliceStable(genPosts, func(i, j int) bool {
 		first, second := genPosts[i], genPosts[j]
 		return first.Created.Before(second.Created)
 	})
 
-	// Save the posts
+	// Save the poststypes
 	if err := savePosts(genPosts, db); err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func GenesisHandler(
 	return nil
 }
 
-func savePosts(genPosts posts.Posts, db desmosdb.DesmosDb) error {
+func savePosts(genPosts poststypes.Posts, db desmosdb.DesmosDb) error {
 	for _, post := range genPosts {
 		if err := db.SavePost(post); err != nil {
 			return err
@@ -64,7 +64,7 @@ func savePosts(genPosts posts.Posts, db desmosdb.DesmosDb) error {
 	return nil
 }
 
-func saveRegisteredReactions(reactions posts.Reactions, db desmosdb.DesmosDb) error {
+func saveRegisteredReactions(reactions poststypes.Reactions, db desmosdb.DesmosDb) error {
 	for _, reaction := range reactions {
 		if _, err := db.SaveRegisteredReactionIfNotPresent(reaction); err != nil {
 			return err
@@ -73,9 +73,9 @@ func saveRegisteredReactions(reactions posts.Reactions, db desmosdb.DesmosDb) er
 	return nil
 }
 
-func savePostReactions(reactions map[string]posts.PostReactions, db desmosdb.DesmosDb) error {
+func savePostReactions(reactions map[string]poststypes.PostReactions, db desmosdb.DesmosDb) error {
 	for postIDKey, reactions := range reactions {
-		postID, err := posts.ParsePostID(postIDKey)
+		postID, err := poststypes.ParsePostID(postIDKey)
 		if err != nil {
 			return err
 		}
@@ -89,9 +89,9 @@ func savePostReactions(reactions map[string]posts.PostReactions, db desmosdb.Des
 	return nil
 }
 
-func savePollAnswers(userAnswers map[string]posts.UserAnswers, db desmosdb.DesmosDb) error {
+func savePollAnswers(userAnswers map[string]poststypes.UserAnswers, db desmosdb.DesmosDb) error {
 	for postIDKey, answers := range userAnswers {
-		postID, err := posts.ParsePostID(postIDKey)
+		postID, err := poststypes.ParsePostID(postIDKey)
 		if err != nil {
 			return err
 		}

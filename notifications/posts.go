@@ -7,7 +7,7 @@ import (
 
 	"firebase.google.com/go/messaging"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"github.com/desmos-labs/djuno/database"
 )
 
@@ -45,7 +45,7 @@ var (
 // a push notification to the people that might somehow be interested into the creation of the post.
 // For example, if the post is a comment to another post, the creator of the latter will be notified
 // that a new comment has been added.
-func SendPostNotifications(post posts.Post, db database.DesmosDb) error {
+func SendPostNotifications(post poststypes.Post, db database.DesmosDb) error {
 	// Get the post parent
 	parent, err := db.GetPostByID(post.ParentID)
 	if err != nil {
@@ -69,7 +69,7 @@ func SendPostNotifications(post posts.Post, db database.DesmosDb) error {
 
 // sendCommentNotification sends the creator of the parent post a notification telling him
 // that the given post has been added as a comment to it's original post.
-func sendCommentNotification(post posts.Post, parent *posts.Post) error {
+func sendCommentNotification(post poststypes.Post, parent *poststypes.Post) error {
 	// Not a comment, skip
 	if parent == nil {
 		return nil
@@ -82,7 +82,7 @@ func sendCommentNotification(post posts.Post, parent *posts.Post) error {
 
 	// Build the notification
 	notification := messaging.Notification{
-		Title: "Someone commented one of your posts! 💬",
+		Title: "Someone commented one of your poststypes! 💬",
 		Body:  fmt.Sprintf("%s commented on your post: %s", post.Creator.String(), post.Message),
 	}
 	data := map[string]string{
@@ -102,7 +102,7 @@ func sendCommentNotification(post posts.Post, parent *posts.Post) error {
 // If the given post is a comment to another post, the notification will not be sent to the user that has
 // created the post to which this post is a comment. He will already receive the comment notification,
 // so we need to avoid double notifications
-func sendMentionNotifications(parent *posts.Post, post posts.Post) error {
+func sendMentionNotifications(parent *poststypes.Post, post poststypes.Post) error {
 
 	var originalPoster sdk.AccAddress
 	if parent != nil {
@@ -135,7 +135,7 @@ func sendMentionNotifications(parent *posts.Post, post posts.Post) error {
 
 // GetPostMentions returns the list of all the addresses that have been mentioned inside a post.
 // If no mentions are present, returns nil instead.
-func GetPostMentions(post posts.Post) ([]sdk.AccAddress, error) {
+func GetPostMentions(post poststypes.Post) ([]sdk.AccAddress, error) {
 	mentions := mentionRegEx.FindAllString(post.Message, -1)
 
 	addresses := make([]sdk.AccAddress, len(mentions))
@@ -153,7 +153,7 @@ func GetPostMentions(post posts.Post) ([]sdk.AccAddress, error) {
 
 // sendMentionNotification sends a single notification to the given telling him that he's been mentioned
 // inside the given post.
-func sendMentionNotification(post posts.Post, user sdk.AccAddress) error {
+func sendMentionNotification(post poststypes.Post, user sdk.AccAddress) error {
 	// Get the mentions
 	notification := messaging.Notification{
 		Title: "You've been mentioned inside a post",
@@ -174,7 +174,7 @@ func sendMentionNotification(post posts.Post, user sdk.AccAddress) error {
 // SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
 // For example, a push notification is send to the user that has created the post.
-func SendReactionNotifications(postID posts.PostID, reaction *posts.PostReaction, db database.DesmosDb) error {
+func SendReactionNotifications(postID poststypes.PostID, reaction *poststypes.PostReaction, db database.DesmosDb) error {
 	post, err := db.GetPostByID(postID)
 	if err != nil {
 		return err
@@ -193,10 +193,10 @@ func SendReactionNotifications(postID posts.PostID, reaction *posts.PostReaction
 
 // sendGenericReactionNotification allows to send a notification for a generic given reaction
 // that has been added to the specified post
-func sendGenericReactionNotification(post *posts.Post, reaction *posts.PostReaction) error {
+func sendGenericReactionNotification(post *poststypes.Post, reaction *poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
-		Title: "Someone added a new reaction to one of your posts 🎉",
+		Title: "Someone added a new reaction to one of your poststypes 🎉",
 		Body:  fmt.Sprintf("%s added a new reaction to your post: %s", reaction.Owner.String(), reaction.Value),
 	}
 	data := map[string]string{
@@ -214,10 +214,10 @@ func sendGenericReactionNotification(post *posts.Post, reaction *posts.PostReact
 }
 
 // sendLikeNotification sends a push notification telling that a like has been added to the given post
-func sendLikeNotification(post *posts.Post, reaction *posts.PostReaction) error {
+func sendLikeNotification(post *poststypes.Post, reaction *poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
-		Title: "Someone like one of your posts ❤️",
+		Title: "Someone like one of your poststypes ❤️",
 		Body:  fmt.Sprintf("%s like your post!", reaction.Owner.String()),
 	}
 	data := map[string]string{

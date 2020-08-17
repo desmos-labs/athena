@@ -2,7 +2,7 @@ package database
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"github.com/rs/zerolog/log"
 )

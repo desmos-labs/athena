@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x/posts/handlers"
 	"github.com/desmos-labs/juno/parse/worker"
@@ -12,11 +12,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// MsgHandler allows to handle different message types from the posts module
+// MsgHandler allows to handle different message types from the poststypes module
 func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
 	if len(tx.Logs) == 0 {
 		log.Info().
-			Str("module", "posts").
+			Str("module", "poststypes").
 			Str("tx_hash", tx.TxHash).Int("msg_index", index).
 			Msg("skipping message as it was not successful")
 		return nil
@@ -29,24 +29,24 @@ func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
 
 	switch desmosMsg := msg.(type) {
 	// Posts
-	case posts.MsgCreatePost:
+	case poststypes.MsgCreatePost:
 		return handlers.HandleMsgCreatePost(tx, index, desmosMsg, database)
 
-	case posts.MsgEditPost:
-		return handlers.HandleMsgEditPost(desmosMsg, database)
+	case poststypes.MsgEditPost:
+		return handlers.HandleMsgEditPost(tx, index, desmosMsg, database)
 
 	// Reactions
-	case posts.MsgRegisterReaction:
+	case poststypes.MsgRegisterReaction:
 		return handlers.HandleMsgRegisterReaction(desmosMsg, database)
 
-	case posts.MsgAddPostReaction:
+	case poststypes.MsgAddPostReaction:
 		return handlers.HandleMsgAddPostReaction(tx, index, database)
 
-	case posts.MsgRemovePostReaction:
+	case poststypes.MsgRemovePostReaction:
 		return handlers.HandleMsgRemovePostReaction(tx, index, database)
 
 	// Polls
-	case posts.MsgAnswerPoll:
+	case poststypes.MsgAnswerPoll:
 		return handlers.HandleMsgAnswerPoll(desmosMsg, database)
 	}
 

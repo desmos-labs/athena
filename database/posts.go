@@ -5,24 +5,24 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"github.com/rs/zerolog/log"
 )
 
 // convertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
-func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*posts.Post, error) {
+func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*poststypes.Post, error) {
 
 	// Parse the post id
-	postID, err := posts.ParsePostID(postRow.PostID)
+	postID, err := poststypes.ParsePostID(postRow.PostID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Parse the parent id
-	var parentID posts.PostID
+	var parentID poststypes.PostID
 	if postRow.ParentID.Valid {
-		parentID, err = posts.ParsePostID(postRow.ParentID.String)
+		parentID, err = poststypes.ParsePostID(postRow.ParentID.String)
 		if err != nil {
 			return nil, err
 		}
@@ -41,7 +41,7 @@ func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*post
 		return nil, err
 	}
 
-	post := posts.NewPost(
+	post := poststypes.NewPost(
 		postID,
 		parentID,
 		postRow.Message,
@@ -57,8 +57,8 @@ func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*post
 }
 
 // SavePost allows to store the given post inside the database properly.
-func (db DesmosDb) SavePost(post posts.Post) error {
-	log.Info().Str("module", "posts").
+func (db DesmosDb) SavePost(post poststypes.Post) error {
+	log.Info().Str("module", "poststypes").
 		Str("post_id", post.PostID.String()).
 		Msg("saving post")
 
@@ -73,11 +73,11 @@ func (db DesmosDb) SavePost(post posts.Post) error {
 	}
 
 	// Save medias
-	return db.saveMedias(post.PostID, post.Medias)
+	return db.saveMedias(post.PostID, post.Attachments)
 }
 
 // savePostContent allows to store the content of the given post
-func (db DesmosDb) savePostContent(post posts.Post) error {
+func (db DesmosDb) savePostContent(post poststypes.Post) error {
 	optionalDataBz, err := json.Marshal(post.OptionalData)
 	if err != nil {
 		return err
@@ -110,7 +110,7 @@ func (db DesmosDb) savePostContent(post posts.Post) error {
 
 // saveMedias allows to save the specified medias that are associated
 // to the post having the given postID
-func (db DesmosDb) saveMedias(postID posts.PostID, medias posts.PostMedias) error {
+func (db DesmosDb) saveMedias(postID poststypes.PostID, medias poststypes.Attachments) error {
 	stmt := `INSERT INTO media (post_id, uri, mime_type) 
 			 VALUES ($1, $2, $3) 
 			 ON CONFLICT ON CONSTRAINT unique_post_media DO NOTHING`
@@ -127,7 +127,7 @@ func (db DesmosDb) saveMedias(postID posts.PostID, medias posts.PostMedias) erro
 
 // EditPost allows to properly edit the post having the given postID by setting the new
 // given message and editDate
-func (db DesmosDb) EditPost(postID posts.PostID, message string, editDate time.Time) error {
+func (db DesmosDb) EditPost(postID poststypes.PostID, message string, editDate time.Time) error {
 	statement := `UPDATE post SET message = $1, last_edited = $2 WHERE id = $3`
 	_, err := db.Sql.Exec(statement, message, editDate, postID)
 	return err
@@ -136,7 +136,7 @@ func (db DesmosDb) EditPost(postID posts.PostID, message string, editDate time.T
 // GetPostByID returns the post having the specified id.
 // If some error raised during the read, it is returned.
 // If no post with the specified id is found, nil is returned instead.
-func (db DesmosDb) GetPostByID(id posts.PostID) (*posts.Post, error) {
+func (db DesmosDb) GetPostByID(id poststypes.PostID) (*poststypes.Post, error) {
 	postSqlStatement := `SELECT * FROM post WHERE id = $1`
 
 	var rows []dbtypes.PostRow

@@ -3,7 +3,7 @@ package handlers
 import (
 	"time"
 
-	profilestypes "github.com/desmos-labs/desmos/x/profiles"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	juno "github.com/desmos-labs/juno/types"
 )
