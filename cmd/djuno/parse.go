@@ -28,6 +28,13 @@ will be used to send push notifications when parsing the messages that might req
 	}
 
 	cmd.Flags().Bool(flags.FlagEnableNotifications, true, "Enabled the sending of push notifications")
+
+	cmd.Flags().String(flags.FlagDBHost, "", "Overwrite the database host written inside the configuration")
+	cmd.Flags().Uint64(flags.FlagDBPort, 0, "Overwrite the database port written inside the configuration")
+	cmd.Flags().String(flags.FlagDBUser, "", "Overwrite the database user written inside the configuration")
+	cmd.Flags().String(flags.FlagDBPassword, "", "Overwrite the database password written inside the configuration")
+	cmd.Flags().String(flags.FlagDBName, "", "Overwrite the database name written inside the configuration")
+
 	return parse.SetupFlags(cmd)
 }
 

@@ -1,0 +1,49 @@
+version: '3.6'
+services:
+  postgres:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: djuno
+    volumes:
+      - ./schema:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
+
+  djuno:
+    image: desmoslabs/djuno:v0.10.0
+    depends_on:
+      - postgres
+    restart: always
+    volumes:
+      - ./config:/home
+    entrypoint: [
+      "djuno",
+      "parse",
+      "config.toml",
+      "firebase-config.json",
+      "--db-host=postgres",
+      "--db-port=5432",
+      "--db-user=user",
+      "--db-password=password",
+      "--db-name=djuno"
+    ]
+
+  hasura:
+    image: hasura/graphql-engine:v1.1.0
+    ports:
+      - 8080:8080
+    depends_on:
+      - djuno
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://user:password@postgres:5432/djuno"
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+    volumes:
+      - ./schema/hasura:/hasura-metadata
+
+volumes:
+  db_data:
