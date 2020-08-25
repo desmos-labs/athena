@@ -29,7 +29,7 @@ func GenesisHandler(
 	genPosts := genState.Posts
 	sort.SliceStable(genPosts, func(i, j int) bool {
 		first, second := genPosts[i], genPosts[j]
-		return second.Created.Before(first.Created)
+		return first.Created.Before(second.Created)
 	})
 
 	// Save the poststypes
