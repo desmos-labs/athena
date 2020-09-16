@@ -30,6 +30,33 @@ func (suite *DbTestSuite) TestDesmosDb_SaveUserIfNotExisting() {
 	suite.Require().Equal(addr.String(), rows[0].Address)
 }
 
+func (suite *DbTestSuite) TestDesmosDB_UpdateProfileDTag() {
+	user, err := sdk.AccAddressFromBech32("cosmos15vqfryzfgaznd45cef25jlpn2wqdjs5a53ws45")
+	suite.Require().NoError(err)
+
+	err = suite.database.UpdateProfileDTag(user, "moniker")
+	suite.Require().NoError(err)
+
+	var rows []dbtypes.ProfileRow
+	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM profile WHERE address = $1", user.String())
+	suite.Require().NoError(err)
+
+	suite.Require().Len(rows, 1)
+	suite.Require().True(rows[0].DTag.Valid)
+	suite.Require().Equal("moniker", rows[0].DTag.String)
+
+	err = suite.database.UpdateProfileDTag(user, "new-dtag")
+	suite.Require().NoError(err)
+
+	var newRows []dbtypes.ProfileRow
+	err = suite.database.Sqlx.Select(&newRows, "SELECT * FROM profile WHERE address = $1", user.String())
+	suite.Require().NoError(err)
+
+	suite.Require().Len(newRows, 1)
+	suite.Require().True(newRows[0].DTag.Valid)
+	suite.Require().Equal("new-dtag", newRows[0].DTag.String)
+}
+
 func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 	creator, err := sdk.AccAddressFromBech32("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
 	suite.Require().NoError(err)

@@ -58,6 +58,17 @@ func (db DesmosDb) SaveProfile(profile profilestypes.Profile) error {
 	return err
 }
 
+// UpdateProfileDTag allows to update the DTag of the given user setting the given value
+func (db DesmosDb) UpdateProfileDTag(user sdk.AccAddress, dTag string) error {
+	if err := db.SaveUserIfNotExisting(user); err != nil {
+		return err
+	}
+
+	stmt := `UPDATE profile SET dtag = $1 WHERE address = $2`
+	_, err := db.Sql.Exec(stmt, dTag, user.String())
+	return err
+}
+
 // DeleteProfile allows to delete the profilesTypes of the user having the given address
 func (db DesmosDb) DeleteProfile(address sdk.AccAddress) error {
 	sqlStmt := `UPDATE profile 

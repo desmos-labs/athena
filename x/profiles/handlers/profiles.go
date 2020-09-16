@@ -32,6 +32,27 @@ func HandleMsgSaveProfile(tx juno.Tx, index int, msg profilestypes.MsgSaveProfil
 	return database.SaveProfile(newProfile)
 }
 
+func HandleMsgAcceptDTagTransfer(tx juno.Tx, index int, msg profilestypes.MsgAcceptDTagTransfer, database desmosdb.DesmosDb) error {
+	// Get the traded event
+	event, err := tx.FindEventByType(index, profilestypes.EventTypeDTagTransferAccept)
+	if err != nil {
+		return err
+	}
+	tradedDTag, err := tx.FindAttributeByKey(event, profilestypes.AttributeDTagToTrade)
+	if err != nil {
+		return err
+	}
+
+	// Set the new DTag to the current owner
+	err = database.UpdateProfileDTag(msg.CurrentOwner, msg.NewDTag)
+	if err != nil {
+		return err
+	}
+
+	// Set the new DTag to the receiver
+	return database.UpdateProfileDTag(msg.ReceivingUser, tradedDTag)
+}
+
 // HandleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
 func HandleMsgDeleteProfile(msg profilestypes.MsgDeleteProfile, database desmosdb.DesmosDb) error {
 	return database.DeleteProfile(msg.Creator)

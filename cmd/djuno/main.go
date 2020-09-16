@@ -8,6 +8,7 @@ import (
 	"github.com/desmos-labs/djuno/x/notifications"
 	"github.com/desmos-labs/djuno/x/posts"
 	"github.com/desmos-labs/djuno/x/profiles"
+	"github.com/desmos-labs/djuno/x/relationships"
 	"github.com/desmos-labs/juno/config"
 	"github.com/desmos-labs/juno/executor"
 	"github.com/desmos-labs/juno/parse/worker"
@@ -61,4 +62,5 @@ func SetupModules() {
 	worker.RegisterMsgHandler(bank.MsgHandler)
 	worker.RegisterMsgHandler(posts.MsgHandler)
 	worker.RegisterMsgHandler(profiles.MsgHandler)
+	worker.RegisterMsgHandler(relationships.MsgHandler)
 }

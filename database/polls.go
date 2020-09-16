@@ -18,12 +18,12 @@ func (db DesmosDb) SavePollData(postID poststypes.PostID, poll *poststypes.PollD
 
 	// Saving the poll data
 	var pollID *uint64
-	stmt := `INSERT INTO poll (post_id, question, end_date, open, allows_multiple_answers, allows_answer_edits)
-			 VALUES ($1, $2, $3, $4, $5, $6)
+	stmt := `INSERT INTO poll (post_id, question, end_date, allows_multiple_answers, allows_answer_edits)
+			 VALUES ($1, $2, $3, $4, $5)
 			 RETURNING id`
 
 	err := db.Sql.QueryRow(stmt,
-		postID.String(), poll.Question, poll.EndDate, poll.Open, poll.AllowsMultipleAnswers, poll.AllowsAnswerEdits,
+		postID.String(), poll.Question, poll.EndDate, poll.AllowsMultipleAnswers, poll.AllowsAnswerEdits,
 	).Scan(&pollID)
 	if err != nil {
 		return err

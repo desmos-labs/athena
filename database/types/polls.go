@@ -10,7 +10,6 @@ type PollRow struct {
 	PostID                string    `db:"post_id"`
 	Question              string    `db:"question"`
 	EndDate               time.Time `db:"end_date"`
-	Open                  bool      `db:"open"`
 	AllowsMultipleAnswers bool      `db:"allows_multiple_answers"`
 	AllowsAnswerEdits     bool      `db:"allows_answer_edits"`
 }
@@ -20,13 +19,13 @@ func (row PollRow) Equal(other PollRow) bool {
 		row.PostID == other.PostID &&
 		row.Question == other.Question &&
 		row.EndDate.Equal(other.EndDate) &&
-		row.Open == other.Open &&
 		row.AllowsMultipleAnswers == other.AllowsMultipleAnswers &&
 		row.AllowsAnswerEdits == other.AllowsAnswerEdits
 }
 
 // ________________________________________________
 
+// UserPollAnswerRow represents a single row inside the database containing the data of a user answer to a poll
 type UserPollAnswerRow struct {
 	PollId          int64  `db:"poll_id"`
 	Answer          int64  `db:"answer"`

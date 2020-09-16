@@ -52,8 +52,15 @@ func createAndStorePostFromMsgCreatePost(
 	}
 
 	// Create the post
-	post := poststypes.NewPost(postID, msg.ParentID, msg.Message, msg.AllowsComments,
-		msg.Subspace, msg.OptionalData, created, msg.Creator)
+	post := poststypes.NewPost(
+		msg.ParentID,
+		msg.Message,
+		msg.AllowsComments,
+		msg.Subspace,
+		msg.OptionalData,
+		created,
+		msg.Creator,
+	)
 
 	if msg.Attachments != nil {
 		post = post.WithAttachments(msg.Attachments)

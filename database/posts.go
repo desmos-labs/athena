@@ -12,14 +12,8 @@ import (
 
 // convertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
 func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*poststypes.Post, error) {
-
-	// Parse the post id
-	postID, err := poststypes.ParsePostID(postRow.PostID)
-	if err != nil {
-		return nil, err
-	}
-
 	// Parse the parent id
+	var err error
 	var parentID poststypes.PostID
 	if postRow.ParentID.Valid {
 		parentID, err = poststypes.ParsePostID(postRow.ParentID.String)
@@ -42,7 +36,6 @@ func convertPostRow(postRow dbtypes.PostRow, userRow *dbtypes.ProfileRow) (*post
 	}
 
 	post := poststypes.NewPost(
-		postID,
 		parentID,
 		postRow.Message,
 		postRow.AllowsComments,

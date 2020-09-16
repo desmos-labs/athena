@@ -24,7 +24,6 @@ func (suite *DbTestSuite) savePollData() (poststypes.Post, poststypes.PollData) 
 			poststypes.NewPollAnswer(0, "Cats"),
 			poststypes.NewPollAnswer(1, "Dogs"),
 		),
-		true,
 		false,
 		false,
 	)
@@ -50,7 +49,6 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollData() {
 		PostID:                post.PostID.String(),
 		Question:              pollData.Question,
 		EndDate:               pollData.EndDate,
-		Open:                  pollData.Open,
 		AllowsMultipleAnswers: pollData.AllowsMultipleAnswers,
 		AllowsAnswerEdits:     pollData.AllowsAnswerEdits,
 	}))
@@ -100,7 +98,6 @@ func (suite *DbTestSuite) TestDesmosDb_GetPollByPostId() {
 		PostID:                post.PostID.String(),
 		Question:              poll.Question,
 		EndDate:               poll.EndDate,
-		Open:                  poll.Open,
 		AllowsMultipleAnswers: poll.AllowsMultipleAnswers,
 		AllowsAnswerEdits:     poll.AllowsAnswerEdits,
 	}

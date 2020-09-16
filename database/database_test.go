@@ -95,7 +95,6 @@ func (suite *DbTestSuite) setupTestData() {
 
 	suite.testData = TestData{
 		post: poststypes.NewPost(
-			"979cc7397c87be773dd04fd219cdc031482efc9ed5443b7b636de1aff0179fc4",
 			"",
 			"Post message",
 			false,
