@@ -70,6 +70,9 @@ func createAndStorePostFromMsgCreatePost(
 		post = post.WithPollData(*msg.PollData)
 	}
 
+	// Force the PostID to the one retrieved otherwise it will look different
+	post.PostID = postID
+
 	log.Info().
 		Str("id", postID.String()).
 		Str("owner", post.Creator.String()).
