@@ -1,8 +1,7 @@
 package database
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/profile"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"github.com/rs/zerolog/log"
 )
@@ -10,59 +9,44 @@ import (
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
-func (db DesmosDb) SaveUserIfNotExisting(address sdk.AccAddress) (*dbtypes.ProfileRow, error) {
-	// Insert the user
-	sqlStmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
-	_, err := db.sqlx.Exec(sqlStmt, address.String())
-	if err != nil {
-		return nil, err
-	}
-
-	return db.GetUserByAddress(address)
+func (db DesmosDb) SaveUserIfNotExisting(address string) error {
+	stmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
+	_, err := db.sqlx.Exec(stmt, address)
+	return err
 }
 
 // SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db DesmosDb) SaveProfile(profile profile.Profile) (*dbtypes.ProfileRow, error) {
+func (db DesmosDb) SaveProfile(profile profilestypes.Profile) error {
 	log.Info().
 		Str("module", "profiles").
 		Str("moniker", profile.Moniker).
-		Str("creator", profile.Creator.String()).
+		Str("creator", profile.Creator).
 		Msg("saving profile")
 
-	sqlStmt := `INSERT INTO profile (address, moniker, name, surname, bio, profile_pic, cover_pic) 
-				VALUES ($1, $2, $3, $4, $5, $6, $7) 
-				ON CONFLICT (address) DO UPDATE 
-				    SET address = excluded.address, 
-				        moniker = excluded.moniker, 
-				        name = excluded.name, 
-				        surname = excluded.surname,
-				        bio = excluded.bio,
-				        profile_pic = excluded.profile_pic,
-				        cover_pic = excluded.cover_pic`
-
-	var profilePic, coverPic *string
-	if profile.Pictures != nil {
-		profilePic = profile.Pictures.Profile
-		coverPic = profile.Pictures.Cover
-	}
+	sqlStmt := `
+INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic) 
+VALUES ($1, $2, $3, $4, $5, $6) 
+ON CONFLICT (address) DO UPDATE 
+	SET address = excluded.address, 
+		moniker = excluded.moniker, 
+		dtag = excluded.dtag,
+		bio = excluded.bio,
+		profile_pic = excluded.profile_pic,
+		cover_pic = excluded.cover_pic`
 
 	_, err := db.Sql.Exec(
 		sqlStmt,
-		profile.Creator.String(), profile.Moniker, profile.Name, profile.Surname, profile.Bio,
-		profilePic, coverPic,
+		profile.Creator, profile.Moniker, profile.Dtag, profile.Bio,
+		profile.Pictures.Profile, profile.Pictures.Cover,
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	return db.GetUserByAddress(profile.Creator)
+	return err
 }
 
 // DeleteProfile allows to delete the profile of the user having the given address
-func (db DesmosDb) DeleteProfile(address sdk.AccAddress) error {
-	updatedProfile := profile.NewProfile(address)
-	_, err := db.SaveProfile(updatedProfile)
+func (db DesmosDb) DeleteProfile(address string) error {
+	stmt := `UPDATE profile SET moniker = '', dtag = '', bio = '', profile_pic = '', cover_pic = '' WHERE address = $1`
+	_, err := db.Sql.Exec(stmt, address)
 	return err
 }
 
@@ -92,6 +76,6 @@ func (db DesmosDb) GetUserById(id *uint64) (*dbtypes.ProfileRow, error) {
 
 // GetUserByAddress returns the user row having the given address.
 // If the user does not exist yet, returns nil instead.
-func (db DesmosDb) GetUserByAddress(address sdk.AccAddress) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address.String())
+func (db DesmosDb) GetUserByAddress(address string) (*dbtypes.ProfileRow, error) {
+	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address)
 }

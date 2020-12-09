@@ -2,28 +2,18 @@ package posts
 
 import (
 	"encoding/json"
-	"fmt"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/desmos-labs/desmos/x/posts"
 	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/juno/parse/worker"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-// GenesisHandler allows to properly handle the genesis state for the posts module
-func GenesisHandler(
-	codec *codec.Codec, _ *tmtypes.GenesisDoc, appState map[string]json.RawMessage, w worker.Worker,
-) error {
-	db, ok := w.Db.(desmosdb.DesmosDb)
-	if !ok {
-		return fmt.Errorf("database is not a DesmosDB instance")
-	}
-
+// HandleGenesis allows to properly handle the genesis state for the posts module
+func HandleGenesis(codec *codec.LegacyAmino, appState map[string]json.RawMessage, db *desmosdb.DesmosDb) error {
 	// Get the posts state
-	var genState posts.GenesisState
-	codec.MustUnmarshalJSON(appState[posts.ModuleName], &genState)
+	var genState poststypes.GenesisState
+	codec.MustUnmarshalJSON(appState[poststypes.ModuleName], &genState)
 
 	// Order the posts based on the ids
 	genPosts := genState.Posts
@@ -41,34 +31,27 @@ func GenesisHandler(
 
 	// Save the registered reactions
 	for _, reaction := range genState.RegisteredReactions {
-		if _, err := db.RegisterReactionIfNotPresent(reaction); err != nil {
+		err := db.RegisterReactionIfNotPresent(reaction)
+		if err != nil {
 			return err
 		}
 	}
 
 	// Save the reactions
-	for postIDKey, reactions := range genState.PostReactions {
-		postID, err := posts.ParsePostID(postIDKey)
-		if err != nil {
-			return err
-		}
-
-		for _, reaction := range reactions {
-			if err := db.SaveReaction(postID, &reaction); err != nil {
+	for _, entry := range genState.PostsReactions {
+		for _, reaction := range entry.Reactions {
+			err := db.SaveReaction(entry.PostId, &reaction)
+			if err != nil {
 				return err
 			}
 		}
 	}
 
 	// Save poll answers
-	for postIDKey, answers := range genState.UsersPollAnswers {
-		postID, err := posts.ParsePostID(postIDKey)
-		if err != nil {
-			return err
-		}
-
-		for _, answer := range answers {
-			if err := db.SavePollAnswer(postID, answer); err != nil {
+	for _, entry := range genState.UsersPollAnswers {
+		for _, answer := range entry.UserAnswers {
+			err := db.SaveUserPollAnswer(entry.PostId, answer)
+			if err != nil {
 				return err
 			}
 		}

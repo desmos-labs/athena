@@ -1,40 +1,60 @@
 package profiles
 
 import (
-	"fmt"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/desmos/x/profile"
 	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/x/profiles/handlers"
-	"github.com/desmos-labs/juno/parse/worker"
 	juno "github.com/desmos-labs/juno/types"
-	"github.com/rs/zerolog/log"
 )
 
-// MsgHandler allows to handle different messages types for the profiles module
-func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
+// HandleMsg allows to handle different messages types for the profiles module
+func HandleMsg(tx *juno.Tx, index int, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 	if len(tx.Logs) == 0 {
-		log.Info().
-			Str("module", "profiles").
-			Str("tx_hash", tx.TxHash).Int("msg_index", index).
-			Msg("skipping message as it was not successful")
 		return nil
 	}
 
-	database, ok := w.Db.(desmosdb.DesmosDb)
-	if !ok {
-		return fmt.Errorf("database is not a DesmosDb instance")
-	}
-
 	switch desmosMsg := msg.(type) {
+	case *profilestypes.MsgSaveProfile:
+		return handleMsgSaveProfile(tx, index, desmosMsg, db)
 
-	// Users
-	case profile.MsgSaveProfile:
-		return handlers.HandleMsgSaveProfile(desmosMsg, database)
-	case profile.MsgDeleteProfile:
-		return handlers.HandleMsgDeleteProfile(desmosMsg, database)
+	case *profilestypes.MsgDeleteProfile:
+		return handleMsgDeleteProfile(desmosMsg, db)
 	}
 
 	return nil
+}
+
+// handleMsgSaveProfile handles a MsgCreateProfile and properly stores the new profile inside the database
+func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProfile, database *desmosdb.DesmosDb) error {
+	event, err := tx.FindEventByType(index, profilestypes.EventTypeProfileSaved)
+	if err != nil {
+		return err
+	}
+
+	// Get creation date
+	creationDateStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeProfileCreationTime)
+	if err != nil {
+		return err
+	}
+	creationDate, err := time.Parse(time.RFC3339, creationDateStr)
+	if err != nil {
+		return err
+	}
+
+	newProfile := profilestypes.NewProfile(
+		msg.Dtag,
+		msg.Moniker,
+		msg.Bio,
+		profilestypes.NewPictures(msg.ProfilePicture, msg.CoverPicture),
+		creationDate,
+		msg.Creator,
+	)
+	return database.SaveProfile(newProfile)
+}
+
+// handleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
+func handleMsgDeleteProfile(msg *profilestypes.MsgDeleteProfile, database *desmosdb.DesmosDb) error {
+	return database.DeleteProfile(msg.Creator)
 }
