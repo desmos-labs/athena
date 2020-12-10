@@ -2,6 +2,7 @@ package relationships
 
 import (
 	"encoding/json"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	desmosdb "github.com/desmos-labs/djuno/database"

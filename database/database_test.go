@@ -1,13 +1,14 @@
 package database_test
 
 import (
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 	"time"
+
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 
 	desmosapp "github.com/desmos-labs/desmos/app"
 	"github.com/desmos-labs/djuno/database"

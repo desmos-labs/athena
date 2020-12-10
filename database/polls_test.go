@@ -1,9 +1,10 @@
 package database_test
 
 import (
+	"time"
+
 	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
-	"time"
 )
 
 func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
