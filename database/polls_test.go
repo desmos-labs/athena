@@ -42,7 +42,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollData() {
 
 	suite.Require().Len(rows, 1)
 	suite.Require().True(rows[0].Equal(dbtypes.PollRow{
-		Id:                    1,
+		ID:                    1,
 		PostID:                post.PostID,
 		Question:              pollData.Question,
 		EndDate:               pollData.EndDate,
@@ -86,7 +86,7 @@ func (suite *DbTestSuite) TestDesmosDb_GetPollByPostId() {
 	suite.Require().NoError(err)
 
 	expected := dbtypes.PollRow{
-		Id:                    1,
+		ID:                    1,
 		PostID:                post.PostID,
 		Question:              poll.Question,
 		EndDate:               poll.EndDate,

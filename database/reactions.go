@@ -16,7 +16,7 @@ func convertReactionRow(row dbtypes.RegisteredReactionRow) poststypes.Registered
 }
 
 // SavePostReaction allows to save the given reaction into the database.
-func (db DesmosDb) SavePostReaction(postID string, reaction *poststypes.PostReaction) error {
+func (db DesmosDb) SavePostReaction(postID string, reaction poststypes.PostReaction) error {
 	err := db.SaveUserIfNotExisting(reaction.Owner)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (db DesmosDb) SavePostReaction(postID string, reaction *poststypes.PostReac
 }
 
 // RemoveReaction allows to remove an already existing reaction from the database.
-func (db DesmosDb) RemoveReaction(postID string, reaction *poststypes.PostReaction) error {
+func (db DesmosDb) RemoveReaction(postID string, reaction poststypes.PostReaction) error {
 	err := db.SaveUserIfNotExisting(reaction.Owner)
 	if err != nil {
 		return err
@@ -44,10 +44,10 @@ func (db DesmosDb) RemoveReaction(postID string, reaction *poststypes.PostReacti
 func (db DesmosDb) GetRegisteredReactionByCodeOrValue(
 	codeOrValue string, subspace string,
 ) (*poststypes.RegisteredReaction, error) {
-	postSqlStatement := `SELECT * FROM registered_reactions WHERE (short_code = $1 OR value = $1) AND subspace = $2`
+	stmt := `SELECT * FROM registered_reactions WHERE (short_code = $1 OR value = $1) AND subspace = $2`
 
 	var rows []dbtypes.RegisteredReactionRow
-	err := db.Sqlx.Select(&rows, postSqlStatement, codeOrValue, subspace)
+	err := db.Sqlx.Select(&rows, stmt, codeOrValue, subspace)
 	if err != nil {
 		return nil, err
 	}

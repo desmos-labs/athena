@@ -1,11 +1,11 @@
 CREATE TABLE poll
 (
     id                      SERIAL PRIMARY KEY,
-    post_id                 TEXT                        NOT NULL UNIQUE REFERENCES post (id),
+    post_id                 TEXT UNIQUE                 NOT NULL REFERENCES post (id),
     question                TEXT                        NOT NULL,
     end_date                TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    allows_multiple_answers boolean                     NOT NULL,
-    allows_answer_edits     boolean                     NOT NULL
+    allows_multiple_answers BOOLEAN                     NOT NULL,
+    allows_answer_edits     BOOLEAN                     NOT NULL
 );
 
 CREATE TABLE poll_answer

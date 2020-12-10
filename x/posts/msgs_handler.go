@@ -148,34 +148,33 @@ func handleMsgAnswerPoll(msg *poststypes.MsgAnswerPoll, db *database.DesmosDb) e
 
 // getReactionFromTxEvent creates a new PostReaction object from the event having the given type and associated
 // to the message having the given inside the inside the given tx.
-func getReactionFromTxEvent(tx *juno.Tx, index int, eventType string) (string, *poststypes.PostReaction, error) {
+func getReactionFromTxEvent(tx *juno.Tx, index int, eventType string) (string, poststypes.PostReaction, error) {
 	event, err := tx.FindEventByType(index, eventType)
 	if err != nil {
-		return "", nil, err
+		return "", poststypes.PostReaction{}, err
 	}
 
 	postID, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostID)
 	if err != nil {
-		return "", nil, err
+		return "", poststypes.PostReaction{}, err
 	}
 
 	user, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostReactionOwner)
 	if err != nil {
-		return "", nil, err
+		return "", poststypes.PostReaction{}, err
 	}
 
 	value, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostReactionValue)
 	if err != nil {
-		return "", nil, err
+		return "", poststypes.PostReaction{}, err
 	}
 
 	shortCode, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyReactionShortCode)
 	if err != nil {
-		return "", nil, err
+		return "", poststypes.PostReaction{}, err
 	}
 
-	reaction := poststypes.NewPostReaction(shortCode, value, user)
-	return postID, &reaction, nil
+	return postID, poststypes.NewPostReaction(shortCode, value, user), nil
 }
 
 // HandleMsgAddPostReaction allows to properly handle the adding of a reaction by storing the newly created

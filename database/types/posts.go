@@ -9,16 +9,14 @@ import (
 
 // PostRow represents a single PostgreSQL row containing the data of a Post
 type PostRow struct {
-	PostID         string         `db:"id"`
 	ParentID       sql.NullString `db:"parent_id"`
-	Message        string         `db:"message"`
 	Created        time.Time      `db:"created"`
 	LastEdited     time.Time      `db:"last_edited"`
-	AllowsComments bool           `db:"allows_comments"`
+	PostID         string         `db:"id"`
+	Message        string         `db:"message"`
 	Subspace       string         `db:"subspace"`
 	Creator        string         `db:"creator_address"`
-	PollID         *uint64        `db:"poll_id"`
-	OptionalData   string         `db:"optional_data"`
+	AllowsComments bool           `db:"allows_comments"`
 	Hidden         bool           `db:"hidden"`
 }
 
@@ -71,13 +69,13 @@ func ConvertOptionalDataRows(rows []OptionalDataRow) poststypes.OptionalData {
 type AttachmentRow struct {
 	ID       int    `db:"id"`
 	PostID   string `db:"post_id"`
-	Uri      string `db:"uri"`
+	URI      string `db:"uri"`
 	MimeType string `db:"mime_type"`
 }
 
 // ConvertAttachmentRow converts the given row and tags into a proper Attachment object
 func ConvertAttachmentRow(row AttachmentRow, tags []string) poststypes.Attachment {
-	return poststypes.NewAttachment(row.Uri, row.MimeType, tags)
+	return poststypes.NewAttachment(row.URI, row.MimeType, tags)
 }
 
 // AttachmentTagRow represents a single row of the attachment_tag table

@@ -72,7 +72,7 @@ func saveRegisteredReactions(reactions []poststypes.RegisteredReaction, db *desm
 func savePostReactions(reactions []poststypes.PostReactionsEntry, db *desmosdb.DesmosDb) error {
 	for _, entry := range reactions {
 		for _, reaction := range entry.Reactions {
-			err := db.SavePostReaction(entry.PostId, &reaction)
+			err := db.SavePostReaction(entry.PostId, reaction)
 			if err != nil {
 				return err
 			}

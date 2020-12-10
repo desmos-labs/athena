@@ -99,7 +99,7 @@ func (db DesmosDb) GetPollByPostID(postID string) (*poststypes.PollData, error) 
 	row := rows[0]
 
 	var answers []dbtypes.PollAnswerRow
-	err = db.Sqlx.Select(&answers, `SELECT * FROM poll_answer WHERE poll_id = $1`, row.Id)
+	err = db.Sqlx.Select(&answers, `SELECT * FROM poll_answer WHERE poll_id = $1`, row.ID)
 	if err != nil {
 		return nil, err
 	}

@@ -9,7 +9,7 @@ import (
 // PollRow represents a single PostgreSQL row containing the details of a poll
 type PollRow struct {
 	PostID                string    `db:"post_id"`
-	Id                    uint64    `db:"id"`
+	ID                    uint64    `db:"id"`
 	Question              string    `db:"question"`
 	EndDate               time.Time `db:"end_date"`
 	AllowsMultipleAnswers bool      `db:"allows_multiple_answers"`
@@ -19,7 +19,7 @@ type PollRow struct {
 // Equal tells whether r and s contain the same data
 func (r PollRow) Equal(s PollRow) bool {
 	return r.PostID == s.PostID &&
-		r.Id == s.Id &&
+		r.ID == s.ID &&
 		r.Question == s.Question &&
 		r.EndDate.Equal(s.EndDate) &&
 		r.AllowsMultipleAnswers == s.AllowsMultipleAnswers &&

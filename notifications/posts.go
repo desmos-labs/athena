@@ -168,7 +168,7 @@ func sendMentionNotification(post poststypes.Post, user string) error {
 // SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
 // For example, a push notification is send to the user that has created the post.
-func SendReactionNotifications(postID string, reaction *poststypes.PostReaction, db *database.DesmosDb) error {
+func SendReactionNotifications(postID string, reaction poststypes.PostReaction, db *database.DesmosDb) error {
 	post, err := db.GetPostByID(postID)
 	if err != nil {
 		return err
@@ -187,7 +187,7 @@ func SendReactionNotifications(postID string, reaction *poststypes.PostReaction,
 
 // sendGenericReactionNotification allows to send a notification for a generic given reaction
 // that has been added to the specified post
-func sendGenericReactionNotification(post *poststypes.Post, reaction *poststypes.PostReaction) error {
+func sendGenericReactionNotification(post *poststypes.Post, reaction poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone added a new reaction to one of your posts 🎉",
@@ -208,7 +208,7 @@ func sendGenericReactionNotification(post *poststypes.Post, reaction *poststypes
 }
 
 // sendLikeNotification sends a push notification telling that a like has been added to the given post
-func sendLikeNotification(post *poststypes.Post, reaction *poststypes.PostReaction) error {
+func sendLikeNotification(post *poststypes.Post, reaction poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone like one of your posts ❤️",

@@ -47,7 +47,7 @@ func (db DesmosDb) savePostContent(post poststypes.Post) error {
 	}
 
 	// Save the post
-	postSqlStatement := `
+	stmt := `
 	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, hidden)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
@@ -58,7 +58,7 @@ func (db DesmosDb) savePostContent(post poststypes.Post) error {
 	}
 
 	_, err = db.Sql.Exec(
-		postSqlStatement,
+		stmt,
 		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.AllowsComments,
 		post.Subspace, post.Creator, false,
 	)
@@ -87,9 +87,9 @@ func (db DesmosDb) saveOptionalData(postID string, data poststypes.OptionalData)
 func (db DesmosDb) saveAttachments(postID string, attachments []poststypes.Attachment) error {
 	for _, media := range attachments {
 		// Insert the attachment
-		var attachmentId int
+		var attachmentID int
 		stmt := `INSERT INTO attachment (post_id, uri, mime_type) VALUES ($1, $2, $3) RETURNING id`
-		err := db.Sqlx.QueryRow(stmt, postID, media.URI, media.MimeType).Scan(&attachmentId)
+		err := db.Sqlx.QueryRow(stmt, postID, media.URI, media.MimeType).Scan(&attachmentID)
 		if err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func (db DesmosDb) saveAttachments(postID string, attachments []poststypes.Attac
 			}
 
 			stmt = `INSERT INTO attachment_tag (attachment_id, tag) VALUES ($1, $2)`
-			_, err = db.Sql.Exec(stmt, attachmentId, tag)
+			_, err = db.Sql.Exec(stmt, attachmentID, tag)
 			if err != nil {
 				return err
 			}
@@ -150,10 +150,10 @@ func (db DesmosDb) EditPost(
 // If some error raised during the read, it is returned.
 // If no post with the specified id is found, nil is returned instead.
 func (db DesmosDb) GetPostByID(id string) (*poststypes.Post, error) {
-	postSqlStatement := `SELECT * FROM post WHERE id = $1`
+	stmt := `SELECT * FROM post WHERE id = $1`
 
 	var rows []dbtypes.PostRow
-	err := db.Sqlx.Select(&rows, postSqlStatement, id)
+	err := db.Sqlx.Select(&rows, stmt, id)
 	if err != nil {
 		return nil, err
 	}
