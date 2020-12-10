@@ -1,11 +1,14 @@
 package database_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	desmosapp "github.com/desmos-labs/desmos/app"
 	"github.com/desmos-labs/djuno/database"
@@ -19,9 +22,17 @@ type DbTestSuite struct {
 	suite.Suite
 
 	database *database.DesmosDb
+	testData TestData
+}
+
+type TestData struct {
+	post poststypes.Post
 }
 
 func (suite *DbTestSuite) SetupTest() {
+	// Setup test data
+	suite.setupTestData()
+
 	// Create the codec
 	_, codec := desmosapp.MakeCodecs()
 
@@ -72,6 +83,30 @@ func (suite *DbTestSuite) SetupTest() {
 	}
 
 	suite.database = desmosDb
+}
+
+func (suite *DbTestSuite) setupTestData() {
+	// Setup the test data
+	creator, err := sdk.AccAddressFromBech32("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
+	suite.Require().NoError(err)
+
+	created, err := time.Parse(time.RFC3339, "2020-10-10T15:00:00Z")
+	suite.Require().NoError(err)
+
+	suite.testData = TestData{
+		post: poststypes.NewPost(
+			"",
+			"Post message",
+			false,
+			"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+			map[string]string{
+				"first_key":  "first_value",
+				"second_key": "1",
+			},
+			created,
+			creator,
+		),
+	}
 }
 
 func TestDatabaseTestSuite(t *testing.T) {

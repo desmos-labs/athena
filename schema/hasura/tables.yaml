@@ -1,0 +1,192 @@
+- table:
+    schema: public
+    name: block
+  object_relationships:
+  - name: validator
+    using:
+      foreign_key_constraint_on: proposer_address
+  array_relationships:
+  - name: transactions
+    using:
+      foreign_key_constraint_on:
+        column: height
+        table:
+          schema: public
+          name: transaction
+- table:
+    schema: public
+    name: media
+  object_relationships:
+  - name: post
+    using:
+      foreign_key_constraint_on: post_id
+- table:
+    schema: public
+    name: poll
+  object_relationships:
+  - name: post
+    using:
+      foreign_key_constraint_on: post_id
+  array_relationships:
+  - name: available_answers
+    using:
+      foreign_key_constraint_on:
+        column: poll_id
+        table:
+          schema: public
+          name: poll_answer
+  - name: user_answers
+    using:
+      foreign_key_constraint_on:
+        column: poll_id
+        table:
+          schema: public
+          name: user_poll_answer
+- table:
+    schema: public
+    name: poll_answer
+  object_relationships:
+  - name: poll
+    using:
+      foreign_key_constraint_on: poll_id
+- table:
+    schema: public
+    name: post
+  object_relationships:
+  - name: creator
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: profile
+        column_mapping:
+          creator_address: address
+  - name: parent
+    using:
+      foreign_key_constraint_on: parent_id
+  - name: poll
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: poll
+        column_mapping:
+          id: post_id
+  array_relationships:
+  - name: comments
+    using:
+      foreign_key_constraint_on:
+        column: parent_id
+        table:
+          schema: public
+          name: post
+  - name: medias
+    using:
+      foreign_key_constraint_on:
+        column: post_id
+        table:
+          schema: public
+          name: media
+  - name: reactions
+    using:
+      foreign_key_constraint_on:
+        column: post_id
+        table:
+          schema: public
+          name: reaction
+- table:
+    schema: public
+    name: pre_commit
+  object_relationships:
+  - name: validator
+    using:
+      foreign_key_constraint_on: validator_address
+- table:
+    schema: public
+    name: profile
+  array_relationships:
+  - name: poll_answers
+    using:
+      foreign_key_constraint_on:
+        column: answerer_address
+        table:
+          schema: public
+          name: user_poll_answer
+  - name: post_reactions
+    using:
+      foreign_key_constraint_on:
+        column: owner_address
+        table:
+          schema: public
+          name: reaction
+  - name: posts
+    using:
+      foreign_key_constraint_on:
+        column: creator_address
+        table:
+          schema: public
+          name: post
+  - name: registered_reactions
+    using:
+      foreign_key_constraint_on:
+        column: owner_address
+        table:
+          schema: public
+          name: registered_reactions
+- table:
+    schema: public
+    name: reaction
+  object_relationships:
+  - name: owner
+    using:
+      foreign_key_constraint_on: owner_address
+  - name: post
+    using:
+      foreign_key_constraint_on: post_id
+- table:
+    schema: public
+    name: registered_reactions
+  object_relationships:
+  - name: creator
+    using:
+      foreign_key_constraint_on: owner_address
+- table:
+    schema: public
+    name: transaction
+  object_relationships:
+  - name: block
+    using:
+      foreign_key_constraint_on: height
+- table:
+    schema: public
+    name: user_poll_answer
+  object_relationships:
+  - name: poll
+    using:
+      foreign_key_constraint_on: poll_id
+  - name: user
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: profile
+        column_mapping:
+          answerer_address: address
+- table:
+    schema: public
+    name: validator
+  array_relationships:
+  - name: blocks
+    using:
+      foreign_key_constraint_on:
+        column: proposer_address
+        table:
+          schema: public
+          name: block
+  - name: pre_commits
+    using:
+      foreign_key_constraint_on:
+        column: validator_address
+        table:
+          schema: public
+          name: pre_commit

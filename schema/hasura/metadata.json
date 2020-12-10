@@ -106,7 +106,15 @@
         {
           "name": "creator",
           "using": {
-            "foreign_key_constraint_on": "creator_address"
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "profile"
+              },
+              "column_mapping": {
+                "creator_address": "address"
+              }
+            }
           }
         },
         {
@@ -186,62 +194,6 @@
     {
       "table": {
         "schema": "public",
-        "name": "profile"
-      },
-      "array_relationships": [
-        {
-          "name": "posts",
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "creator_address",
-              "table": {
-                "schema": "public",
-                "name": "post"
-              }
-            }
-          }
-        },
-        {
-          "name": "reactions",
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "owner_address",
-              "table": {
-                "schema": "public",
-                "name": "reaction"
-              }
-            }
-          }
-        },
-        {
-          "name": "registered_reactions",
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "owner_address",
-              "table": {
-                "schema": "public",
-                "name": "registered_reactions"
-              }
-            }
-          }
-        },
-        {
-          "name": "user_poll_answers",
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "answerer_address",
-              "table": {
-                "schema": "public",
-                "name": "user_poll_answer"
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
-      "table": {
-        "schema": "public",
         "name": "reaction"
       },
       "object_relationships": [
@@ -266,7 +218,7 @@
       },
       "object_relationships": [
         {
-          "name": "profile",
+          "name": "creator",
           "using": {
             "foreign_key_constraint_on": "owner_address"
           }
@@ -290,6 +242,62 @@
     {
       "table": {
         "schema": "public",
+        "name": "profile"
+      },
+      "array_relationships": [
+        {
+          "name": "poll_answers",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "answerer_address",
+              "table": {
+                "schema": "public",
+                "name": "user_poll_answer"
+              }
+            }
+          }
+        },
+        {
+          "name": "post_reactions",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "owner_address",
+              "table": {
+                "schema": "public",
+                "name": "reaction"
+              }
+            }
+          }
+        },
+        {
+          "name": "posts",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "creator_address",
+              "table": {
+                "schema": "public",
+                "name": "post"
+              }
+            }
+          }
+        },
+        {
+          "name": "registered_reactions",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "owner_address",
+              "table": {
+                "schema": "public",
+                "name": "registered_reactions"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
         "name": "user_poll_answer"
       },
       "object_relationships": [
@@ -302,7 +310,15 @@
         {
           "name": "user",
           "using": {
-            "foreign_key_constraint_on": "answerer_address"
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "profile"
+              },
+              "column_mapping": {
+                "answerer_address": "address"
+              }
+            }
           }
         }
       ]
