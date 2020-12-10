@@ -1,37 +1,15 @@
 package database
 
 import (
-	"encoding/json"
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	"database/sql"
+	"fmt"
 	"time"
+
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"github.com/rs/zerolog/log"
 )
-
-// convertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
-func convertPostRow(postRow dbtypes.PostRow) (*poststypes.Post, error) {
-	// Parse the optional data
-	var optionalData map[string]string
-	err := json.Unmarshal([]byte(postRow.OptionalData), &optionalData)
-	if err != nil {
-		return nil, err
-	}
-
-	post := poststypes.NewPost(
-		postRow.PostID,
-		postRow.ParentID,
-		postRow.Message,
-		postRow.AllowsComments,
-		postRow.Subspace,
-		optionalData,
-		postRow.Created,
-		postRow.Creator,
-	)
-	post.LastEdited = postRow.LastEdited
-
-	return &post, nil
-}
 
 // SavePost allows to store the given post inside the database properly.
 func (db DesmosDb) SavePost(post poststypes.Post) error {
@@ -42,50 +20,94 @@ func (db DesmosDb) SavePost(post poststypes.Post) error {
 		return err
 	}
 
+	err = db.saveOptionalData(post.PostID, post.OptionalData)
+	if err != nil {
+		return err
+	}
+
+	err = db.saveAttachments(post.PostID, post.Attachments)
+	if err != nil {
+		return err
+	}
+
 	err = db.SavePollData(post.PostID, post.PollData)
 	if err != nil {
 		return err
 	}
 
-	// Save medias
-	return db.saveAttachments(post.PostID, post.Attachments)
+	return err
 }
 
 // savePostContent allows to store the content of the given post
 func (db DesmosDb) savePostContent(post poststypes.Post) error {
-	optionalDataBz, err := json.Marshal(post.OptionalData)
-	if err != nil {
-		return err
-	}
-
 	// Save the user
-	err = db.SaveUserIfNotExisting(post.Creator)
+	err := db.SaveUserIfNotExisting(post.Creator)
 	if err != nil {
 		return err
 	}
 
 	// Save the post
 	postSqlStatement := `
-	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, optional_data, hidden)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, hidden)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+
+	// Convert the parent id string
+	var parentID sql.NullString
+	if len(post.ParentID) > 0 {
+		parentID = sql.NullString{Valid: true, String: post.ParentID}
+	}
 
 	_, err = db.Sql.Exec(
 		postSqlStatement,
-		post.PostID, post.ParentID, post.Message, post.Created, post.LastEdited, post.AllowsComments, post.Subspace,
-		post.Creator, string(optionalDataBz), false,
+		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.AllowsComments,
+		post.Subspace, post.Creator, false,
 	)
+	return err
+}
+
+// saveOptionalData allows to save the specified optional data that are associated
+// to the post having the given postID
+func (db DesmosDb) saveOptionalData(postID string, data poststypes.OptionalData) error {
+	stmt := `INSERT INTO optional_data (post_id, key, value) VALUES `
+	var args []interface{}
+	for index, entry := range data {
+		oi := index * 3
+		stmt += fmt.Sprintf("($%d, $%d, $%d),", oi+1, oi+2, oi+3)
+		args = append(args, postID, entry.Key, entry.Value)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Remove trailing ,
+	stmt += " ON CONFLICT DO NOTHING"
+	_, err := db.Sql.Exec(stmt, args...)
 	return err
 }
 
 // saveAttachments allows to save the specified medias that are associated
 // to the post having the given postID
 func (db DesmosDb) saveAttachments(postID string, attachments []poststypes.Attachment) error {
-	mediaQuery := `INSERT INTO media (post_id, uri, mime_type) VALUES ($1, $2, $3)`
 	for _, media := range attachments {
-		_, err := db.Sql.Exec(mediaQuery, postID, media.URI, media.MimeType)
+		// Insert the attachment
+		var attachmentId int
+		stmt := `INSERT INTO attachment (post_id, uri, mime_type) VALUES ($1, $2, $3) RETURNING id`
+		err := db.sqlx.QueryRow(stmt, postID, media.URI, media.MimeType).Scan(&attachmentId)
 		if err != nil {
 			return err
 		}
+
+		// Insert all the tags
+		for _, tag := range media.Tags {
+			err = db.SaveUserIfNotExisting(tag)
+			if err != nil {
+				return err
+			}
+
+			stmt = `INSERT INTO attachment_tag (attachment_id, tag) VALUES ($1, $2)`
+			_, err = db.Sql.Exec(stmt, attachmentId, tag)
+			if err != nil {
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -103,7 +125,7 @@ func (db DesmosDb) EditPost(
 	}
 
 	// Delete and store again the medias
-	stmt = `DELETE FROM media WHERE post_id = $1`
+	stmt = `DELETE FROM attachment WHERE post_id = $1`
 	_, err = db.Sql.Exec(stmt, postID)
 	if err != nil {
 		return err
@@ -138,9 +160,63 @@ func (db DesmosDb) GetPostByID(id string) (*poststypes.Post, error) {
 
 	// No post found
 	if len(rows) == 0 {
-		return nil, nil
+		return nil, fmt.Errorf("no post with the given id found: %s", id)
 	}
 
-	postRow := rows[0]
-	return convertPostRow(postRow)
+	row := rows[0]
+
+	optionalData, err := db.getOptionalData(row.PostID)
+	if err != nil {
+		return nil, err
+	}
+
+	attachments, err := db.getAttachments(row.PostID)
+	if err != nil {
+		return nil, err
+	}
+
+	poll, err := db.GetPollByPostID(row.PostID)
+	if err != nil {
+		return nil, err
+	}
+
+	post := dbtypes.ConvertPostRow(row, optionalData, attachments, poll)
+	return &post, nil
+}
+
+// getOptionalData returns all the optional data associated to the post having the given id
+func (db DesmosDb) getOptionalData(postID string) (poststypes.OptionalData, error) {
+	stmt := `SELECT * FROM optional_data WHERE post_id = $1`
+
+	var rows []dbtypes.OptionalDataRow
+	err := db.sqlx.Select(&rows, stmt, postID)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbtypes.ConvertOptionalDataRows(rows), nil
+}
+
+// getAttachments returns the attachments of the post having the given id
+func (db DesmosDb) getAttachments(postID string) ([]poststypes.Attachment, error) {
+	stmt := `SELECT * FROM attachment WHERE post_id = $1`
+
+	var rows []dbtypes.AttachmentRow
+	err := db.sqlx.Select(&rows, stmt, postID)
+	if err != nil {
+		return nil, err
+	}
+
+	attachments := make([]poststypes.Attachment, len(rows))
+	for i, row := range rows {
+		var tagRows []dbtypes.AttachmentTagRow
+		err := db.sqlx.Select(&tagRows, `SELECT * FROM attachment_tag WHERE attachment_id  =$1`, row.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		attachments[i] = dbtypes.ConvertAttachmentRow(row, dbtypes.ConvertAttachmentTagRows(tagRows))
+	}
+
+	return attachments, nil
 }

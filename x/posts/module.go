@@ -2,6 +2,7 @@ package posts
 
 import (
 	"encoding/json"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
@@ -11,7 +12,7 @@ import (
 	"github.com/desmos-labs/juno/modules"
 	juno "github.com/desmos-labs/juno/types"
 	"github.com/go-co-op/gocron"
-	"github.com/tendermint/tendermint/rpc/core/types"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 

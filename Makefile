@@ -1,5 +1,6 @@
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT  := $(shell git log -1 --format='%H')
+DOCKER := $(shell which docker)
 
 export GO111MODULE = on
 
@@ -43,17 +44,22 @@ start-docker-test: stop-docker-test
 	@echo "Starting Docker container..."
 	@docker run --name juno-test-db -e POSTGRES_USER=juno -e POSTGRES_PASSWORD=password -e POSTGRES_DB=juno -d -p 5433:5432 postgres
 
-ci-test: start-docker-test
+test-unit: start-docker-test
 	@echo "Executing unit tests..."
 	@go test -mod=readonly -v -coverprofile coverage.txt ./...
 
-ci-lint:
-	@echo "Running GolangCI-Lint..."
-	@GO111MODULE=on golangci-lint run
-	@echo "Formatting..."
-	@find . -name '*.go' -type f -not -path "*.git*" | xargs gofmt -d -s
-	@echo "Verifying modules..."
-	@go mod verify
+lint:
+	$(DOCKER) run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.28.0 golangci-lint run --out-format=tab
+
+lint-fix:
+	$(DOCKER) run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.28.0 golangci-lint run --fix --out-format=tab --issues-exit-code=0
+.PHONY: lint lint-fix
+
+format:
+	find . -name '*.go' -type f -not -path "*.git*" | xargs gofmt -w -s
+	find . -name '*.go' -type f -not -path "*.git*" | xargs misspell -w
+	find . -name '*.go' -type f -not -path "*.git*" | xargs goimports -w -local github.com/hodlend/go-hodlend-core
+.PHONY: format
 
 clean:
 	rm -f tools-stamp ./build/**

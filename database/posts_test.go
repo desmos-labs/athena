@@ -3,14 +3,10 @@ package database_test
 import (
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/posts"
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SavePost() {
-	creator, err := sdk.AccAddressFromBech32("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
-	suite.Require().NoError(err)
-
 	created, err := time.Parse(time.RFC3339, "2020-10-10T15:00:00Z")
 	suite.Require().NoError(err)
 
@@ -20,12 +16,33 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 		"Post message",
 		false,
 		"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-		map[string]string{
-			"first_key":  "first_value",
-			"second_key": "1",
+		poststypes.OptionalData{
+			poststypes.NewOptionalDataEntry("first_key", "first_value"),
+			poststypes.NewOptionalDataEntry("second_key", "1"),
 		},
+		poststypes.NewAttachments(
+			poststypes.NewAttachment(
+				"http://example.com/uri",
+				"image/png",
+				[]string{
+					"cosmos1h7snyfa2kqyea2kelnywzlmle9vfmj3378xfkn",
+					"cosmos19aa4ys9vy98unh68r6hc2sqhgv6ze4svrxh2vn",
+				},
+			),
+		),
+		poststypes.NewPollData(
+			"Do you like dogs?",
+			time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			[]poststypes.PollAnswer{
+				poststypes.NewPollAnswer("1", "Yes"),
+				poststypes.NewPollAnswer("2", "No"),
+			},
+			true,
+			false,
+		),
+		time.Time{},
 		created,
-		creator,
+		"cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d",
 	)
 
 	// Save the data
@@ -36,5 +53,5 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	stored, err := suite.database.GetPostByID(post.PostID)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(stored)
-	suite.Require().True(post.Equals(*stored))
+	suite.Require().True(post.Equal(stored))
 }

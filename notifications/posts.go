@@ -37,7 +37,7 @@ const (
 )
 
 var (
-	mentionRegEx = regexp.MustCompile(`\s([@][a-zA-Z_1-9]+)`)
+	mentionRegEx = regexp.MustCompile(`\s([@][a-zA-Z0-9]+)`)
 )
 
 // SendPostNotifications takes the given post and, upon having performed the necessary checks, sends
@@ -139,7 +139,7 @@ func GetPostMentions(post poststypes.Post) ([]string, error) {
 
 	addresses := make([]string, len(mentions))
 	for index, mention := range mentions {
-		addresses[index] = strings.Trim("@", strings.TrimSpace(mention))
+		addresses[index] = strings.Trim(strings.TrimSpace(mention), "@")
 	}
 
 	return addresses, nil

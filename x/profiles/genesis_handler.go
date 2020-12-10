@@ -2,6 +2,7 @@ package profiles
 
 import (
 	"encoding/json"
+
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"

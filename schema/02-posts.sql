@@ -8,14 +8,29 @@ CREATE TABLE post
     allows_comments boolean                     NOT NULL,
     subspace        TEXT                        NOT NULL,
     creator_address TEXT                        NOT NULL REFERENCES profile (address),
-    optional_data   jsonb                       NOT NULL DEFAULT '{}'::jsonb,
     hidden          BOOLEAN                     NOT NULL DEFAULT false
 );
 
-CREATE TABLE media
+CREATE TABLE optional_data
 (
+    post_id TEXT NOT NULL REFERENCES post (id),
+    key     TEXT NOT NULL,
+    value   TEXT NOT NULL,
+    PRIMARY KEY (post_id, key)
+);
+
+CREATE TABLE attachment
+(
+    id        SERIAL PRIMARY KEY,
     post_id   TEXT NOT NULL REFERENCES post (id),
     uri       TEXT NOT NULL,
     mime_type TEXT NOT NULL,
-    PRIMARY KEY (post_id, uri)
+    UNIQUE (post_id, uri)
 );
+
+CREATE TABLE attachment_tag
+(
+    attachment_id INTEGER NOT NULL REFERENCES attachment (id),
+    tag           TEXT    NOT NULL REFERENCES profile (address),
+    UNIQUE (attachment_id, tag)
+)

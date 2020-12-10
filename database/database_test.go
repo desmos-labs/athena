@@ -18,16 +18,16 @@ import (
 type DbTestSuite struct {
 	suite.Suite
 
-	database database.DesmosDb
+	database *database.DesmosDb
 }
 
 func (suite *DbTestSuite) SetupTest() {
 	// Create the codec
-	codec := desmosapp.MakeCodec()
+	_, codec := desmosapp.MakeCodecs()
 
 	// Build the database
-	config := jconfig.Config{
-		DatabaseConfig: jconfig.DatabaseConfig{
+	config := &jconfig.Config{
+		DatabaseConfig: &jconfig.DatabaseConfig{
 			Type: "psql",
 			Config: &jconfig.PostgreSQLConfig{
 				Name:     "juno",
@@ -42,7 +42,7 @@ func (suite *DbTestSuite) SetupTest() {
 	db, err := database.Builder(config, codec)
 	suite.Require().NoError(err)
 
-	desmosDb, ok := (*db).(database.DesmosDb)
+	desmosDb, ok := (db).(*database.DesmosDb)
 	suite.Require().True(ok)
 
 	// Delete the public schema

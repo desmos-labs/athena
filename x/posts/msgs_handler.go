@@ -1,13 +1,14 @@
 package posts
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/notifications"
 	juno "github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 // MsgHandler allows to handle different message types from the posts module
@@ -95,17 +96,12 @@ func createAndStorePostFromMsgCreatePost(
 		msg.AllowsComments,
 		msg.Subspace,
 		msg.OptionalData,
+		msg.Attachments,
+		msg.PollData,
 		creationTime,
+		time.Time{},
 		msg.Creator,
 	)
-
-	if msg.Attachments != nil {
-		post = post.WithAttachments(msg.Attachments)
-	}
-
-	if msg.PollData != nil {
-		post = post.WithPollData(msg.PollData)
-	}
 
 	log.Info().Str("id", postID).Str("owner", post.Creator).Msg("saving post")
 

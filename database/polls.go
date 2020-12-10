@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
@@ -67,17 +66,12 @@ func (db DesmosDb) SaveUserPollAnswer(postID string, answer poststypes.UserAnswe
 		return err
 	}
 
-	poll, err := db.GetPollByPostID(postID)
-	if err != nil {
-		return err
-	}
-	if poll == nil {
-		return fmt.Errorf("post with id %s has no poll associated to it", postID)
-	}
+	statement := `
+INSERT INTO user_poll_answer (poll_id, answer, answerer_address) 
+VALUES ((SELECT poll_id FROM poll WHERE post_id = $1), $2, $3)`
 
-	statement := `INSERT INTO user_poll_answer (poll_id, answer, answerer_address) VALUES ($1, $2, $3)`
 	for _, answerText := range answer.Answers {
-		_, err = db.Sql.Exec(statement, poll.Id, answerText, answer.User)
+		_, err = db.Sql.Exec(statement, postID, answerText, answer.User)
 		if err != nil {
 			return err
 		}
@@ -88,8 +82,8 @@ func (db DesmosDb) SaveUserPollAnswer(postID string, answer poststypes.UserAnswe
 
 // GetPollByPostID returns the poll row associated to the post having the specified id.
 // If the post with the same id has no poll associated to it, nil is returned instead.
-func (db DesmosDb) GetPollByPostID(postID string) (*dbtypes.PollRow, error) {
-	sqlStmt := `SELECT * FROM poll WHERE post_id = ?`
+func (db DesmosDb) GetPollByPostID(postID string) (*poststypes.PollData, error) {
+	sqlStmt := `SELECT * FROM poll WHERE post_id = $1`
 
 	var rows []dbtypes.PollRow
 	err := db.sqlx.Select(&rows, sqlStmt, postID)
@@ -97,9 +91,18 @@ func (db DesmosDb) GetPollByPostID(postID string) (*dbtypes.PollRow, error) {
 		return nil, err
 	}
 
+	// Return nil if no poll is present
 	if len(rows) == 0 {
 		return nil, nil
 	}
 
-	return &rows[0], nil
+	row := rows[0]
+
+	var answers []dbtypes.PollAnswerRow
+	err = db.sqlx.Select(&answers, `SELECT * FROM poll_answer WHERE poll_id = $1`, row.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbtypes.ConvertPollRow(row, dbtypes.ConvertPollAnswerRows(answers)), nil
 }

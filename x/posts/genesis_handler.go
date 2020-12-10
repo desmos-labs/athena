@@ -2,8 +2,9 @@ package posts
 
 import (
 	"encoding/json"
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"sort"
+
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	desmosdb "github.com/desmos-labs/djuno/database"

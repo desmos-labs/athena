@@ -25,20 +25,21 @@ func (db DesmosDb) SaveProfile(profile profilestypes.Profile) error {
 		Msg("saving profile")
 
 	sqlStmt := `
-INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic) 
-VALUES ($1, $2, $3, $4, $5, $6) 
+INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic, creation_time) 
+VALUES ($1, $2, $3, $4, $5, $6, $7) 
 ON CONFLICT (address) DO UPDATE 
 	SET address = excluded.address, 
 		moniker = excluded.moniker, 
 		dtag = excluded.dtag,
 		bio = excluded.bio,
 		profile_pic = excluded.profile_pic,
-		cover_pic = excluded.cover_pic`
+		cover_pic = excluded.cover_pic,
+		creation_time = excluded.creation_time`
 
 	_, err := db.Sql.Exec(
 		sqlStmt,
 		profile.Creator, profile.Moniker, profile.Dtag, profile.Bio,
-		profile.Pictures.Profile, profile.Pictures.Cover,
+		profile.Pictures.Profile, profile.Pictures.Cover, profile.CreationDate,
 	)
 	return err
 }
@@ -52,11 +53,11 @@ func (db DesmosDb) DeleteProfile(address string) error {
 
 // ______________________________________
 
-// ExecuteQueryAndGetFirstUserRow executes the given query with the specified arguments
-// and returns the first matched row.
-func (db DesmosDb) ExecuteQueryAndGetFirstUserRow(query string, args ...interface{}) (*dbtypes.ProfileRow, error) {
+// GetUserByAddress returns the user row having the given address.
+// If the user does not exist yet, returns nil instead.
+func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 	var rows []dbtypes.ProfileRow
-	err := db.sqlx.Select(&rows, query, args...)
+	err := db.sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
 	if err != nil {
 		return nil, err
 	}
@@ -66,16 +67,6 @@ func (db DesmosDb) ExecuteQueryAndGetFirstUserRow(query string, args ...interfac
 		return nil, nil
 	}
 
-	return &rows[0], nil
-}
-
-// GetUserById returns the user having the specified id. If not found returns nil instead.
-func (db DesmosDb) GetUserById(id *uint64) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE id = $1`, id)
-}
-
-// GetUserByAddress returns the user row having the given address.
-// If the user does not exist yet, returns nil instead.
-func (db DesmosDb) GetUserByAddress(address string) (*dbtypes.ProfileRow, error) {
-	return db.ExecuteQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address)
+	profile := dbtypes.ConvertProfileRow(rows[0])
+	return &profile, nil
 }

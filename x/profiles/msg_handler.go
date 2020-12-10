@@ -1,8 +1,9 @@
 package profiles
 
 import (
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	"time"
+
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
