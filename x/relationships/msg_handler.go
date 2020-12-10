@@ -1,42 +1,53 @@
 package relationships
 
 import (
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	relationshipstypes "github.com/desmos-labs/desmos/x/relationships/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/x/relationships/handlers"
-	"github.com/desmos-labs/juno/parse/worker"
 	juno "github.com/desmos-labs/juno/types"
-	"github.com/rs/zerolog/log"
 )
 
-func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
+// HandleMsg allows to properly handle relationships-related messages
+func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 	if len(tx.Logs) == 0 {
-		log.Info().
-			Str("module", "relationships").
-			Str("tx_hash", tx.TxHash).Int("msg_index", index).
-			Msg("skipping message as it was not successful")
 		return nil
-	}
-
-	database, ok := w.Db.(desmosdb.DesmosDb)
-	if !ok {
-		return fmt.Errorf("database is not a DesmosDb instance")
 	}
 
 	switch desmosMsg := msg.(type) {
 
 	// Users
-	case relationshipstypes.MsgCreateRelationship:
-		return handlers.HandleMsgCreateRelationship(desmosMsg, database)
-	case relationshipstypes.MsgDeleteRelationship:
-		return handlers.HandleMsgDeleteRelationship(desmosMsg, database)
-	case relationshipstypes.MsgBlockUser:
-		return handlers.HandleMsgBlockUser(desmosMsg, database)
-	case relationshipstypes.MsgUnblockUser:
-		return handlers.HandleMsgUnblockUser(desmosMsg, database)
+	case *relationshipstypes.MsgCreateRelationship:
+		return handleMsgCreateRelationship(desmosMsg, db)
+
+	case *relationshipstypes.MsgDeleteRelationship:
+		return HandleMsgDeleteRelationship(desmosMsg, db)
+
+	case *relationshipstypes.MsgBlockUser:
+		return HandleMsgBlockUser(desmosMsg, db)
+
+	case *relationshipstypes.MsgUnblockUser:
+		return HandleMsgUnblockUser(desmosMsg, db)
 	}
 
 	return nil
+}
+
+// handleMsgCreateRelationship allows to handle a MsgCreateRelationship properly
+func handleMsgCreateRelationship(msg *relationshipstypes.MsgCreateRelationship, db *desmosdb.DesmosDb) error {
+	return db.SaveRelationship(msg.Sender, msg.Receiver, msg.Subspace)
+}
+
+// HandleMsgDeleteRelationship allows to handle a MsgDeleteRelationship properly
+func HandleMsgDeleteRelationship(msg *relationshipstypes.MsgDeleteRelationship, db *desmosdb.DesmosDb) error {
+	return db.DeleteRelationship(msg.User, msg.Counterparty, msg.Subspace)
+}
+
+// HandleMsgBlockUser allows to handle a MsgBlockUser properly
+func HandleMsgBlockUser(msg *relationshipstypes.MsgBlockUser, db *desmosdb.DesmosDb) error {
+	return db.SaveBlockage(msg.Blocker, msg.Blocked, msg.Reason, msg.Subspace)
+}
+
+// HandleMsgUnblockUser allows to handle a MsgUnblockUser properly
+func HandleMsgUnblockUser(msg *relationshipstypes.MsgUnblockUser, db *desmosdb.DesmosDb) error {
+	return db.RemoveBlockage(msg.Blocker, msg.Blocked, msg.Subspace)
 }

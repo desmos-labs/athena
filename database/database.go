@@ -14,7 +14,7 @@ import (
 // so that it can properly store posts and other Desmos-related data.
 type DesmosDb struct {
 	*postgresql.Database
-	sqlx *sqlx.DB
+	Sqlx *sqlx.DB
 }
 
 // Cast casts the given database to be a *DesmosDb
@@ -46,6 +46,6 @@ func Builder(cfg *config.Config, codec *codec.LegacyAmino) (db.Database, error) 
 
 	return &DesmosDb{
 		Database: psqlDb,
-		sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
+		Sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
 	}, nil
 }

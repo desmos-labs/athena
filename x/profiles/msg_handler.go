@@ -22,6 +22,9 @@ func HandleMsg(tx *juno.Tx, index int, msg sdk.Msg, db *desmosdb.DesmosDb) error
 
 	case *profilestypes.MsgDeleteProfile:
 		return handleMsgDeleteProfile(desmosMsg, db)
+
+		// TODO: Handle DTag transfer requests
+
 	}
 
 	return nil

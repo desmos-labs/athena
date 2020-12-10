@@ -22,5 +22,7 @@ func HandleGenesis(cdc *codec.LegacyAmino, appState map[string]json.RawMessage, 
 		}
 	}
 
+	// TODO: Handle DTag transfer requests
+
 	return nil
 }

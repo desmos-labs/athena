@@ -3,9 +3,11 @@ package main
 import (
 	desmosapp "github.com/desmos-labs/desmos/app"
 	desmosdb "github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/x/bank"
 	"github.com/desmos-labs/djuno/x/notifications"
 	"github.com/desmos-labs/djuno/x/posts"
 	"github.com/desmos-labs/djuno/x/profiles"
+	"github.com/desmos-labs/djuno/x/relationships"
 	junocmd "github.com/desmos-labs/juno/cmd"
 	"github.com/desmos-labs/juno/config"
 	"github.com/desmos-labs/juno/modules/registrar"
@@ -13,9 +15,11 @@ import (
 
 func main() {
 	registrar.RegisterModules(
+		bank.Module{},
 		notifications.Module{},
 		posts.Module{},
 		profiles.Module{},
+		relationships.Module{},
 	)
 
 	// Build the root command

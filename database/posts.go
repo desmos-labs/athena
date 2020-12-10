@@ -89,7 +89,7 @@ func (db DesmosDb) saveAttachments(postID string, attachments []poststypes.Attac
 		// Insert the attachment
 		var attachmentId int
 		stmt := `INSERT INTO attachment (post_id, uri, mime_type) VALUES ($1, $2, $3) RETURNING id`
-		err := db.sqlx.QueryRow(stmt, postID, media.URI, media.MimeType).Scan(&attachmentId)
+		err := db.Sqlx.QueryRow(stmt, postID, media.URI, media.MimeType).Scan(&attachmentId)
 		if err != nil {
 			return err
 		}
@@ -153,7 +153,7 @@ func (db DesmosDb) GetPostByID(id string) (*poststypes.Post, error) {
 	postSqlStatement := `SELECT * FROM post WHERE id = $1`
 
 	var rows []dbtypes.PostRow
-	err := db.sqlx.Select(&rows, postSqlStatement, id)
+	err := db.Sqlx.Select(&rows, postSqlStatement, id)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func (db DesmosDb) getOptionalData(postID string) (poststypes.OptionalData, erro
 	stmt := `SELECT * FROM optional_data WHERE post_id = $1`
 
 	var rows []dbtypes.OptionalDataRow
-	err := db.sqlx.Select(&rows, stmt, postID)
+	err := db.Sqlx.Select(&rows, stmt, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func (db DesmosDb) getAttachments(postID string) ([]poststypes.Attachment, error
 	stmt := `SELECT * FROM attachment WHERE post_id = $1`
 
 	var rows []dbtypes.AttachmentRow
-	err := db.sqlx.Select(&rows, stmt, postID)
+	err := db.Sqlx.Select(&rows, stmt, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +210,7 @@ func (db DesmosDb) getAttachments(postID string) ([]poststypes.Attachment, error
 	attachments := make([]poststypes.Attachment, len(rows))
 	for i, row := range rows {
 		var tagRows []dbtypes.AttachmentTagRow
-		err := db.sqlx.Select(&tagRows, `SELECT * FROM attachment_tag WHERE attachment_id  =$1`, row.ID)
+		err := db.Sqlx.Select(&tagRows, `SELECT * FROM attachment_tag WHERE attachment_id  =$1`, row.ID)
 		if err != nil {
 			return nil, err
 		}

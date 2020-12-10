@@ -1,63 +1,53 @@
 package bank
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/juno/parse/worker"
 	juno "github.com/desmos-labs/juno/types"
-	"github.com/rs/zerolog/log"
 )
 
-// MsgHandler handles properly all the Cosmos x/bank modules messages
-func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
+// HandleMsg handles properly all the Cosmos x/bank modules messages
+func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 	if len(tx.Logs) == 0 {
-		log.Info().
-			Str("module", "bank").
-			Str("tx_hash", tx.TxHash).Int("msg_index", index).
-			Msg("skipping message as it was not successful")
 		return nil
-	}
-
-	database, ok := w.Db.(desmosdb.DesmosDb)
-	if !ok {
-		return fmt.Errorf("database is not a DesmosDb instance")
 	}
 
 	switch cosmosMsg := msg.(type) {
 
-	// Users
-	case bank.MsgSend:
-		return handleMsgSend(cosmosMsg, database)
-	case bank.MsgMultiSend:
-		return handleMsgMultiSend(cosmosMsg, database)
+	case *banktypes.MsgSend:
+		return handleMsgSend(cosmosMsg, db)
+
+	case *banktypes.MsgMultiSend:
+		return handleMsgMultiSend(cosmosMsg, db)
 	}
 
 	return nil
 }
 
-func handleMsgMultiSend(cosmosMsg bank.MsgMultiSend, database desmosdb.DesmosDb) error {
-	for _, input := range cosmosMsg.Inputs {
-		if err := database.SaveUserIfNotExisting(input.Address); err != nil {
-			return err
-		}
-	}
-
-	for _, output := range cosmosMsg.Outputs {
-		if err := database.SaveUserIfNotExisting(output.Address); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func handleMsgSend(cosmosMsg bank.MsgSend, database desmosdb.DesmosDb) error {
-	if err := database.SaveUserIfNotExisting(cosmosMsg.FromAddress); err != nil {
+func handleMsgSend(msg *banktypes.MsgSend, database *desmosdb.DesmosDb) error {
+	err := database.SaveUserIfNotExisting(msg.FromAddress)
+	if err != nil {
 		return err
 	}
 
-	return database.SaveUserIfNotExisting(cosmosMsg.ToAddress)
+	return database.SaveUserIfNotExisting(msg.ToAddress)
+}
+
+func handleMsgMultiSend(msg *banktypes.MsgMultiSend, database *desmosdb.DesmosDb) error {
+	for _, input := range msg.Inputs {
+		err := database.SaveUserIfNotExisting(input.Address)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, output := range msg.Outputs {
+		err := database.SaveUserIfNotExisting(output.Address)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

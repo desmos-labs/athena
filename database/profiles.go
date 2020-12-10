@@ -11,7 +11,7 @@ import (
 // If any error is raised during the process, returns that.
 func (db DesmosDb) SaveUserIfNotExisting(address string) error {
 	stmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
-	_, err := db.sqlx.Exec(stmt, address)
+	_, err := db.Sqlx.Exec(stmt, address)
 	return err
 }
 
@@ -57,7 +57,7 @@ func (db DesmosDb) DeleteProfile(address string) error {
 // If the user does not exist yet, returns nil instead.
 func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 	var rows []dbtypes.ProfileRow
-	err := db.sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
+	err := db.Sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
 	if err != nil {
 		return nil, err
 	}

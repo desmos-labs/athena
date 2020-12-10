@@ -186,7 +186,7 @@ func handleMsgAddPostReaction(tx *juno.Tx, index int, db *database.DesmosDb) err
 		return err
 	}
 
-	err = db.SaveReaction(postID, reaction)
+	err = db.SavePostReaction(postID, reaction)
 	if err != nil {
 		return err
 	}

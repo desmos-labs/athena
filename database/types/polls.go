@@ -16,6 +16,16 @@ type PollRow struct {
 	AllowsAnswerEdits     bool      `db:"allows_answer_edits"`
 }
 
+// Equal tells whether r and s contain the same data
+func (r PollRow) Equal(s PollRow) bool {
+	return r.PostID == s.PostID &&
+		r.Id == s.Id &&
+		r.Question == s.Question &&
+		r.EndDate.Equal(s.EndDate) &&
+		r.AllowsMultipleAnswers == s.AllowsMultipleAnswers &&
+		r.AllowsAnswerEdits == s.AllowsAnswerEdits
+}
+
 // ConvertPollRow converts the given row and answers into a proper PollData object
 func ConvertPollRow(row PollRow, answers []poststypes.PollAnswer) *poststypes.PollData {
 	return poststypes.NewPollData(
@@ -43,4 +53,20 @@ func ConvertPollAnswerRows(rows []PollAnswerRow) []poststypes.PollAnswer {
 		answers[index] = poststypes.NewPollAnswer(rows.AnswerID, rows.Text)
 	}
 	return answers
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+// UserPollAnswerRow represents a single row of the user_poll_answer table
+type UserPollAnswerRow struct {
+	PollID          int    `db:"poll_id"`
+	Answer          string `db:"answer"`
+	AnswererAddress string `db:"answerer_address"`
+}
+
+// Equal tells whether r and s contain the same data
+func (r UserPollAnswerRow) Equal(s UserPollAnswerRow) bool {
+	return r.PollID == s.PollID &&
+		r.Answer == s.Answer &&
+		r.AnswererAddress == s.AnswererAddress
 }
