@@ -26,10 +26,6 @@ jobs:
       - name: Filter out DONTCOVER
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
-          if [ ${#excludelist[@]} -eq 0 ]; then
-            exit 0
-          fi
-
           for filename in ${excludelist}; do
             filename=$(echo $filename | sed 's/^./github.com\/desmos-labs\/djuno/g')
             echo "Excluding ${filename} from coverage report..."
