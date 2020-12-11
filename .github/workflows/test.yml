@@ -26,10 +26,12 @@ jobs:
       - name: Filter out DONTCOVER
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
-          excludelist+=" $(find ./ -type f -name '*.pb.go')"
-          excludelist+=" $(find ./ -type f -path './tests/mocks/*.go')"
+          if [ ${#excludelist[@]} -eq 0 ]; then
+            exit 0
+          fi
+
           for filename in ${excludelist}; do
-            filename=$(echo $filename | sed 's/^./github.com\/forbole\/bdjuno/g')
+            filename=$(echo $filename | sed 's/^./github.com\/desmos-labs\/djuno/g')
             echo "Excluding ${filename} from coverage report..."
             sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
           done
