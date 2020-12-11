@@ -1,14 +1,14 @@
 package database_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 	"time"
+
+	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 
 	desmosapp "github.com/desmos-labs/desmos/app"
 	"github.com/desmos-labs/djuno/database"
@@ -21,7 +21,7 @@ import (
 type DbTestSuite struct {
 	suite.Suite
 
-	database database.DesmosDb
+	database *database.DesmosDb
 	testData TestData
 }
 
@@ -34,11 +34,11 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.setupTestData()
 
 	// Create the codec
-	codec := desmosapp.MakeCodec()
+	_, codec := desmosapp.MakeCodecs()
 
 	// Build the database
-	config := jconfig.Config{
-		DatabaseConfig: jconfig.DatabaseConfig{
+	config := &jconfig.Config{
+		DatabaseConfig: &jconfig.DatabaseConfig{
 			Type: "psql",
 			Config: &jconfig.PostgreSQLConfig{
 				Name:     "juno",
@@ -53,7 +53,7 @@ func (suite *DbTestSuite) SetupTest() {
 	db, err := database.Builder(config, codec)
 	suite.Require().NoError(err)
 
-	desmosDb, ok := (*db).(database.DesmosDb)
+	desmosDb, ok := (db).(*database.DesmosDb)
 	suite.Require().True(ok)
 
 	// Delete the public schema
@@ -86,25 +86,40 @@ func (suite *DbTestSuite) SetupTest() {
 }
 
 func (suite *DbTestSuite) setupTestData() {
-	// Setup the test data
-	creator, err := sdk.AccAddressFromBech32("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
-	suite.Require().NoError(err)
-
-	created, err := time.Parse(time.RFC3339, "2020-10-10T15:00:00Z")
-	suite.Require().NoError(err)
-
 	suite.testData = TestData{
 		post: poststypes.NewPost(
+			"60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752",
 			"",
 			"Post message",
 			false,
 			"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-			map[string]string{
-				"first_key":  "first_value",
-				"second_key": "1",
+			poststypes.OptionalData{
+				poststypes.NewOptionalDataEntry("first_key", "first_value"),
+				poststypes.NewOptionalDataEntry("second_key", "1"),
 			},
-			created,
-			creator,
+			poststypes.NewAttachments(
+				poststypes.NewAttachment(
+					"http://example.com/uri",
+					"image/png",
+					[]string{
+						"cosmos1h7snyfa2kqyea2kelnywzlmle9vfmj3378xfkn",
+						"cosmos19aa4ys9vy98unh68r6hc2sqhgv6ze4svrxh2vn",
+					},
+				),
+			),
+			poststypes.NewPollData(
+				"Do you like dogs?",
+				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				[]poststypes.PollAnswer{
+					poststypes.NewPollAnswer("1", "Yes"),
+					poststypes.NewPollAnswer("2", "No"),
+				},
+				true,
+				false,
+			),
+			time.Time{},
+			time.Date(2020, 10, 10, 15, 00, 00, 00, time.UTC),
+			"cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d",
 		),
 	}
 }

@@ -1,91 +1,49 @@
 package database
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
-	"github.com/rs/zerolog/log"
 )
 
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
-func (db DesmosDb) SaveUserIfNotExisting(address sdk.AccAddress) error {
-	// Insert the user
-	sqlStmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
-	_, err := db.Sqlx.Exec(sqlStmt, address.String())
-	if err != nil {
-		return err
-	}
-
-	_, err = db.GetUserByAddress(address)
+func (db DesmosDb) SaveUserIfNotExisting(address string) error {
+	stmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
+	_, err := db.Sqlx.Exec(stmt, address)
 	return err
 }
 
-// SaveProfile saves the given profilesTypes into the database, replacing any existing info.
+// SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
 func (db DesmosDb) SaveProfile(profile profilestypes.Profile) error {
-	log.Info().
-		Str("module", "profiles").
-		Str("dtag", profile.DTag).
-		Str("creator", profile.Creator.String()).
-		Msg("saving profile")
+	stmt := `
+INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic, creation_time) 
+VALUES ($1, $2, $3, $4, $5, $6, $7) 
+ON CONFLICT (address) DO UPDATE 
+	SET address = excluded.address, 
+		moniker = excluded.moniker, 
+		dtag = excluded.dtag,
+		bio = excluded.bio,
+		profile_pic = excluded.profile_pic,
+		cover_pic = excluded.cover_pic,
+		creation_time = excluded.creation_time`
 
-	sqlStmt := `INSERT INTO profile (address, dtag, moniker, bio, profile_pic, cover_pic, creation_date) 
-				VALUES ($1, $2, $3, $4, $5, $6, $7) 
-				ON CONFLICT (address) DO UPDATE 
-				    SET address = excluded.address, 
-				        dtag = excluded.dtag,
-				        moniker = excluded.moniker, 
-				        bio = excluded.bio,
-				        profile_pic = excluded.profile_pic,
-				        cover_pic = excluded.cover_pic,
-				        creation_date = excluded.creation_date`
-
-	var profilePic, coverPic *string
-	if profile.Pictures != nil {
-		profilePic = profile.Pictures.Profile
-		coverPic = profile.Pictures.Cover
-	}
-
-	_, err := db.Sql.Exec(sqlStmt,
-		profile.Creator.String(), profile.DTag, profile.Moniker, profile.Bio, profilePic, coverPic, profile.CreationDate)
-	if err != nil {
-		return err
-	}
-
-	_, err = db.GetUserByAddress(profile.Creator)
+	_, err := db.Sql.Exec(
+		stmt,
+		profile.Creator, profile.Moniker, profile.Dtag, profile.Bio,
+		profile.Pictures.Profile, profile.Pictures.Cover, profile.CreationDate,
+	)
 	return err
 }
 
-// UpdateProfileDTag allows to update the DTag of the given user setting the given value
-func (db DesmosDb) UpdateProfileDTag(user sdk.AccAddress, dTag string) error {
-	if err := db.SaveUserIfNotExisting(user); err != nil {
-		return err
-	}
+// ---------------------------------------------------------------------------------------------------
 
-	stmt := `UPDATE profile SET dtag = $1 WHERE address = $2`
-	_, err := db.Sql.Exec(stmt, dTag, user.String())
-	return err
-}
-
-// DeleteProfile allows to delete the profilesTypes of the user having the given address
-func (db DesmosDb) DeleteProfile(address sdk.AccAddress) error {
-	sqlStmt := `UPDATE profile 
-				SET dtag = $1, moniker = $2, bio = $3, profile_pic = $4, cover_pic = $5, creation_date = $6 
-				WHERE address = $7`
-	_, err := db.Sql.Exec(sqlStmt,
-		nil, nil, nil, nil, nil, nil, address.String())
-	return err
-}
-
-// ______________________________________
-
-// executeQueryAndGetFirstUserRow executes the given query with the specified arguments
-// and returns the first matched row.
-func (db DesmosDb) executeQueryAndGetFirstUserRow(query string, args ...interface{}) (*dbtypes.ProfileRow, error) {
+// GetUserByAddress returns the user row having the given address.
+// If the user does not exist yet, returns nil instead.
+func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 	var rows []dbtypes.ProfileRow
-	err := db.Sqlx.Select(&rows, query, args...)
+	err := db.Sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
 	if err != nil {
 		return nil, err
 	}
@@ -95,11 +53,64 @@ func (db DesmosDb) executeQueryAndGetFirstUserRow(query string, args ...interfac
 		return nil, nil
 	}
 
-	return &rows[0], nil
+	profile := dbtypes.ConvertProfileRow(rows[0])
+	return &profile, nil
 }
 
-// GetUserByAddress returns the user row having the given address.
-// If the user does not exist yet, returns nil instead.
-func (db DesmosDb) GetUserByAddress(address sdk.AccAddress) (*dbtypes.ProfileRow, error) {
-	return db.executeQueryAndGetFirstUserRow(`SELECT * FROM profile WHERE address = $1`, address.String())
+// ---------------------------------------------------------------------------------------------------
+
+// DeleteProfile allows to delete the profile of the user having the given address
+func (db DesmosDb) DeleteProfile(address string) error {
+	stmt := `UPDATE profile SET moniker = '', dtag = '', bio = '', profile_pic = '', cover_pic = '' WHERE address = $1`
+	_, err := db.Sql.Exec(stmt, address)
+	return err
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+// SaveDTagTransferRequest saves a new transfer request from sender to receiver
+func (db DesmosDb) SaveDTagTransferRequest(sender, receiver string) error {
+	err := db.SaveUserIfNotExisting(sender)
+	if err != nil {
+		return err
+	}
+
+	err = db.SaveUserIfNotExisting(receiver)
+	if err != nil {
+		return err
+	}
+
+	stmt := `
+INSERT INTO dtag_transfer_requests (sender_address, receiver_address) VALUES ($2, $3) ON CONFLICT DO NOTHING`
+
+	_, err = db.Sql.Exec(stmt, sender, receiver)
+	return err
+}
+
+func (db DesmosDb) TransferDTag(newDTag, sender, receiver string) error {
+	// Get the old DTag
+	var oldDTag string
+	err := db.Sql.QueryRow(`SELECT dtag FROM profile WHERE address = $1`, receiver).Scan(&oldDTag)
+	if err != nil {
+		return err
+	}
+
+	// Save the new DTags
+	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, newDTag, receiver)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, oldDTag, sender)
+	if err != nil {
+		return err
+	}
+
+	// Delete the transfer request
+	return db.DeleteDTagTransferRequest(sender, receiver)
+}
+
+func (db DesmosDb) DeleteDTagTransferRequest(sender, receiver string) error {
+	_, err := db.Sql.Exec(`DELETE FROM dtag_transfer_requests WHERE sender_address = $1 AND receiver_address = $2`)
+	return err
 }

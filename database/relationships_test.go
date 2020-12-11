@@ -1,21 +1,16 @@
 package database_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 
-func (suite *DbTestSuite) saveRelationship() (sender, receiver sdk.AccAddress, subspace string) {
-	sender, err := sdk.AccAddressFromBech32("cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s")
-	suite.Require().NoError(err)
-
-	receiver, err = sdk.AccAddressFromBech32("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr")
-	suite.Require().NoError(err)
-
+func (suite *DbTestSuite) saveRelationship() (sender, receiver string, subspace string) {
+	sender = "cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s"
+	receiver = "cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr"
 	subspace = "mooncake"
 
 	// Save the relationship
-	err = suite.database.SaveRelationship(sender, receiver, subspace)
+	err := suite.database.SaveRelationship(sender, receiver, subspace)
 	suite.Require().NoError(err)
 
 	return sender, receiver, subspace
@@ -33,8 +28,8 @@ func (suite *DbTestSuite) TestDesmosDb_SaveRelationship() {
 
 	suite.Require().Len(rows, 1)
 	suite.Require().True(rows[0].Equal(dbtypes.RelationshipRow{
-		Sender:   sender.String(),
-		Receiver: receiver.String(),
+		Sender:   sender,
+		Receiver: receiver,
 		Subspace: subspace,
 	}))
 }
@@ -57,18 +52,14 @@ func (suite *DbTestSuite) TestDesmosDb_DeleteRelationship() {
 
 // ____________________________________
 
-func (suite *DbTestSuite) saveBlockage() (blocker, blocked sdk.AccAddress, reason, subspace string) {
-	blocker, err := sdk.AccAddressFromBech32("cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s")
-	suite.Require().NoError(err)
-
-	blocked, err = sdk.AccAddressFromBech32("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr")
-	suite.Require().NoError(err)
-
+func (suite *DbTestSuite) saveBlockage() (blocker, blocked string, reason, subspace string) {
+	blocker = "cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s"
+	blocked = "cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr"
 	reason = "this is my blocking reason"
 	subspace = "mooncake"
 
 	// Save the blockage
-	err = suite.database.SaveBlockage(blocker, blocked, reason, subspace)
+	err := suite.database.SaveBlockage(blocker, blocked, reason, subspace)
 	suite.Require().NoError(err)
 
 	return blocker, blocked, reason, subspace
@@ -86,8 +77,8 @@ func (suite *DbTestSuite) TestDesmosDB_SaveUserBlockage() {
 
 	suite.Require().Len(rows, 1)
 	suite.Require().True(rows[0].Equal(dbtypes.BlockageRow{
-		Blocker:  blocker.String(),
-		Blocked:  blocked.String(),
+		Blocker:  blocker,
+		Blocked:  blocked,
 		Reason:   reason,
 		Subspace: subspace,
 	}))

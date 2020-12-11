@@ -30,7 +30,7 @@ CREATE TABLE transaction
     gas_wanted INTEGER                              DEFAULT 0,
     gas_used   INTEGER                              DEFAULT 0,
     height     INTEGER                     NOT NULL REFERENCES block (height),
-    txhash     TEXT                        NOT NULL UNIQUE PRIMARY KEY,
+    hash       TEXT                        NOT NULL UNIQUE PRIMARY KEY,
     messages   JSONB                       NOT NULL DEFAULT '[]'::JSONB,
     fee        JSONB                       NOT NULL DEFAULT '{}'::JSONB,
     signatures JSONB                       NOT NULL DEFAULT '[]'::JSONB,

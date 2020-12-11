@@ -1,6 +1,6 @@
 package types
 
-// RegisteredReactionRow represents a single PostgreSQL row containing the data of a registered reaction
+// PostRow represents a single PostgreSQL row containing the data of a Post
 type RegisteredReactionRow struct {
 	OwnerAddress string `db:"owner_address"`
 	ShortCode    string `db:"short_code"`

@@ -1,40 +1,88 @@
 package profiles
 
 import (
-	"fmt"
+	"time"
+
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/x/profiles/handlers"
-	"github.com/desmos-labs/juno/parse/worker"
 	juno "github.com/desmos-labs/juno/types"
-	"github.com/rs/zerolog/log"
 )
 
-// MsgHandler allows to handle different messages types for the profiles module
-func MsgHandler(tx juno.Tx, index int, msg sdk.Msg, w worker.Worker) error {
+// HandleMsg allows to handle different messages types for the profiles module
+func HandleMsg(tx *juno.Tx, index int, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 	if len(tx.Logs) == 0 {
-		log.Info().
-			Str("module", "profiles").
-			Str("tx_hash", tx.TxHash).Int("msg_index", index).
-			Msg("skipping message as it was not successful")
 		return nil
 	}
 
-	database, ok := w.Db.(desmosdb.DesmosDb)
-	if !ok {
-		return fmt.Errorf("database is not a DesmosDb instance")
-	}
-
 	switch desmosMsg := msg.(type) {
-	case profilestypes.MsgSaveProfile:
-		return handlers.HandleMsgSaveProfile(tx, index, desmosMsg, database)
-	case profilestypes.MsgAcceptDTagTransfer:
-		return handlers.HandleMsgAcceptDTagTransfer(tx, index, desmosMsg, database)
-	case profilestypes.MsgDeleteProfile:
-		return handlers.HandleMsgDeleteProfile(desmosMsg, database)
+	case *profilestypes.MsgSaveProfile:
+		return handleMsgSaveProfile(tx, index, desmosMsg, db)
+
+	case *profilestypes.MsgDeleteProfile:
+		return handleMsgDeleteProfile(desmosMsg, db)
+
+	case *profilestypes.MsgRequestDTagTransfer:
+		return handleMsgRequestDTagTransfer(desmosMsg, db)
+
+	case *profilestypes.MsgAcceptDTagTransfer:
+		return handleMsgAcceptDTagTransfer(desmosMsg, db)
+
+	case *profilestypes.MsgCancelDTagTransfer:
+		return handleDTagTransferRequestDeletion(desmosMsg.Sender, desmosMsg.Receiver, db)
+
+	case *profilestypes.MsgRefuseDTagTransfer:
+		return handleDTagTransferRequestDeletion(desmosMsg.Sender, desmosMsg.Receiver, db)
 	}
 
 	return nil
+}
+
+// handleMsgSaveProfile handles a MsgCreateProfile and properly stores the new profile inside the database
+func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProfile, database *desmosdb.DesmosDb) error {
+	event, err := tx.FindEventByType(index, profilestypes.EventTypeProfileSaved)
+	if err != nil {
+		return err
+	}
+
+	// Get creation date
+	creationDateStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeProfileCreationTime)
+	if err != nil {
+		return err
+	}
+	creationDate, err := time.Parse(time.RFC3339, creationDateStr)
+	if err != nil {
+		return err
+	}
+
+	newProfile := profilestypes.NewProfile(
+		msg.Dtag,
+		msg.Moniker,
+		msg.Bio,
+		profilestypes.NewPictures(msg.ProfilePicture, msg.CoverPicture),
+		creationDate,
+		msg.Creator,
+	)
+	return database.SaveProfile(newProfile)
+}
+
+// handleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
+func handleMsgDeleteProfile(msg *profilestypes.MsgDeleteProfile, database *desmosdb.DesmosDb) error {
+	return database.DeleteProfile(msg.Creator)
+}
+
+// handleMsgRequestDTagTransfer handles a MsgRequestDTagTransfer storing the request into the database
+func handleMsgRequestDTagTransfer(msg *profilestypes.MsgRequestDTagTransfer, database *desmosdb.DesmosDb) error {
+	return database.SaveDTagTransferRequest(msg.Sender, msg.Receiver)
+}
+
+// handleMsgAcceptDTagTransfer handles a MsgAcceptDTagTransfer effectively transferring the DTag
+func handleMsgAcceptDTagTransfer(msg *profilestypes.MsgAcceptDTagTransfer, database *desmosdb.DesmosDb) error {
+	return database.TransferDTag(msg.NewDtag, msg.Sender, msg.Receiver)
+}
+
+// handleDTagTransferRequestDeletion allows to delete an existing transfer request
+func handleDTagTransferRequestDeletion(sender, receiver string, database *desmosdb.DesmosDb) error {
+	return database.DeleteDTagTransferRequest(sender, receiver)
 }

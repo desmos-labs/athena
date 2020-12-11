@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/desmos-labs/djuno/cmd/djuno/flags"
 	"github.com/desmos-labs/djuno/notifications"
+	junocmd "github.com/desmos-labs/juno/cmd"
+	"github.com/desmos-labs/juno/config"
 	"github.com/desmos-labs/juno/db"
-	"github.com/desmos-labs/juno/parse"
 	"github.com/spf13/cobra"
 )
 
-// GetDesmosParseCmd returns the command that should be run when we want to start parsing a chain state
-func GetDesmosParseCmd(cdc *codec.Codec, builder db.Builder) *cobra.Command {
+// ParseCmd returns the command that should be run when we want to start parsing a chain state
+func ParseCmd(cdcBuilder config.CodecBuilder, setupCfg config.SdkConfigSetup, buildDb db.Builder) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "parse [config-file] [firebase-private-key]",
 		Short: "Start parsing the Desmos blockchain using the provided config file and Firebase private key",
@@ -23,21 +23,22 @@ will be used to send push notifications when parsing the messages that might req
 `,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return parseCmdHandler(cdc, builder, args)
+			cdc, cp, database, modules, err := junocmd.SetupParsing(args, cdcBuilder, setupCfg, buildDb)
+			if err != nil {
+				return err
+			}
+
+			// Setup Firebase
+			err = notifications.SetupFirebase(args[1])
+			if err != nil {
+				return err
+			}
+
+			return junocmd.StartParsing(cdc, cp, database, modules)
 		},
 	}
 
 	cmd.Flags().Bool(flags.FlagEnableNotifications, true, "Enabled the sending of push notifications")
-	return parse.SetupFlags(cmd)
-}
 
-// parseCmdHandler represents the function that should be called when the parse command is executed
-func parseCmdHandler(codec *codec.Codec, dbBuilder db.Builder, args []string) error {
-	// Setup Firebase
-	err := notifications.SetupFirebase(args[1])
-	if err != nil {
-		return err
-	}
-
-	return parse.ParseCmdHandler(codec, dbBuilder, args[0], nil)
+	return junocmd.SetupFlags(cmd)
 }
