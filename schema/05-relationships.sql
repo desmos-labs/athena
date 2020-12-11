@@ -1,16 +1,16 @@
 CREATE TABLE relationship
 (
-    sender   TEXT NOT NULL REFERENCES profile (address),
-    receiver TEXT NOT NULL REFERENCES profile (address),
-    subspace TEXT NOT NULL,
-    UNIQUE (sender, receiver, subspace)
+    sender_address   TEXT NOT NULL REFERENCES profile (address),
+    receiver_address TEXT NOT NULL REFERENCES profile (address),
+    subspace         TEXT NOT NULL,
+    UNIQUE (sender_address, receiver_address, subspace)
 );
 
 CREATE TABLE user_block
 (
-    blocker      TEXT NOT NULL REFERENCES profile (address),
-    blocked_user TEXT NOT NULL REFERENCES profile (address),
-    reason       TEXT,
-    subspace     TEXT NOT NULL,
-    UNIQUE (blocker, blocked_user, subspace)
+    blocker_address      TEXT NOT NULL REFERENCES profile (address),
+    blocked_user_address TEXT NOT NULL REFERENCES profile (address),
+    reason               TEXT,
+    subspace             TEXT NOT NULL,
+    UNIQUE (blocker_address, blocked_user_address, subspace)
 );

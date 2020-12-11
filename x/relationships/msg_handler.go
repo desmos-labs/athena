@@ -14,8 +14,6 @@ func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 	}
 
 	switch desmosMsg := msg.(type) {
-
-	// Users
 	case *relationshipstypes.MsgCreateRelationship:
 		return handleMsgCreateRelationship(desmosMsg, db)
 

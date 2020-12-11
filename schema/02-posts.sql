@@ -31,6 +31,6 @@ CREATE TABLE attachment
 CREATE TABLE attachment_tag
 (
     attachment_id INTEGER NOT NULL REFERENCES attachment (id),
-    tag           TEXT    NOT NULL REFERENCES profile (address),
-    UNIQUE (attachment_id, tag)
+    tag_address           TEXT    NOT NULL REFERENCES profile (address),
+    UNIQUE (attachment_id, tag_address)
 )

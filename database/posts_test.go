@@ -3,6 +3,8 @@ package database_test
 import (
 	"time"
 
+	dbtypes "github.com/desmos-labs/djuno/database/types"
+
 	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 )
 
@@ -54,4 +56,38 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	suite.Require().NoError(err)
 	suite.Require().NotNil(stored)
 	suite.Require().True(post.Equal(stored))
+}
+
+func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
+	post := suite.testData.post
+	err := suite.database.SavePost(post)
+	suite.Require().NoError(err)
+
+	return post, post.PollData
+}
+
+func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
+	post, _ := suite.savePollData()
+
+	// Save the answer
+	user := "cosmos184dqecwkwex2hv6ae8fhzkw0cwrn39aw2ncy7n"
+	err := suite.database.SaveUserPollAnswer(post.PostID, poststypes.NewUserAnswer([]string{"0", "1"}, user))
+	suite.Require().NoError(err)
+
+	// Verify the insertion
+	var rows []dbtypes.UserPollAnswerRow
+	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM user_poll_answer")
+	suite.Require().NoError(err)
+
+	suite.Require().Len(rows, 2)
+	suite.Require().True(rows[0].Equal(dbtypes.UserPollAnswerRow{
+		PollID:          1,
+		Answer:          "0",
+		AnswererAddress: user,
+	}))
+	suite.Require().True(rows[1].Equal(dbtypes.UserPollAnswerRow{
+		PollID:          1,
+		Answer:          "1",
+		AnswererAddress: user,
+	}))
 }

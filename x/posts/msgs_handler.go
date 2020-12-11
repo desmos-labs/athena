@@ -14,10 +14,6 @@ import (
 // MsgHandler allows to handle different message types from the posts module
 func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.DesmosDb) error {
 	if len(tx.Logs) == 0 {
-		log.Info().
-			Str("module", "posts").
-			Str("tx_hash", tx.TxHash).Int("msg_index", index).
-			Msg("skipping message as it was not successful")
 		return nil
 	}
 

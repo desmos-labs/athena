@@ -23,8 +23,17 @@ func HandleMsg(tx *juno.Tx, index int, msg sdk.Msg, db *desmosdb.DesmosDb) error
 	case *profilestypes.MsgDeleteProfile:
 		return handleMsgDeleteProfile(desmosMsg, db)
 
-		// TODO: Handle DTag transfer requests
+	case *profilestypes.MsgRequestDTagTransfer:
+		return handleMsgRequestDTagTransfer(desmosMsg, db)
 
+	case *profilestypes.MsgAcceptDTagTransfer:
+		return handleMsgAcceptDTagTransfer(desmosMsg, db)
+
+	case *profilestypes.MsgCancelDTagTransfer:
+		return handleDTagTransferRequestDeletion(desmosMsg.Sender, desmosMsg.Receiver, db)
+
+	case *profilestypes.MsgRefuseDTagTransfer:
+		return handleDTagTransferRequestDeletion(desmosMsg.Sender, desmosMsg.Receiver, db)
 	}
 
 	return nil
@@ -61,4 +70,19 @@ func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProf
 // handleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
 func handleMsgDeleteProfile(msg *profilestypes.MsgDeleteProfile, database *desmosdb.DesmosDb) error {
 	return database.DeleteProfile(msg.Creator)
+}
+
+// handleMsgRequestDTagTransfer handles a MsgRequestDTagTransfer storing the request into the database
+func handleMsgRequestDTagTransfer(msg *profilestypes.MsgRequestDTagTransfer, database *desmosdb.DesmosDb) error {
+	return database.SaveDTagTransferRequest(msg.Sender, msg.Receiver)
+}
+
+// handleMsgAcceptDTagTransfer handles a MsgAcceptDTagTransfer effectively transferring the DTag
+func handleMsgAcceptDTagTransfer(msg *profilestypes.MsgAcceptDTagTransfer, database *desmosdb.DesmosDb) error {
+	return database.TransferDTag(msg.NewDtag, msg.Sender, msg.Receiver)
+}
+
+// handleDTagTransferRequestDeletion allows to delete an existing transfer request
+func handleDTagTransferRequestDeletion(sender, receiver string, database *desmosdb.DesmosDb) error {
+	return database.DeleteDTagTransferRequest(sender, receiver)
 }
