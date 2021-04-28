@@ -3,7 +3,7 @@ package notifications_test
 import (
 	"testing"
 
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	"github.com/desmos-labs/djuno/notifications"
 	"github.com/stretchr/testify/require"
 )

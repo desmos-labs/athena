@@ -1,7 +1,7 @@
 package database
 
 import (
-	reportstypes "github.com/desmos-labs/desmos/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/x/staging/reports/types"
 )
 
 // SaveReport allows to store the given report properly

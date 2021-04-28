@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
 	desmosapp "github.com/desmos-labs/desmos/app"
 	"github.com/desmos-labs/djuno/database"

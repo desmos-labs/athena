@@ -4,7 +4,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/notifications"
 	juno "github.com/desmos-labs/juno/types"
@@ -87,7 +87,7 @@ func createAndStorePostFromMsgCreatePost(
 	// Create the post
 	post := poststypes.NewPost(
 		postID,
-		msg.ParentID,
+		msg.ParentId,
 		msg.Message,
 		msg.AllowsComments,
 		msg.Subspace,
@@ -129,7 +129,7 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 		return err
 	}
 
-	return db.EditPost(msg.PostID, msg.Message, msg.Attachments, msg.PollData, editDate)
+	return db.EditPost(msg.PostId, msg.Message, msg.Attachments, msg.PollData, editDate)
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 // HandleMsgAnswerPoll allows to properly handle a MsgAnswerPoll message by
 // storing inside the database the new answer.
 func handleMsgAnswerPoll(msg *poststypes.MsgAnswerPoll, db *database.DesmosDb) error {
-	return db.SaveUserPollAnswer(msg.PostID, poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer))
+	return db.SaveUserPollAnswer(msg.PostId, poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer))
 }
 
 // -----------------------------------------------------------------------------------------------------

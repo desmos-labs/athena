@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"firebase.google.com/go/messaging"
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	"github.com/desmos-labs/djuno/database"
 )
 

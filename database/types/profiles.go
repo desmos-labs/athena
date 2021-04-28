@@ -1,6 +1,8 @@
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"time"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
@@ -18,13 +20,23 @@ type ProfileRow struct {
 }
 
 // ConvertProfileRow converts the given row into a profile
-func ConvertProfileRow(row ProfileRow) profilestypes.Profile {
-	return profilestypes.NewProfile(
+func ConvertProfileRow(row ProfileRow) (*profilestypes.Profile, error) {
+	address, err := sdk.AccAddressFromBech32(row.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	profile, err := profilestypes.NewProfile(
 		row.DTag,
 		row.Moniker,
 		row.Bio,
 		profilestypes.NewPictures(row.ProfilePic, row.CoverPic),
 		row.CreationTime,
-		row.Address,
+		authtypes.NewBaseAccountWithAddress(address),
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	return profile, nil
 }

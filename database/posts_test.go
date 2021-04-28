@@ -5,7 +5,7 @@ import (
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SavePost() {

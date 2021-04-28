@@ -1,8 +1,8 @@
 package notifications
 
 import (
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	"github.com/desmos-labs/djuno/notifications"
 	juno "github.com/desmos-labs/juno/types"
 )
@@ -19,7 +19,7 @@ func TxHandler(tx *juno.Tx) error {
 // inside the given transaction. If no Desmos message could be found, returns false.
 func getDesmosUser(tx *juno.Tx) (bool, string) {
 	// TODO: Add other message types
-	for _, msg := range tx.Msgs {
+	for _, msg := range tx.GetMsgs() {
 		switch desmosMsg := msg.(type) {
 		// Posts
 		case *poststypes.MsgCreatePost:

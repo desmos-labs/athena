@@ -11,7 +11,7 @@ CREATE TABLE post
     hidden          BOOLEAN                     NOT NULL DEFAULT false
 );
 
-CREATE TABLE optional_data
+CREATE TABLE post_optional_data_entry
 (
     post_id TEXT NOT NULL REFERENCES post (id),
     key     TEXT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE optional_data
     PRIMARY KEY (post_id, key)
 );
 
-CREATE TABLE attachment
+CREATE TABLE post_attachment
 (
     id        SERIAL PRIMARY KEY,
     post_id   TEXT NOT NULL REFERENCES post (id),
@@ -28,9 +28,9 @@ CREATE TABLE attachment
     UNIQUE (post_id, uri)
 );
 
-CREATE TABLE attachment_tag
+CREATE TABLE post_attachment_tag
 (
-    attachment_id INTEGER NOT NULL REFERENCES attachment (id),
+    attachment_id INTEGER NOT NULL REFERENCES post_attachment (id),
     tag_address           TEXT    NOT NULL REFERENCES profile (address),
     UNIQUE (attachment_id, tag_address)
 )

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 )
 
 // PostRow represents a single PostgreSQL row containing the data of a Post

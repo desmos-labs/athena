@@ -3,34 +3,27 @@ package main
 import (
 	desmosapp "github.com/desmos-labs/desmos/app"
 	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/x/bank"
-	"github.com/desmos-labs/djuno/x/notifications"
-	"github.com/desmos-labs/djuno/x/posts"
-	"github.com/desmos-labs/djuno/x/profiles"
-	"github.com/desmos-labs/djuno/x/relationships"
+	"github.com/desmos-labs/djuno/x"
 	junocmd "github.com/desmos-labs/juno/cmd"
-	"github.com/desmos-labs/juno/config"
-	"github.com/desmos-labs/juno/modules/registrar"
+	junotypes "github.com/desmos-labs/juno/types"
 )
 
 func main() {
-	registrar.RegisterModules(
-		bank.Module{},
-		notifications.Module{},
-		posts.Module{},
-		profiles.Module{},
-		relationships.Module{},
-	)
-
 	// Build the root command
 	rootCmd := junocmd.RootCmd("djuno")
 	rootCmd.AddCommand(
 		junocmd.VersionCmd(),
-		ParseCmd(desmosapp.MakeCodecs, config.DefaultSetup, desmosdb.Builder),
+		junocmd.InitCmd(),
+		ParseCmd(
+			x.NewModulesRegistrar(),
+			desmosapp.MakeTestEncodingConfig,
+			junotypes.DefaultConfigSetup,
+			desmosdb.Builder,
+		),
 	)
 
 	// Run the commands and panic on any error
-	command := junocmd.PrepareMainCmd(rootCmd)
+	command := junocmd.PrepareRootCmd(rootCmd)
 	err := command.Execute()
 	if err != nil {
 		panic(err)

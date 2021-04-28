@@ -10,7 +10,7 @@ import (
 )
 
 // HandleGenesis allows to properly handle the genesis state for the posts module
-func HandleGenesis(cdc *codec.LegacyAmino, appState map[string]json.RawMessage, db *desmosdb.DesmosDb) error {
+func HandleGenesis(appState map[string]json.RawMessage, cdc *codec.LegacyAmino, db *desmosdb.DesmosDb) error {
 	var genState profilestypes.GenesisState
 	cdc.MustUnmarshalJSON(appState[profilestypes.ModuleName], &genState)
 

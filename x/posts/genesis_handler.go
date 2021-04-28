@@ -5,12 +5,12 @@ import (
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	poststypes "github.com/desmos-labs/desmos/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
 )
 
-// GenesisHandler allows to properly handle the genesis state for the posts module
-func HandleGenesis(codec *codec.LegacyAmino, appState map[string]json.RawMessage, db *desmosdb.DesmosDb) error {
+// HandleGenesis allows to properly handle the genesis state for the posts module
+func HandleGenesis(appState map[string]json.RawMessage, codec *codec.LegacyAmino, db *desmosdb.DesmosDb) error {
 	// Get the posts state
 	var genState poststypes.GenesisState
 	codec.MustUnmarshalJSON(appState[poststypes.ModuleName], &genState)

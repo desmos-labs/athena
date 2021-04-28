@@ -2,57 +2,44 @@ package profiles
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/desmos-labs/djuno/database"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	desmosdb "github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/juno/client"
-	"github.com/desmos-labs/juno/config"
-	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/modules"
 	juno "github.com/desmos-labs/juno/types"
-	"github.com/go-co-op/gocron"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-var _ modules.Module = Module{}
+var _ modules.Module = &Module{}
+var _ modules.GenesisModule = &Module{}
+var _ modules.MessageModule = &Module{}
 
-type Module struct{}
+// Module represents the x/profiles module handler
+type Module struct {
+	encodingConfig *params.EncodingConfig
+	db             *database.DesmosDb
+}
 
-// Name implements Module
-func (m Module) Name() string {
+// NewModule allows to build a new Module instance
+func NewModule(encodingConfig *params.EncodingConfig, db *database.DesmosDb) *Module {
+	return &Module{
+		encodingConfig: encodingConfig,
+		db:             db,
+	}
+}
+
+// Name implements modules.Module
+func (m *Module) Name() string {
 	return "profiles"
 }
 
-// RunAdditionalOperations implements Module
-func (m Module) RunAdditionalOperations(_ *config.Config, _ *codec.LegacyAmino, _ *client.Proxy, _ db.Database) error {
-	return nil
+// HandleGenesis implements modules.GenesisModule
+func (m *Module) HandleGenesis(_ *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
+	return HandleGenesis(appState, m.encodingConfig.Amino, m.db)
 }
 
-// RegisterPeriodicOperations implements Module
-func (m Module) RegisterPeriodicOperations(_ *gocron.Scheduler, _ *codec.LegacyAmino, _ *client.Proxy, _ db.Database) error {
-	return nil
-}
-
-// HandleGenesis implements Module
-func (m Module) HandleGenesis(_ *tmtypes.GenesisDoc, appState map[string]json.RawMessage, cdc *codec.LegacyAmino, _ *client.Proxy, db db.Database) error {
-	desmosDb := desmosdb.Cast(db)
-	return HandleGenesis(cdc, appState, desmosDb)
-}
-
-// HandleBlock implements Module
-func (m Module) HandleBlock(_ *coretypes.ResultBlock, _ []*juno.Tx, _ *coretypes.ResultValidators, _ *codec.LegacyAmino, _ *client.Proxy, _ db.Database) error {
-	return nil
-}
-
-// HandleTx implements Module
-func (m Module) HandleTx(_ *juno.Tx, _ *codec.LegacyAmino, _ *client.Proxy, _ db.Database) error {
-	return nil
-}
-
-// HandleMsg implements Module
-func (m Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx, _ *codec.LegacyAmino, _ *client.Proxy, db db.Database) error {
-	desmosDb := desmosdb.Cast(db)
-	return HandleMsg(tx, index, msg, desmosDb)
+// HandleMsg implements modules.MessageModule
+func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
+	return HandleMsg(tx, index, msg, m.db)
 }

@@ -2,7 +2,7 @@ package reports
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	reportstypes "github.com/desmos-labs/desmos/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/x/staging/reports/types"
 	desmosdb "github.com/desmos-labs/djuno/database"
 	juno "github.com/desmos-labs/juno/types"
 )
