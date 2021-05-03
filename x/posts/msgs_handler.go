@@ -5,10 +5,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-	"github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/notifications"
 	juno "github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
+
+	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/notifications"
 )
 
 // MsgHandler allows to handle different message types from the posts module

@@ -2,7 +2,9 @@ package profiles
 
 import (
 	"encoding/json"
+
 	"github.com/cosmos/cosmos-sdk/simapp/params"
+
 	"github.com/desmos-labs/djuno/database"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -36,7 +38,7 @@ func (m *Module) Name() string {
 
 // HandleGenesis implements modules.GenesisModule
 func (m *Module) HandleGenesis(_ *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
-	return HandleGenesis(appState, m.encodingConfig.Amino, m.db)
+	return HandleGenesis(appState, m.encodingConfig.Marshaler, m.db)
 }
 
 // HandleMsg implements modules.MessageModule

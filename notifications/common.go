@@ -6,8 +6,6 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
-	"github.com/desmos-labs/djuno/cmd/djuno/flags"
-	"github.com/spf13/viper"
 	"google.golang.org/api/option"
 )
 
@@ -49,10 +47,11 @@ func SetupFirebase(credentialsFile string) error {
 // containing the given notification and data.
 // If some error rises during the process, it is returned.
 func SendNotification(topic string, notification *messaging.Notification, data map[string]string) error {
+	// TODO: Re-implement this
 	// If disabled, just return
-	if !viper.GetBool(flags.FlagEnableNotifications) {
-		return nil
-	}
+	//if !viper.GetBool(flags.FlagEnableNotifications) {
+	//	return nil
+	//}
 
 	// Set the default Flutter click action
 	data[ClickActionKey] = ClickActionValue

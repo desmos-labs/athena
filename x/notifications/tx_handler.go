@@ -3,8 +3,9 @@ package notifications
 import (
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-	"github.com/desmos-labs/djuno/notifications"
 	juno "github.com/desmos-labs/juno/types"
+
+	"github.com/desmos-labs/djuno/notifications"
 )
 
 // TxHandler allows to handle a transaction in order to send the

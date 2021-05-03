@@ -3,8 +3,9 @@ package bank
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	desmosdb "github.com/desmos-labs/djuno/database"
 	juno "github.com/desmos-labs/juno/types"
+
+	desmosdb "github.com/desmos-labs/djuno/database"
 )
 
 // HandleMsg handles properly all the Cosmos x/bank modules messages

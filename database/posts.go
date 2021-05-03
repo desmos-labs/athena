@@ -7,8 +7,9 @@ import (
 
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
 	"github.com/rs/zerolog/log"
+
+	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 
 // SavePost allows to store the given post inside the database properly.

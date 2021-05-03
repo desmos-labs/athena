@@ -2,7 +2,9 @@ package posts
 
 import (
 	"encoding/json"
+
 	"github.com/cosmos/cosmos-sdk/simapp/params"
+
 	"github.com/desmos-labs/djuno/database"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -2,6 +2,7 @@ package database
 
 import (
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 

@@ -1,31 +1,30 @@
 package main
 
 import (
+	"os"
+
+	"github.com/desmos-labs/djuno/config"
+
 	desmosapp "github.com/desmos-labs/desmos/app"
+	junocmd "github.com/desmos-labs/juno/cmd"
+	"github.com/desmos-labs/juno/cmd/parse"
+
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x"
-	junocmd "github.com/desmos-labs/juno/cmd"
-	junotypes "github.com/desmos-labs/juno/types"
 )
 
 func main() {
-	// Build the root command
-	rootCmd := junocmd.RootCmd("djuno")
-	rootCmd.AddCommand(
-		junocmd.VersionCmd(),
-		junocmd.InitCmd(),
-		ParseCmd(
-			x.NewModulesRegistrar(),
-			desmosapp.MakeTestEncodingConfig,
-			junotypes.DefaultConfigSetup,
-			desmosdb.Builder,
-		),
-	)
+	// Setup the config
+	cfg := parse.NewConfig("djuno").
+		WithRegistrar(x.NewModulesRegistrar()).
+		WithEncodingConfigBuilder(desmosapp.MakeTestEncodingConfig).
+		WithDBBuilder(desmosdb.Builder).
+		WithConfigParser(config.ParseCfg)
 
 	// Run the commands and panic on any error
-	command := junocmd.PrepareRootCmd(rootCmd)
-	err := command.Execute()
+	executor := junocmd.BuildDefaultExecutor(cfg)
+	err := executor.Execute()
 	if err != nil {
-		panic(err)
+		os.Exit(1)
 	}
 }

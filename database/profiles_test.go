@@ -1,10 +1,12 @@
 package database_test
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 	dbtypes "github.com/desmos-labs/djuno/database/types"
-	"time"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 )

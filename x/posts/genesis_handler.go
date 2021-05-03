@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+
 	desmosdb "github.com/desmos-labs/djuno/database"
 )
 

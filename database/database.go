@@ -2,11 +2,11 @@ package database
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 
-	"github.com/desmos-labs/juno/config"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/db/postgresql"
+	juno "github.com/desmos-labs/juno/types"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -27,8 +27,8 @@ func Cast(database db.Database) *DesmosDb {
 }
 
 // Builder allows to create a new DesmosDb instance implementing the database.Builder type
-func Builder(cfg *config.Config, encodingConfig *params.EncodingConfig) (db.Database, error) {
-	database, err := postgresql.Builder(cfg.Database, encodingConfig)
+func Builder(cfg juno.Config, encodingConfig *params.EncodingConfig) (db.Database, error) {
+	database, err := postgresql.Builder(cfg.GetDatabaseConfig(), encodingConfig)
 	if err != nil {
 		return nil, err
 	}

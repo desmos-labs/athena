@@ -2,9 +2,10 @@ package reports
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/juno/modules"
 	juno "github.com/desmos-labs/juno/types"
+
+	"github.com/desmos-labs/djuno/database"
 )
 
 var _ modules.Module = &Module{}

@@ -7,6 +7,7 @@ import (
 
 	"firebase.google.com/go/messaging"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+
 	"github.com/desmos-labs/djuno/database"
 )
 
@@ -46,7 +47,7 @@ var (
 // that a new comment has been added.
 func SendPostNotifications(post poststypes.Post, db *database.DesmosDb) error {
 	// Get the post parent
-	parent, err := db.GetPostByID(post.ParentID)
+	parent, err := db.GetPostByID(post.ParentId)
 	if err != nil {
 		return err
 	}
@@ -88,7 +89,7 @@ func sendCommentNotification(post poststypes.Post, parent *poststypes.Post) erro
 		NotificationTypeKey:   TypeComment,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:      post.PostID,
+		PostIDKey:      post.PostId,
 		PostMessageKey: post.Message,
 		PostCreatorKey: post.Creator,
 	}
@@ -157,7 +158,7 @@ func sendMentionNotification(post poststypes.Post, user string) error {
 		NotificationTypeKey:   TypeMention,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:          post.PostID,
+		PostIDKey:          post.PostId,
 		PostMentionUserKey: post.Creator,
 		PostMentionTextKey: post.Message,
 	}
@@ -197,7 +198,7 @@ func sendGenericReactionNotification(post *poststypes.Post, reaction poststypes.
 		NotificationTypeKey:   TypeReaction,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:                post.PostID,
+		PostIDKey:                post.PostId,
 		PostReactionValueKey:     reaction.Value,
 		PostReactionShortCodeKey: reaction.ShortCode,
 		PostReactionOwnerKey:     reaction.Owner,
@@ -218,7 +219,7 @@ func sendLikeNotification(post *poststypes.Post, reaction poststypes.PostReactio
 		NotificationTypeKey:   TypeLike,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:       post.PostID,
+		PostIDKey:       post.PostId,
 		PostLikeUserKey: reaction.Owner,
 	}
 

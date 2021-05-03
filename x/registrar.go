@@ -3,16 +3,17 @@ package x
 import (
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/desmos-labs/juno/client"
+	"github.com/desmos-labs/juno/db"
+	"github.com/desmos-labs/juno/modules"
+	juno "github.com/desmos-labs/juno/types"
+
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x/bank"
 	"github.com/desmos-labs/djuno/x/notifications"
 	"github.com/desmos-labs/djuno/x/posts"
 	"github.com/desmos-labs/djuno/x/profiles"
 	"github.com/desmos-labs/djuno/x/reports"
-	"github.com/desmos-labs/juno/client"
-	"github.com/desmos-labs/juno/config"
-	"github.com/desmos-labs/juno/db"
-	"github.com/desmos-labs/juno/modules"
 )
 
 // ModulesRegistrar represents the modules.Registrar that allows to register all custom BDJuno modules
@@ -26,7 +27,7 @@ func NewModulesRegistrar() *ModulesRegistrar {
 
 // BuildModules implements modules.Registrar
 func (r *ModulesRegistrar) BuildModules(
-	cfg *config.Config, encodingConfig *params.EncodingConfig, _ *sdk.Config, db db.Database, cp *client.Proxy,
+	cfg juno.Config, encodingConfig *params.EncodingConfig, _ *sdk.Config, db db.Database, cp *client.Proxy,
 ) modules.Modules {
 	desmosDb := database.Cast(db)
 	return []modules.Module{

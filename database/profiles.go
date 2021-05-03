@@ -2,42 +2,25 @@ package database
 
 import (
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+
+	"github.com/desmos-labs/djuno/x/profiles/types"
+
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
-func (db DesmosDb) SaveUserIfNotExisting(address string) error {
-	stmt := `INSERT INTO profile (address) VALUES ($1) ON CONFLICT DO NOTHING`
-	_, err := db.Sqlx.Exec(stmt, address)
-	return err
-}
-
-// SaveProfile saves the given profile into the database, replacing any existing info.
-// Returns the inserted row or an error if something goes wrong.
-func (db DesmosDb) SaveProfile(profile *profilestypes.Profile) error {
+func (db DesmosDb) SaveUserIfNotExisting(address string, height int64) error {
 	stmt := `
-INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic, creation_time) 
-VALUES ($1, $2, $3, $4, $5, $6, $7) 
+INSERT INTO profile (address, height) 
+VALUES ($1, $2)
 ON CONFLICT (address) DO UPDATE 
-	SET address = excluded.address, 
-		moniker = excluded.moniker, 
-		dtag = excluded.dtag,
-		bio = excluded.bio,
-		profile_pic = excluded.profile_pic,
-		cover_pic = excluded.cover_pic,
-		creation_time = excluded.creation_time`
-
-	_, err := db.Sql.Exec(
-		stmt,
-		profile.GetAddress().String(), profile.Moniker, profile.DTag, profile.Bio,
-		profile.Pictures.Profile, profile.Pictures.Cover, profile.CreationDate,
-	)
+    SET height = excluded.height
+WHERE profile.height <= excluded.height`
+	_, err := db.Sqlx.Exec(stmt, address, height)
 	return err
 }
-
-// ---------------------------------------------------------------------------------------------------
 
 // GetUserByAddress returns the user row having the given address.
 // If the user does not exist yet, returns nil instead.
@@ -58,111 +41,172 @@ func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, err
 
 // ---------------------------------------------------------------------------------------------------
 
+// SaveProfile saves the given profile into the database, replacing any existing info.
+// Returns the inserted row or an error if something goes wrong.
+func (db DesmosDb) SaveProfile(profile types.Profile) error {
+	stmt := `
+INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic, creation_time, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+ON CONFLICT (address) DO UPDATE 
+	SET address = excluded.address, 
+		moniker = excluded.moniker, 
+		dtag = excluded.dtag,
+		bio = excluded.bio,
+		profile_pic = excluded.profile_pic,
+		cover_pic = excluded.cover_pic,
+		creation_time = excluded.creation_time,
+		height = excluded.height
+WHERE profile.height <= excluded.height`
+
+	_, err := db.Sql.Exec(
+		stmt,
+		profile.GetAddress().String(), profile.Moniker, profile.DTag, profile.Bio,
+		profile.Pictures.Profile, profile.Pictures.Cover, profile.CreationDate,
+		profile.Height,
+	)
+	return err
+}
+
 // DeleteProfile allows to delete the profile of the user having the given address
-func (db DesmosDb) DeleteProfile(address string) error {
-	stmt := `UPDATE profile SET moniker = '', dtag = '', bio = '', profile_pic = '', cover_pic = '' WHERE address = $1`
-	_, err := db.Sql.Exec(stmt, address)
+func (db DesmosDb) DeleteProfile(address string, height int64) error {
+	stmt := `
+UPDATE profile 
+SET moniker = '', 
+    dtag = '', 
+    bio = '', 
+    profile_pic = '', 
+    cover_pic = '' 
+WHERE address = $1 AND height <= $2`
+	_, err := db.Sql.Exec(stmt, address, height)
 	return err
 }
 
 // ---------------------------------------------------------------------------------------------------
 
 // SaveDTagTransferRequest saves a new transfer request from sender to receiver
-func (db DesmosDb) SaveDTagTransferRequest(sender, receiver string) error {
-	err := db.SaveUserIfNotExisting(sender)
+func (db DesmosDb) SaveDTagTransferRequest(request types.DTagTransferRequest) error {
+	err := db.SaveUserIfNotExisting(request.Sender, request.Height)
 	if err != nil {
 		return err
 	}
 
-	err = db.SaveUserIfNotExisting(receiver)
+	err = db.SaveUserIfNotExisting(request.Receiver, request.Height)
 	if err != nil {
 		return err
 	}
 
 	stmt := `
-INSERT INTO dtag_transfer_requests (sender_address, receiver_address) VALUES ($2, $3) ON CONFLICT DO NOTHING`
+INSERT INTO dtag_transfer_requests (sender_address, receiver_address, height) 
+VALUES ($1, $2, $3) 
+ON CONFLICT ON CONSTRAINT unique_request DO UPDATE 
+    SET sender_address = excluded.sender_address,
+    	receiver_address = excluded.receiver_address
+WHERE dtag_transfer_requests.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt, sender, receiver)
+	_, err = db.Sql.Exec(stmt, request.Sender, request.Receiver, request.Height)
 	return err
 }
 
-func (db DesmosDb) TransferDTag(newDTag, sender, receiver string) error {
+// TransferDTag transfers the DTag from the sender to the receiver, and sets the sender DTag to the new one provided
+func (db DesmosDb) TransferDTag(acceptance types.DTagTransferRequestAcceptance) error {
 	// Get the old DTag
 	var oldDTag string
-	err := db.Sql.QueryRow(`SELECT dtag FROM profile WHERE address = $1`, receiver).Scan(&oldDTag)
+	stmt := `SELECT dtag FROM profile WHERE address = $1 AND height <= $2`
+	err := db.Sql.QueryRow(stmt, acceptance.Receiver, acceptance.Height).Scan(&oldDTag)
 	if err != nil {
 		return err
 	}
 
 	// Save the new DTags
-	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, newDTag, receiver)
+	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, acceptance.NewDTag, acceptance.Receiver)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, oldDTag, sender)
+	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, oldDTag, acceptance.Sender)
 	if err != nil {
 		return err
 	}
 
 	// Delete the transfer request
-	return db.DeleteDTagTransferRequest(sender, receiver)
+	return db.DeleteDTagTransferRequest(acceptance.DTagTransferRequest)
 }
 
-func (db DesmosDb) DeleteDTagTransferRequest(sender, receiver string) error {
-	stmt := `DELETE FROM dtag_transfer_requests WHERE sender_address = $1 AND receiver_address = $2`
-	_, err := db.Sql.Exec(stmt, sender, receiver)
+// DeleteDTagTransferRequest deletes the DTag requests from sender to receiver
+func (db DesmosDb) DeleteDTagTransferRequest(request types.DTagTransferRequest) error {
+	stmt := `
+DELETE FROM dtag_transfer_requests 
+WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
+	_, err := db.Sql.Exec(stmt, request.Sender, request.Receiver, request.Height)
 	return err
 }
 
 // ---------------------------------------------------------------------------------------------------
 
 // SaveRelationship allows to save a relationship between the sender and receiver on the given subspace
-func (db DesmosDb) SaveRelationship(sender, receiver string, subspace string) error {
-	err := db.SaveUserIfNotExisting(sender)
+func (db DesmosDb) SaveRelationship(relationship types.Relationship) error {
+	err := db.SaveUserIfNotExisting(relationship.Creator, relationship.Height)
 	if err != nil {
 		return err
 	}
 
-	err = db.SaveUserIfNotExisting(receiver)
-	if err != nil {
-		return err
-	}
-
-	stmt := `INSERT INTO relationship (sender_address, receiver_address, subspace) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	_, err = db.Sql.Exec(stmt, sender, receiver, subspace)
-	return err
-}
-
-// DeleteRelationship allows to delete the relationship between the given sender and receiver on the specified subspace
-func (db DesmosDb) DeleteRelationship(sender, counterparty string, subspace string) error {
-	stmt := `DELETE FROM relationship WHERE sender_address = $1 AND receiver_address = $2 AND subspace = $3`
-	_, err := db.Sql.Exec(stmt, sender, counterparty, subspace)
-	return err
-}
-
-// SaveBlockage allows to save a user blockage
-func (db DesmosDb) SaveBlockage(blocker, blocked string, reason, subspace string) error {
-	err := db.SaveUserIfNotExisting(blocker)
-	if err != nil {
-		return err
-	}
-
-	err = db.SaveUserIfNotExisting(blocked)
+	err = db.SaveUserIfNotExisting(relationship.Recipient, relationship.Height)
 	if err != nil {
 		return err
 	}
 
 	stmt := `
-INSERT INTO user_block(blocker_address, blocked_user_address, reason, subspace) 
-VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	_, err = db.Sql.Exec(stmt, blocker, blocked, reason, subspace)
+INSERT INTO relationship (sender_address, receiver_address, subspace, height) 
+VALUES ($1, $2, $3, $4) 
+ON CONFLICT ON CONSTRAINT unique_relationship DO UPDATE 
+    SET sender_address = excluded.sender_address,
+		receiver_address = excluded.receiver_address,
+		subspace = excluded.subspace
+WHERE relationship.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, relationship.Creator, relationship.Recipient, relationship.Subspace, relationship.Height)
+	return err
+}
+
+// DeleteRelationship allows to delete the relationship between the given sender and receiver on the specified subspace
+func (db DesmosDb) DeleteRelationship(relationship types.Relationship) error {
+	stmt := `
+DELETE FROM relationship 
+WHERE sender_address = $1 AND receiver_address = $2 AND subspace = $3 AND height <= $4`
+	_, err := db.Sql.Exec(stmt,
+		relationship.Creator, relationship.Recipient, relationship.Subspace, relationship.Height)
+	return err
+}
+
+// SaveBlockage allows to save a user blockage
+func (db DesmosDb) SaveBlockage(block types.Blockage) error {
+	err := db.SaveUserIfNotExisting(block.Blocker, block.Height)
+	if err != nil {
+		return err
+	}
+
+	err = db.SaveUserIfNotExisting(block.Blocker, block.Height)
+	if err != nil {
+		return err
+	}
+
+	stmt := `
+INSERT INTO user_block(blocker_address, blocked_user_address, reason, subspace, height) 
+VALUES ($1, $2, $3, $4, $5) 
+ON CONFLICT ON CONSTRAINT unique_blockage DO UPDATE 
+    SET blocker_address = excluded.blocker_address,
+    	blocked_user_address = excluded.blocked_user_address,
+    	reason = excluded.reason, 
+    	subspace = excluded.subspace
+WHERE user_block.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.Reason, block.Subspace, block.Height)
 	return err
 }
 
 // RemoveBlockage allow to remove a previously saved user blockage
-func (db DesmosDb) RemoveBlockage(blocker, blocked string, subspace string) error {
-	stmt := `DELETE FROM user_block WHERE blocker_address = $1 AND blocked_user_address = $2 AND subspace = $3`
-	_, err := db.Sql.Exec(stmt, blocker, blocked, subspace)
+func (db DesmosDb) RemoveBlockage(block types.Blockage) error {
+	stmt := `
+DELETE FROM user_block 
+WHERE blocker_address = $1 AND blocked_user_address = $2 AND subspace = $3 AND height <= $4`
+	_, err := db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.Subspace, block.Height)
 	return err
 }
