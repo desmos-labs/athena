@@ -18,6 +18,7 @@ type PostRow struct {
 	Creator        string         `db:"creator_address"`
 	AllowsComments bool           `db:"allows_comments"`
 	Hidden         bool           `db:"hidden"`
+	Height         int64          `db:"height"`
 }
 
 // ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
@@ -151,11 +152,22 @@ type UserPollAnswerRow struct {
 	PollID          int    `db:"poll_id"`
 	Answer          string `db:"answer"`
 	AnswererAddress string `db:"answerer_address"`
+	Height          int64  `db:"height"`
+}
+
+func NewUserPollAnswerRow(pollID int, answer string, answerer string, height int64) UserPollAnswerRow {
+	return UserPollAnswerRow{
+		PollID:          pollID,
+		Answer:          answer,
+		AnswererAddress: answerer,
+		Height:          height,
+	}
 }
 
 // Equal tells whether r and s contain the same data
 func (r UserPollAnswerRow) Equal(s UserPollAnswerRow) bool {
 	return r.PollID == s.PollID &&
 		r.Answer == s.Answer &&
-		r.AnswererAddress == s.AnswererAddress
+		r.AnswererAddress == s.AnswererAddress &&
+		r.Height == s.Height
 }

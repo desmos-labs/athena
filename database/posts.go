@@ -3,7 +3,8 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"time"
+
+	"github.com/desmos-labs/djuno/x/posts/types"
 
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
@@ -13,10 +14,17 @@ import (
 )
 
 // SavePost allows to store the given post inside the database properly.
-func (db DesmosDb) SavePost(post poststypes.Post) error {
+func (db DesmosDb) SavePost(post types.Post) error {
 	log.Info().Str("module", "posts").Str("post_id", post.PostId).Msg("saving post")
 
-	err := db.savePostContent(post)
+	// Delete any previous posts
+	stmt := `DELETE FROM post WHERE id = $1 AND height <= $2`
+	_, err := db.Sql.Exec(stmt, post.PostId, post.Height)
+	if err != nil {
+		return err
+	}
+
+	err = db.savePostContent(post)
 	if err != nil {
 		return err
 	}
@@ -26,7 +34,7 @@ func (db DesmosDb) SavePost(post poststypes.Post) error {
 		return err
 	}
 
-	err = db.saveAttachments(post.PostId, post.Attachments)
+	err = db.saveAttachments(post.Height, post.PostId, post.Attachments)
 	if err != nil {
 		return err
 	}
@@ -40,17 +48,17 @@ func (db DesmosDb) SavePost(post poststypes.Post) error {
 }
 
 // savePostContent allows to store the content of the given post
-func (db DesmosDb) savePostContent(post poststypes.Post) error {
+func (db DesmosDb) savePostContent(post types.Post) error {
 	// Save the user
-	err := db.SaveUserIfNotExisting(post.Creator)
+	err := db.SaveUserIfNotExisting(post.Creator, post.Height)
 	if err != nil {
 		return err
 	}
 
 	// Save the post
 	stmt := `
-	INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, hidden)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, hidden, height)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	// Convert the parent id string
 	var parentID sql.NullString
@@ -61,7 +69,7 @@ func (db DesmosDb) savePostContent(post poststypes.Post) error {
 	_, err = db.Sql.Exec(
 		stmt,
 		post.PostId, parentID, post.Message, post.Created, post.LastEdited, post.AllowsComments,
-		post.Subspace, post.Creator, false,
+		post.Subspace, post.Creator, false, post.Height,
 	)
 	return err
 }
@@ -85,7 +93,7 @@ func (db DesmosDb) saveOptionalData(postID string, data poststypes.OptionalData)
 
 // saveAttachments allows to save the specified medias that are associated
 // to the post having the given postID
-func (db DesmosDb) saveAttachments(postID string, attachments []poststypes.Attachment) error {
+func (db DesmosDb) saveAttachments(height int64, postID string, attachments []poststypes.Attachment) error {
 	for _, media := range attachments {
 		// Insert the attachment
 		var attachmentID int
@@ -97,7 +105,7 @@ func (db DesmosDb) saveAttachments(postID string, attachments []poststypes.Attac
 
 		// Insert all the tags
 		for _, tag := range media.Tags {
-			err = db.SaveUserIfNotExisting(tag)
+			err = db.SaveUserIfNotExisting(tag, height)
 			if err != nil {
 				return err
 			}
@@ -145,66 +153,6 @@ func (db DesmosDb) savePollData(postID string, poll *poststypes.PollData) error 
 	}
 
 	return nil
-}
-
-// ---------------------------------------------------------------------------------------------------
-
-// EditPost allows to properly edit the post having the given postID by setting the new
-// given message and editDate
-func (db DesmosDb) EditPost(
-	postID string, message string, attachments []poststypes.Attachment, poll *poststypes.PollData, editDate time.Time,
-) error {
-	stmt := `UPDATE post SET message = $1, last_edited = $2 WHERE id = $3`
-	_, err := db.Sql.Exec(stmt, message, editDate, postID)
-	if err != nil {
-		return err
-	}
-
-	// Delete and store again the attachments
-	err = db.deleteAttachments(postID)
-	if err != nil {
-		return err
-	}
-
-	err = db.saveAttachments(postID, attachments)
-	if err != nil {
-		return err
-	}
-
-	// Delete and store again the poll data
-	err = db.deletePollData(postID)
-	if err != nil {
-		return err
-	}
-
-	err = db.savePollData(postID, poll)
-	return err
-}
-
-// deleteAttachments removes all the attachments of the post having the given postID
-func (db DesmosDb) deleteAttachments(postID string) error {
-	stmt := `DELETE FROM post_attachment WHERE post_id = $1`
-	_, err := db.Sql.Exec(stmt, postID)
-	return err
-}
-
-// deletePollData allows to delete all the poll data related to the post having the given id.
-func (db DesmosDb) deletePollData(postID string) error {
-	var pollID *uint64
-	err := db.Sql.QueryRow(`SELECT id FROM poll WHERE post_id = $1`, postID).Scan(&pollID)
-	if err != nil {
-		return err
-	}
-
-	stmt := `DELETE FROM poll WHERE id = $1`
-	_, err = db.Sql.Exec(stmt, pollID)
-	if err != nil {
-		return err
-	}
-
-	stmt = `DELETE FROM poll_answer WHERE poll_id = $1`
-	_, err = db.Sql.Exec(stmt, pollID)
-	return err
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -315,22 +263,50 @@ func (db DesmosDb) getPollData(postID string) (*poststypes.PollData, error) {
 
 // SaveUserPollAnswer allows to save the given answers from the specified user for the poll
 // post having the specified postID.
-func (db DesmosDb) SaveUserPollAnswer(postID string, answer poststypes.UserAnswer) error {
-	err := db.SaveUserIfNotExisting(answer.User)
+func (db DesmosDb) SaveUserPollAnswer(answer types.UserPollAnswer) error {
+	err := db.SaveUserIfNotExisting(answer.User, answer.Height)
 	if err != nil {
 		return err
 	}
 
 	statement := `
-INSERT INTO user_poll_answer (poll_id, answer, answerer_address) 
-VALUES ((SELECT id FROM poll WHERE post_id = $1), $2, $3)`
+INSERT INTO user_poll_answer (poll_id, answer, answerer_address, height) 
+VALUES ((SELECT id FROM poll WHERE post_id = $1), $2, $3, $4)
+ON CONFLICT ON CONSTRAINT unique_user_answer DO UPDATE 
+    SET answer = excluded.answer, 
+    	answerer_address = excluded.answerer_address,
+    	height = excluded.height
+WHERE user_poll_answer.height <= excluded.height`
 
 	for _, answerText := range answer.Answers {
-		_, err = db.Sql.Exec(statement, postID, answerText, answer.User)
+		_, err = db.Sql.Exec(statement, answer.PostID, answerText, answer.User, answer.Height)
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+// SaveReport allows to store the given report properly
+func (db DesmosDb) SaveReport(report types.Report) error {
+	err := db.SaveUserIfNotExisting(report.User, report.Height)
+	if err != nil {
+		return err
+	}
+
+	stmt := `
+INSERT INTO report(post_id, type, message, reporter_address, height) 
+VALUES ($1, $2, $3, $4, $5) 
+ON CONFLICT ON CONSTRAINT unique_report DO UPDATE 
+    SET post_id = excluded.post_id, 
+        type = excluded.type,
+        message = excluded.message,
+        reporter_address = excluded.reporter_address, 
+        height = excluded.height
+WHERE report.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, report.PostId, report.Type, report.Message, report.User, report.Height)
+	return err
 }

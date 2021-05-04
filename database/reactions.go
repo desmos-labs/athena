@@ -3,6 +3,8 @@ package database
 import (
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
+	"github.com/desmos-labs/djuno/x/posts/types"
+
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 
@@ -17,26 +19,37 @@ func convertReactionRow(row dbtypes.RegisteredReactionRow) poststypes.Registered
 }
 
 // SavePostReaction allows to save the given reaction into the database.
-func (db DesmosDb) SavePostReaction(postID string, reaction poststypes.PostReaction) error {
-	err := db.SaveUserIfNotExisting(reaction.Owner)
+func (db DesmosDb) SavePostReaction(reaction types.PostReaction) error {
+	err := db.SaveUserIfNotExisting(reaction.Owner, reaction.Height)
 	if err != nil {
 		return err
 	}
 
-	statement := `INSERT INTO reaction (post_id, owner_address, short_code, value) VALUES ($1, $2, $3, $4)`
-	_, err = db.Sql.Exec(statement, postID, reaction.Owner, reaction.ShortCode, reaction.Value)
+	stmt := `
+INSERT INTO post_reaction (post_id, owner_address, short_code, value, height) 
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT ON CONSTRAINT react_unique DO UPDATE 
+    SET post_id = excluded.post_id, 
+        owner_address = excluded.owner_address,
+        short_code = excluded.short_code, 
+		value = excluded.value,
+		height = excluded.height
+WHERE post_reaction.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, reaction.PostID, reaction.Owner, reaction.ShortCode, reaction.Value, reaction.Height)
 	return err
 }
 
-// RemoveReaction allows to remove an already existing reaction from the database.
-func (db DesmosDb) RemoveReaction(postID string, reaction poststypes.PostReaction) error {
-	err := db.SaveUserIfNotExisting(reaction.Owner)
+// RemovePostReaction allows to remove an already existing reaction from the database.
+func (db DesmosDb) RemovePostReaction(reaction types.PostReaction) error {
+	err := db.SaveUserIfNotExisting(reaction.Owner, reaction.Height)
 	if err != nil {
 		return err
 	}
 
-	statement := `DELETE FROM reaction WHERE post_id = $1 AND owner_address = $2 AND short_code = $3`
-	_, err = db.Sql.Exec(statement, postID, reaction.Owner, reaction.ShortCode)
+	statement := `
+DELETE FROM post_reaction 
+WHERE post_id = $1 AND owner_address = $2 AND short_code = $3 AND height <= $4`
+	_, err = db.Sql.Exec(statement, reaction.PostID, reaction.Owner, reaction.ShortCode, reaction.Height)
 	return err
 }
 
@@ -62,8 +75,8 @@ func (db DesmosDb) GetRegisteredReactionByCodeOrValue(
 	return &reaction, nil
 }
 
-// RegisterReaction allows to register into the database the given reaction.
-func (db DesmosDb) RegisterReactionIfNotPresent(reaction poststypes.RegisteredReaction) error {
+// RegisterReactionIfNotPresent allows to register into the database the given reaction.
+func (db DesmosDb) RegisterReactionIfNotPresent(reaction types.RegisteredReaction) error {
 	react, err := db.GetRegisteredReactionByCodeOrValue(reaction.ShortCode, reaction.Subspace)
 	if err != nil {
 		return err
@@ -75,13 +88,22 @@ func (db DesmosDb) RegisterReactionIfNotPresent(reaction poststypes.RegisteredRe
 	}
 
 	// Save the owner
-	err = db.SaveUserIfNotExisting(reaction.Creator)
+	err = db.SaveUserIfNotExisting(reaction.Creator, reaction.Height)
 	if err != nil {
 		return err
 	}
 
 	// Save the reaction
-	statement := `INSERT INTO registered_reactions (owner_address, short_code, value, subspace) VALUES ($1, $2, $3, $4)`
-	_, err = db.Sql.Exec(statement, reaction.Creator, reaction.ShortCode, reaction.Value, reaction.Subspace)
+	stmt := `
+INSERT INTO registered_reactions (owner_address, short_code, value, subspace, height) 
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT ON CONSTRAINT registered_react_unique DO UPDATE 
+    SET owner_address = excluded.owner_address,
+    	short_code = excluded.short_code,
+    	value = excluded.value, 
+    	subspace = excluded.subspace,
+    	height = excluded.height
+WHERE registered_reactions.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, reaction.Creator, reaction.ShortCode, reaction.Value, reaction.Subspace, reaction.Height)
 	return err
 }

@@ -18,6 +18,7 @@ type ProfileRow struct {
 	ProfilePic   string    `db:"profile_pic"`
 	CoverPic     string    `db:"cover_pic"`
 	CreationTime time.Time `db:"creation_time"`
+	Height       int64     `db:"height"`
 }
 
 // ConvertProfileRow converts the given row into a profile

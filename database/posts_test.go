@@ -3,6 +3,8 @@ package database_test
 import (
 	"time"
 
+	"github.com/desmos-labs/djuno/x/posts/types"
+
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
@@ -24,7 +26,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 		},
 		poststypes.NewAttachments(
 			poststypes.NewAttachment(
-				"http://example.com/uri",
+				"https://example.com/uri",
 				"image/png",
 				[]string{
 					"cosmos1h7snyfa2kqyea2kelnywzlmle9vfmj3378xfkn",
@@ -48,11 +50,11 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	)
 
 	// Save the data
-	err = suite.database.SavePost(post)
+	err = suite.database.SavePost(types.NewPost(&post, 10))
 	suite.Require().NoError(err)
 
 	// Get the data
-	stored, err := suite.database.GetPostByID(post.PostID)
+	stored, err := suite.database.GetPostByID(post.PostId)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(stored)
 	suite.Require().True(post.Equal(stored))
@@ -60,7 +62,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 
 func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
 	post := suite.testData.post
-	err := suite.database.SavePost(post)
+	err := suite.database.SavePost(types.NewPost(&post, 1))
 	suite.Require().NoError(err)
 
 	return post, post.PollData
@@ -71,7 +73,11 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
 
 	// Save the answer
 	user := "cosmos184dqecwkwex2hv6ae8fhzkw0cwrn39aw2ncy7n"
-	err := suite.database.SaveUserPollAnswer(post.PostID, poststypes.NewUserAnswer([]string{"0", "1"}, user))
+	err := suite.database.SaveUserPollAnswer(types.NewUserPollAnswer(
+		post.PostId,
+		poststypes.NewUserAnswer([]string{"0", "1"}, user),
+		1,
+	))
 	suite.Require().NoError(err)
 
 	// Verify the insertion
@@ -80,14 +86,16 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
 	suite.Require().NoError(err)
 
 	suite.Require().Len(rows, 2)
-	suite.Require().True(rows[0].Equal(dbtypes.UserPollAnswerRow{
-		PollID:          1,
-		Answer:          "0",
-		AnswererAddress: user,
-	}))
-	suite.Require().True(rows[1].Equal(dbtypes.UserPollAnswerRow{
-		PollID:          1,
-		Answer:          "1",
-		AnswererAddress: user,
-	}))
+	suite.Require().True(rows[0].Equal(dbtypes.NewUserPollAnswerRow(
+		1,
+		"0",
+		user,
+		1,
+	)))
+	suite.Require().True(rows[1].Equal(dbtypes.NewUserPollAnswerRow(
+		1,
+		"1",
+		user,
+		1,
+	)))
 }

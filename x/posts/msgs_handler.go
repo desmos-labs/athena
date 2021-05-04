@@ -3,6 +3,8 @@ package posts
 import (
 	"time"
 
+	"github.com/desmos-labs/djuno/x/posts/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	juno "github.com/desmos-labs/juno/types"
@@ -28,7 +30,7 @@ func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.DesmosDb
 
 	// Reactions
 	case *poststypes.MsgRegisterReaction:
-		return handleMsgRegisterReaction(desmosMsg, database)
+		return handleMsgRegisterReaction(tx, desmosMsg, database)
 
 	case *poststypes.MsgAddPostReaction:
 		return handleMsgAddPostReaction(tx, index, database)
@@ -38,7 +40,7 @@ func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.DesmosDb
 
 	// Polls
 	case *poststypes.MsgAnswerPoll:
-		return handleMsgAnswerPoll(desmosMsg, database)
+		return handleMsgAnswerPoll(tx, desmosMsg, database)
 	}
 
 	return nil
@@ -103,7 +105,7 @@ func createAndStorePostFromMsgCreatePost(
 	log.Info().Str("id", postID).Str("owner", post.Creator).Msg("saving post")
 
 	// Save the post
-	err = db.SavePost(post)
+	err = db.SavePost(types.NewPost(&post, tx.Height))
 	if err != nil {
 		return nil, err
 	}
@@ -130,15 +132,37 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 		return err
 	}
 
-	return db.EditPost(msg.PostId, msg.Message, msg.Attachments, msg.PollData, editDate)
+	// Get the post
+	post, err := db.GetPostByID(msg.PostId)
+	if err != nil {
+		return err
+	}
+
+	// Update the post
+	post.Message = msg.Message
+	post.LastEdited = editDate
+
+	if msg.Attachments != nil {
+		post.Attachments = msg.Attachments
+	}
+
+	if msg.PollData != nil {
+		post.PollData = msg.PollData
+	}
+
+	return db.SavePost(types.NewPost(post, tx.Height))
 }
 
 // -----------------------------------------------------------------------------------------------------
 
 // HandleMsgAnswerPoll allows to properly handle a MsgAnswerPoll message by
 // storing inside the database the new answer.
-func handleMsgAnswerPoll(msg *poststypes.MsgAnswerPoll, db *database.DesmosDb) error {
-	return db.SaveUserPollAnswer(msg.PostId, poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer))
+func handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll, db *database.DesmosDb) error {
+	return db.SaveUserPollAnswer(types.NewUserPollAnswer(
+		msg.PostId,
+		poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer),
+		tx.Height,
+	))
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -182,7 +206,7 @@ func handleMsgAddPostReaction(tx *juno.Tx, index int, db *database.DesmosDb) err
 		return err
 	}
 
-	err = db.SavePostReaction(postID, reaction)
+	err = db.SavePostReaction(types.NewPostReaction(postID, reaction, tx.Height))
 	if err != nil {
 		return err
 	}
@@ -198,13 +222,15 @@ func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.DesmosDb) 
 		return err
 	}
 
-	return db.RemoveReaction(postID, reaction)
+	return db.RemovePostReaction(types.NewPostReaction(postID, reaction, tx.Height))
 }
 
 // -----------------------------------------------------------------------------------------------------
 
 // HandleMsgRegisterReaction handles a MsgRegisterReaction by storing the new reaction inside the database.
-func handleMsgRegisterReaction(msg *poststypes.MsgRegisterReaction, db *database.DesmosDb) error {
-	reaction := poststypes.NewRegisteredReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace)
-	return db.RegisterReactionIfNotPresent(reaction)
+func handleMsgRegisterReaction(tx *juno.Tx, msg *poststypes.MsgRegisterReaction, db *database.DesmosDb) error {
+	return db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(
+		poststypes.NewRegisteredReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace),
+		tx.Height,
+	))
 }

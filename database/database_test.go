@@ -36,15 +36,20 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.setupTestData()
 
 	// Build the database
-	config := &juno.Config{
-		Database: &juno.DatabaseConfig{
+	config := juno.NewConfig(
+		nil,
+		nil,
+		nil,
+		&juno.DatabaseConfig{
 			Name:     "juno",
 			Host:     "localhost",
 			Port:     5433,
 			User:     "juno",
 			Password: "password",
 		},
-	}
+		nil,
+		nil,
+	)
 
 	encodingConfig := desmosapp.MakeTestEncodingConfig()
 	db, err := database.Builder(config, &encodingConfig)

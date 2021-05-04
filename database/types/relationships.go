@@ -5,12 +5,23 @@ type RelationshipRow struct {
 	Sender   string `db:"sender_address"`
 	Receiver string `db:"receiver_address"`
 	Subspace string `db:"subspace"`
+	Height   int64  `db:"height"`
+}
+
+func NewRelationshipRow(sender, receiver, subspace string, height int64) RelationshipRow {
+	return RelationshipRow{
+		Sender:   sender,
+		Receiver: receiver,
+		Subspace: subspace,
+		Height:   height,
+	}
 }
 
 func (row RelationshipRow) Equal(other RelationshipRow) bool {
 	return row.Sender == other.Sender &&
 		row.Receiver == other.Receiver &&
-		row.Subspace == other.Subspace
+		row.Subspace == other.Subspace &&
+		row.Height == other.Height
 }
 
 // ________________________________________________
@@ -21,11 +32,23 @@ type BlockageRow struct {
 	Blocked  string `db:"blocked_user_address"`
 	Reason   string `db:"reason"`
 	Subspace string `db:"subspace"`
+	Height   int64  `db:"height"`
+}
+
+func NewBlockageRow(blocker, blocked, reason, subspace string, height int64) BlockageRow {
+	return BlockageRow{
+		Blocker:  blocker,
+		Blocked:  blocked,
+		Reason:   reason,
+		Subspace: subspace,
+		Height:   height,
+	}
 }
 
 func (row BlockageRow) Equal(other BlockageRow) bool {
 	return row.Blocker == other.Blocker &&
 		row.Blocked == other.Blocked &&
 		row.Reason == other.Reason &&
-		row.Subspace == other.Subspace
+		row.Subspace == other.Subspace &&
+		row.Height == other.Height
 }
