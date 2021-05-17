@@ -22,7 +22,7 @@ To install the binary simply run `make install`.
 Before running the parser, you need to:
 
 1. Create a [PostgreSQL](https://www.postgresql.org/) database.
-2. Run the SQL queries you find inside the `*.sql` files in the [schema folder](schema) inside such database to create
+2. Run the SQL queries you find inside the `*.sql` files in the [schema folder](database/schema) inside such database to create
    all the necessary tables.
 
 ## Running the parser

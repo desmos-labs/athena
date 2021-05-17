@@ -11,7 +11,7 @@ import (
 )
 
 // HandleMsg handles a message properly
-func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
+func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.Db) error {
 	if len(tx.Logs) == 0 {
 		return nil
 	}
@@ -25,7 +25,7 @@ func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 }
 
 // handleMsgReport allows to handle a MsgReportPost properly
-func handleMsgReport(tx *juno.Tx, msg *reportstypes.MsgReportPost, db *desmosdb.DesmosDb) error {
+func handleMsgReport(tx *juno.Tx, msg *reportstypes.MsgReportPost, db *desmosdb.Db) error {
 	return db.SaveReport(types.NewReport(
 		reportstypes.NewReport(
 			msg.PostID,

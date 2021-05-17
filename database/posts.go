@@ -14,7 +14,7 @@ import (
 )
 
 // SavePost allows to store the given post inside the database properly.
-func (db DesmosDb) SavePost(post types.Post) error {
+func (db Db) SavePost(post types.Post) error {
 	log.Info().Str("module", "posts").Str("post_id", post.PostID).Msg("saving post")
 
 	// Delete any previous posts
@@ -48,7 +48,7 @@ func (db DesmosDb) SavePost(post types.Post) error {
 }
 
 // savePostContent allows to store the content of the given post
-func (db DesmosDb) savePostContent(post types.Post) error {
+func (db Db) savePostContent(post types.Post) error {
 	// Save the user
 	err := db.SaveUserIfNotExisting(post.Creator, post.Height)
 	if err != nil {
@@ -76,7 +76,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 // saveOptionalData allows to save the specified optional data that are associated
 // to the post having the given postID
-func (db DesmosDb) saveOptionalData(postID string, data poststypes.OptionalData) error {
+func (db Db) saveOptionalData(postID string, data poststypes.OptionalData) error {
 	stmt := `INSERT INTO post_optional_data_entry (post_id, key, value) VALUES `
 	var args []interface{}
 	for index, entry := range data {
@@ -93,7 +93,7 @@ func (db DesmosDb) saveOptionalData(postID string, data poststypes.OptionalData)
 
 // saveAttachments allows to save the specified medias that are associated
 // to the post having the given postID
-func (db DesmosDb) saveAttachments(height int64, postID string, attachments []poststypes.Attachment) error {
+func (db Db) saveAttachments(height int64, postID string, attachments []poststypes.Attachment) error {
 	for _, media := range attachments {
 		// Insert the attachment
 		var attachmentID int
@@ -125,7 +125,7 @@ func (db DesmosDb) saveAttachments(height int64, postID string, attachments []po
 // savePollData allows to properly store the given poll inside the database, returning the
 // id of the newly created (or updated) row inside the database itself.
 // If the given poll is nil, it will not be inserted and nil will be returned as the id.
-func (db DesmosDb) savePollData(postID string, poll *poststypes.PollData) error {
+func (db Db) savePollData(postID string, poll *poststypes.PollData) error {
 	// Nil data, do nothing
 	if poll == nil {
 		return nil
@@ -160,7 +160,7 @@ func (db DesmosDb) savePollData(postID string, poll *poststypes.PollData) error 
 // GetPostByID returns the post having the specified id.
 // If some error raised during the read, it is returned.
 // If no post with the specified id is found, nil is returned instead.
-func (db DesmosDb) GetPostByID(id string) (*poststypes.Post, error) {
+func (db Db) GetPostByID(id string) (*poststypes.Post, error) {
 	stmt := `SELECT * FROM post WHERE id = $1`
 
 	var rows []dbtypes.PostRow
@@ -196,7 +196,7 @@ func (db DesmosDb) GetPostByID(id string) (*poststypes.Post, error) {
 }
 
 // getOptionalData returns all the optional data associated to the post having the given id
-func (db DesmosDb) getOptionalData(postID string) (poststypes.OptionalData, error) {
+func (db Db) getOptionalData(postID string) (poststypes.OptionalData, error) {
 	stmt := `SELECT * FROM post_optional_data_entry WHERE post_id = $1`
 
 	var rows []dbtypes.OptionalDataRow
@@ -209,7 +209,7 @@ func (db DesmosDb) getOptionalData(postID string) (poststypes.OptionalData, erro
 }
 
 // getAttachments returns the attachments of the post having the given id
-func (db DesmosDb) getAttachments(postID string) ([]poststypes.Attachment, error) {
+func (db Db) getAttachments(postID string) ([]poststypes.Attachment, error) {
 	stmt := `SELECT * FROM post_attachment WHERE post_id = $1`
 
 	var rows []dbtypes.AttachmentRow
@@ -234,7 +234,7 @@ func (db DesmosDb) getAttachments(postID string) ([]poststypes.Attachment, error
 
 // getPollData returns the poll row associated to the post having the specified id.
 // If the post with the same id has no poll associated to it, nil is returned instead.
-func (db DesmosDb) getPollData(postID string) (*poststypes.PollData, error) {
+func (db Db) getPollData(postID string) (*poststypes.PollData, error) {
 	sqlStmt := `SELECT * FROM poll WHERE post_id = $1`
 
 	var rows []dbtypes.PollRow
@@ -263,7 +263,7 @@ func (db DesmosDb) getPollData(postID string) (*poststypes.PollData, error) {
 
 // SaveUserPollAnswer allows to save the given answers from the specified user for the poll
 // post having the specified postID.
-func (db DesmosDb) SaveUserPollAnswer(answer types.UserPollAnswer) error {
+func (db Db) SaveUserPollAnswer(answer types.UserPollAnswer) error {
 	err := db.SaveUserIfNotExisting(answer.User, answer.Height)
 	if err != nil {
 		return err
@@ -291,7 +291,7 @@ WHERE user_poll_answer.height <= excluded.height`
 // ---------------------------------------------------------------------------------------------------
 
 // SaveReport allows to store the given report properly
-func (db DesmosDb) SaveReport(report types.Report) error {
+func (db Db) SaveReport(report types.Report) error {
 	err := db.SaveUserIfNotExisting(report.User, report.Height)
 	if err != nil {
 		return err

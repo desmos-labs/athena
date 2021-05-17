@@ -23,7 +23,7 @@ import (
 type DbTestSuite struct {
 	suite.Suite
 
-	database *database.DesmosDb
+	database *database.Db
 	testData TestData
 }
 
@@ -55,7 +55,7 @@ func (suite *DbTestSuite) SetupTest() {
 	db, err := database.Builder(config, &encodingConfig)
 	suite.Require().NoError(err)
 
-	desmosDb, ok := (db).(*database.DesmosDb)
+	desmosDb, ok := (db).(*database.Db)
 	suite.Require().True(ok)
 
 	// Delete the public schema

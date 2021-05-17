@@ -15,7 +15,7 @@ import (
 
 // HandleGenesis allows to properly handle the genesis state for the posts module
 func HandleGenesis(
-	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, cdc codec.Marshaler, db *desmosdb.DesmosDb,
+	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
 	var authGenState authtypes.GenesisState
 	cdc.MustUnmarshalJSON(appState[authtypes.ModuleName], &authGenState)

@@ -20,11 +20,11 @@ var _ modules.MessageModule = &Module{}
 // Module represents the x/posts module handler
 type Module struct {
 	encodingConfig *params.EncodingConfig
-	db             *database.DesmosDb
+	db             *database.Db
 }
 
 // NewModule allows to build a new Module instance
-func NewModule(encodingConfig *params.EncodingConfig, db *database.DesmosDb) *Module {
+func NewModule(encodingConfig *params.EncodingConfig, db *database.Db) *Module {
 	return &Module{
 		encodingConfig: encodingConfig,
 		db:             db,

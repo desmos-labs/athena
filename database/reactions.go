@@ -19,7 +19,7 @@ func convertReactionRow(row dbtypes.RegisteredReactionRow) poststypes.Registered
 }
 
 // SavePostReaction allows to save the given reaction into the database.
-func (db DesmosDb) SavePostReaction(reaction types.PostReaction) error {
+func (db Db) SavePostReaction(reaction types.PostReaction) error {
 	err := db.SaveUserIfNotExisting(reaction.Owner, reaction.Height)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ WHERE post_reaction.height <= excluded.height`
 }
 
 // RemovePostReaction allows to remove an already existing reaction from the database.
-func (db DesmosDb) RemovePostReaction(reaction types.PostReaction) error {
+func (db Db) RemovePostReaction(reaction types.PostReaction) error {
 	err := db.SaveUserIfNotExisting(reaction.Owner, reaction.Height)
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ WHERE post_id = $1 AND owner_address = $2 AND short_code = $3 AND height <= $4`
 
 // GetRegisteredReactionByCodeOrValue allows to get a registered reaction by its shortcode or
 // value and the subspace for which it has been registered.
-func (db DesmosDb) GetRegisteredReactionByCodeOrValue(
+func (db Db) GetRegisteredReactionByCodeOrValue(
 	codeOrValue string, subspace string,
 ) (*poststypes.RegisteredReaction, error) {
 	stmt := `SELECT * FROM registered_reactions WHERE (short_code = $1 OR value = $1) AND subspace = $2`
@@ -76,7 +76,7 @@ func (db DesmosDb) GetRegisteredReactionByCodeOrValue(
 }
 
 // RegisterReactionIfNotPresent allows to register into the database the given reaction.
-func (db DesmosDb) RegisterReactionIfNotPresent(reaction types.RegisteredReaction) error {
+func (db Db) RegisterReactionIfNotPresent(reaction types.RegisteredReaction) error {
 	react, err := db.GetRegisteredReactionByCodeOrValue(reaction.ShortCode, reaction.Subspace)
 	if err != nil {
 		return err

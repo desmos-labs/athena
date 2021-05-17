@@ -13,11 +13,11 @@ var _ modules.MessageModule = &Module{}
 
 // Module represents the x/reports module handler
 type Module struct {
-	db *database.DesmosDb
+	db *database.Db
 }
 
 // NewModule returns a new Module instance
-func NewModule(db *database.DesmosDb) *Module {
+func NewModule(db *database.Db) *Module {
 	return &Module{
 		db: db,
 	}

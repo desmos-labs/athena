@@ -5,13 +5,13 @@ import (
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	juno "github.com/desmos-labs/juno/types"
 
-	"github.com/desmos-labs/djuno/notifications"
+	"github.com/desmos-labs/djuno/x/notifications/utils"
 )
 
 // TxHandler allows to handle a transaction in order to send the
 func TxHandler(tx *juno.Tx) error {
 	if hasDesmosMsg, desmosUser := getDesmosUser(tx); hasDesmosMsg {
-		return notifications.SendTransactionResultNotification(tx, desmosUser)
+		return utils.SendTransactionResultNotification(tx, desmosUser)
 	}
 	return nil
 }

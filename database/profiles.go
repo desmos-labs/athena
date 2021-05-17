@@ -11,7 +11,7 @@ import (
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
-func (db DesmosDb) SaveUserIfNotExisting(address string, height int64) error {
+func (db Db) SaveUserIfNotExisting(address string, height int64) error {
 	stmt := `
 INSERT INTO profile (address, height) 
 VALUES ($1, $2)
@@ -24,7 +24,7 @@ WHERE profile.height <= excluded.height`
 
 // GetUserByAddress returns the user row having the given address.
 // If the user does not exist yet, returns nil instead.
-func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, error) {
+func (db Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 	var rows []dbtypes.ProfileRow
 	err := db.Sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
 	if err != nil {
@@ -43,7 +43,7 @@ func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, err
 
 // SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db DesmosDb) SaveProfile(profile types.Profile) error {
+func (db Db) SaveProfile(profile types.Profile) error {
 	stmt := `
 INSERT INTO profile (address, nickname, dtag, bio, profile_pic, cover_pic, creation_time, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
@@ -68,7 +68,7 @@ WHERE profile.height <= excluded.height`
 }
 
 // DeleteProfile allows to delete the profile of the user having the given address
-func (db DesmosDb) DeleteProfile(address string, height int64) error {
+func (db Db) DeleteProfile(address string, height int64) error {
 	stmt := `
 UPDATE profile 
 SET nickname = '', 
@@ -84,7 +84,7 @@ WHERE address = $1 AND height <= $2`
 // ---------------------------------------------------------------------------------------------------
 
 // SaveDTagTransferRequest saves a new transfer request from sender to receiver
-func (db DesmosDb) SaveDTagTransferRequest(request types.DTagTransferRequest) error {
+func (db Db) SaveDTagTransferRequest(request types.DTagTransferRequest) error {
 	err := db.SaveUserIfNotExisting(request.Sender, request.Height)
 	if err != nil {
 		return err
@@ -108,7 +108,7 @@ WHERE dtag_transfer_requests.height <= excluded.height`
 }
 
 // TransferDTag transfers the DTag from the sender to the receiver, and sets the sender DTag to the new one provided
-func (db DesmosDb) TransferDTag(acceptance types.DTagTransferRequestAcceptance) error {
+func (db Db) TransferDTag(acceptance types.DTagTransferRequestAcceptance) error {
 	// Get the old DTag
 	var oldDTag string
 	stmt := `SELECT dtag FROM profile WHERE address = $1 AND height <= $2`
@@ -133,7 +133,7 @@ func (db DesmosDb) TransferDTag(acceptance types.DTagTransferRequestAcceptance) 
 }
 
 // DeleteDTagTransferRequest deletes the DTag requests from sender to receiver
-func (db DesmosDb) DeleteDTagTransferRequest(request types.DTagTransferRequest) error {
+func (db Db) DeleteDTagTransferRequest(request types.DTagTransferRequest) error {
 	stmt := `
 DELETE FROM dtag_transfer_requests 
 WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
@@ -144,7 +144,7 @@ WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
 // ---------------------------------------------------------------------------------------------------
 
 // SaveRelationship allows to save a relationship between the sender and receiver on the given subspace
-func (db DesmosDb) SaveRelationship(relationship types.Relationship) error {
+func (db Db) SaveRelationship(relationship types.Relationship) error {
 	err := db.SaveUserIfNotExisting(relationship.Creator, relationship.Height)
 	if err != nil {
 		return err
@@ -168,7 +168,7 @@ WHERE relationship.height <= excluded.height`
 }
 
 // DeleteRelationship allows to delete the relationship between the given sender and receiver on the specified subspace
-func (db DesmosDb) DeleteRelationship(relationship types.Relationship) error {
+func (db Db) DeleteRelationship(relationship types.Relationship) error {
 	stmt := `
 DELETE FROM relationship 
 WHERE sender_address = $1 AND receiver_address = $2 AND subspace = $3 AND height <= $4`
@@ -178,7 +178,7 @@ WHERE sender_address = $1 AND receiver_address = $2 AND subspace = $3 AND height
 }
 
 // SaveBlockage allows to save a user blockage
-func (db DesmosDb) SaveBlockage(block types.Blockage) error {
+func (db Db) SaveBlockage(block types.Blockage) error {
 	err := db.SaveUserIfNotExisting(block.Blocker, block.Height)
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ WHERE user_block.height <= excluded.height`
 }
 
 // RemoveBlockage allow to remove a previously saved user blockage
-func (db DesmosDb) RemoveBlockage(block types.Blockage) error {
+func (db Db) RemoveBlockage(block types.Blockage) error {
 	stmt := `
 DELETE FROM user_block 
 WHERE blocker_address = $1 AND blocked_user_address = $2 AND subspace = $3 AND height <= $4`

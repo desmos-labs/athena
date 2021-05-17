@@ -3,6 +3,9 @@ package profiles
 import (
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/desmos-labs/juno/modules/messages"
+
 	"github.com/desmos-labs/djuno/x/profiles/types"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
@@ -15,7 +18,10 @@ import (
 )
 
 // HandleMsg allows to handle different messages types for the profiles module
-func HandleMsg(tx *juno.Tx, index int, msg sdk.Msg, db *desmosdb.DesmosDb) error {
+func HandleMsg(
+	tx *juno.Tx, index int, msg sdk.Msg,
+	getAccounts messages.MessageAddressesParser, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
 	if len(tx.Logs) == 0 {
 		return nil
 	}
@@ -52,13 +58,34 @@ func HandleMsg(tx *juno.Tx, index int, msg sdk.Msg, db *desmosdb.DesmosDb) error
 		return HandleMsgUnblockUser(tx, desmosMsg, db)
 	}
 
+	return saveAccounts(tx.Height, msg, getAccounts, cdc, db)
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+
+// saveAccounts stores the accounts included in the given messages inside the profile table
+func saveAccounts(
+	height int64, msg sdk.Msg, getAccounts messages.MessageAddressesParser, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
+	accounts, err := getAccounts(cdc, msg)
+	if err != nil {
+		return err
+	}
+
+	for _, account := range accounts {
+		err = db.SaveUserIfNotExisting(account, height)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-// -----------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------
 
 // handleMsgSaveProfile handles a MsgCreateProfile and properly stores the new profile inside the database
-func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProfile, db *desmosdb.DesmosDb) error {
+func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProfile, db *desmosdb.Db) error {
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeProfileSaved)
 	if err != nil {
 		return err
@@ -95,7 +122,7 @@ func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProf
 }
 
 // handleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
-func handleMsgDeleteProfile(tx *juno.Tx, msg *profilestypes.MsgDeleteProfile, db *desmosdb.DesmosDb) error {
+func handleMsgDeleteProfile(tx *juno.Tx, msg *profilestypes.MsgDeleteProfile, db *desmosdb.Db) error {
 	return db.DeleteProfile(msg.Creator, tx.Height)
 }
 
@@ -103,7 +130,7 @@ func handleMsgDeleteProfile(tx *juno.Tx, msg *profilestypes.MsgDeleteProfile, db
 
 // handleMsgRequestDTagTransfer handles a MsgRequestDTagTransfer storing the request into the database
 func handleMsgRequestDTagTransfer(
-	tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer, db *desmosdb.DesmosDb,
+	tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer, db *desmosdb.Db,
 ) error {
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeDTagTransferRequest)
 	if err != nil {
@@ -122,7 +149,7 @@ func handleMsgRequestDTagTransfer(
 }
 
 // handleMsgAcceptDTagTransfer handles a MsgAcceptDTagTransfer effectively transferring the DTag
-func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransfer, db *desmosdb.DesmosDb) error {
+func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransfer, db *desmosdb.Db) error {
 	return db.TransferDTag(types.NewDTagTransferRequestAcceptance(
 		types.NewDTagTransferRequest(
 			profilestypes.NewDTagTransferRequest(msg.NewDTag, msg.Sender, msg.Receiver),
@@ -133,7 +160,7 @@ func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTr
 }
 
 // handleDTagTransferRequestDeletion allows to delete an existing transfer request
-func handleDTagTransferRequestDeletion(height int64, sender, receiver string, db *desmosdb.DesmosDb) error {
+func handleDTagTransferRequestDeletion(height int64, sender, receiver string, db *desmosdb.Db) error {
 	return db.DeleteDTagTransferRequest(types.NewDTagTransferRequest(
 		profilestypes.NewDTagTransferRequest("", sender, receiver),
 		height,
@@ -143,7 +170,7 @@ func handleDTagTransferRequestDeletion(height int64, sender, receiver string, db
 // -----------------------------------------------------------------------------------------------------
 
 // handleMsgCreateRelationship allows to handle a MsgCreateRelationship properly
-func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelationship, db *desmosdb.DesmosDb) error {
+func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelationship, db *desmosdb.Db) error {
 	return db.SaveRelationship(types.NewRelationship(
 		profilestypes.NewRelationship(msg.Sender, msg.Receiver, msg.Subspace),
 		tx.Height,
@@ -151,7 +178,7 @@ func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelati
 }
 
 // HandleMsgDeleteRelationship allows to handle a MsgDeleteRelationship properly
-func HandleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelationship, db *desmosdb.DesmosDb) error {
+func HandleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelationship, db *desmosdb.Db) error {
 	return db.DeleteRelationship(types.NewRelationship(
 		profilestypes.NewRelationship(msg.User, msg.Counterparty, msg.Subspace),
 		tx.Height,
@@ -159,7 +186,7 @@ func HandleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelati
 }
 
 // HandleMsgBlockUser allows to handle a MsgBlockUser properly
-func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmosdb.DesmosDb) error {
+func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmosdb.Db) error {
 	return db.SaveBlockage(types.NewBlockage(
 		profilestypes.NewUserBlock(
 			msg.Blocker,
@@ -172,7 +199,7 @@ func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmos
 }
 
 // HandleMsgUnblockUser allows to handle a MsgUnblockUser properly
-func HandleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *desmosdb.DesmosDb) error {
+func HandleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *desmosdb.Db) error {
 	return db.RemoveBlockage(types.NewBlockage(
 		profilestypes.NewUserBlock(msg.Blocker, msg.Blocked, "", msg.Subspace),
 		tx.Height,

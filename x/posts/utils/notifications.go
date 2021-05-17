@@ -1,9 +1,11 @@
-package notifications
+package utils
 
 import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/desmos-labs/djuno/x/notifications/utils"
 
 	"firebase.google.com/go/messaging"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
@@ -45,7 +47,7 @@ var (
 // a push notification to the people that might somehow be interested into the creation of the post.
 // For example, if the post is a comment to another post, the creator of the latter will be notified
 // that a new comment has been added.
-func SendPostNotifications(post poststypes.Post, db *database.DesmosDb) error {
+func SendPostNotifications(post poststypes.Post, db *database.Db) error {
 	// Get the post parent
 	parent, err := db.GetPostByID(post.ParentID)
 	if err != nil {
@@ -95,7 +97,7 @@ func sendCommentNotification(post poststypes.Post, parent *poststypes.Post) erro
 	}
 
 	// Send a notification to the original post owner
-	return SendNotification(parent.Creator, &notification, data)
+	return utils.SendNotification(parent.Creator, &notification, data)
 }
 
 // sendMentionNotifications sends everyone who is tagged inside the given post message a notification.
@@ -163,13 +165,13 @@ func sendMentionNotification(post poststypes.Post, user string) error {
 		PostMentionTextKey: post.Message,
 	}
 
-	return SendNotification(user, &notification, data)
+	return utils.SendNotification(user, &notification, data)
 }
 
 // SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
 // For example, a push notification is send to the user that has created the post.
-func SendReactionNotifications(postID string, reaction poststypes.PostReaction, db *database.DesmosDb) error {
+func SendReactionNotifications(postID string, reaction poststypes.PostReaction, db *database.Db) error {
 	post, err := db.GetPostByID(postID)
 	if err != nil {
 		return err
@@ -205,7 +207,7 @@ func sendGenericReactionNotification(post *poststypes.Post, reaction poststypes.
 	}
 
 	// Send a notification to the post creator
-	return SendNotification(post.Creator, &notification, data)
+	return utils.SendNotification(post.Creator, &notification, data)
 }
 
 // sendLikeNotification sends a push notification telling that a like has been added to the given post
@@ -224,5 +226,5 @@ func sendLikeNotification(post *poststypes.Post, reaction poststypes.PostReactio
 	}
 
 	// Send a notification to the post creator
-	return SendNotification(post.Creator, &notification, data)
+	return utils.SendNotification(post.Creator, &notification, data)
 }

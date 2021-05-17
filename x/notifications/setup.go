@@ -3,16 +3,16 @@ package notifications
 import (
 	"context"
 
+	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/x/notifications/utils"
+
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/option"
-
-	"github.com/desmos-labs/djuno/config"
-	"github.com/desmos-labs/djuno/notifications"
 )
 
 // setupNotifications allows to properly setup the Firebase Cloud Messaging client so that
 // it can later be used to send push notifications to the subscribing devices.
-func setupNotifications(cfg *config.NotificationsConfig) error {
+func setupNotifications(cfg *types.NotificationsConfig) error {
 	firebaseCfg := firebase.Config{ProjectID: cfg.FirebaseProjectID}
 
 	// Build the firebase app
@@ -27,6 +27,6 @@ func setupNotifications(cfg *config.NotificationsConfig) error {
 		return err
 	}
 
-	notifications.MsgClient = client
+	utils.MsgClient = client
 	return nil
 }

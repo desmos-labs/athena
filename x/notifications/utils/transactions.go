@@ -1,9 +1,11 @@
-package notifications
+package utils
 
 import (
 	juno "github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
 	tmtypes "github.com/tendermint/tendermint/abci/types"
+
+	utils2 "github.com/desmos-labs/djuno/x/posts/utils"
 )
 
 const (
@@ -29,7 +31,7 @@ func SendTransactionResultNotification(tx *juno.Tx, user string) error {
 		Msg("sending notification")
 
 	data := map[string]string{
-		NotificationTypeKey: result,
+		utils2.NotificationTypeKey: result,
 
 		TransactionHashKey:  tx.TxHash,
 		TransactionErrorKey: tx.RawLog,

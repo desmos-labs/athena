@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/desmos-labs/juno/cmd/init"
+	"github.com/desmos-labs/djuno/types"
 
-	"github.com/desmos-labs/djuno/config"
+	"github.com/desmos-labs/juno/cmd/init"
 
 	desmosapp "github.com/desmos-labs/desmos/app"
 	junocmd "github.com/desmos-labs/juno/cmd"
@@ -18,14 +18,14 @@ import (
 func main() {
 	// Setup the config
 	initCfg := init.NewConfig().
-		WithConfigFlagSetup(config.SetupFlags).
-		WithConfigCreator(config.CreateConfigFromFlags)
+		WithConfigFlagSetup(types.SetupFlags).
+		WithConfigCreator(types.CreateConfigFromFlags)
 
 	parseCfg := parse.NewConfig().
 		WithRegistrar(x.NewModulesRegistrar()).
 		WithEncodingConfigBuilder(desmosapp.MakeTestEncodingConfig).
 		WithDBBuilder(desmosdb.Builder).
-		WithConfigParser(config.ParseCfg)
+		WithConfigParser(types.ParseCfg)
 
 	cfg := junocmd.NewConfig("djuno").
 		WithInitConfig(initCfg).

@@ -10,23 +10,23 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// DesmosDb represents a PostgreSQL database with expanded features.
+// Db represents a PostgreSQL database with expanded features.
 // so that it can properly store posts and other Desmos-related data.
-type DesmosDb struct {
+type Db struct {
 	*postgresql.Database
 	Sqlx *sqlx.DB
 }
 
-// Cast casts the given database to be a *DesmosDb
-func Cast(database db.Database) *DesmosDb {
-	desmosDb, ok := (database).(*DesmosDb)
+// Cast casts the given database to be a *Db
+func Cast(database db.Database) *Db {
+	desmosDb, ok := (database).(*Db)
 	if !ok {
 		panic(fmt.Errorf("database is not a DesmosDB instance"))
 	}
 	return desmosDb
 }
 
-// Builder allows to create a new DesmosDb instance implementing the database.Builder type
+// Builder allows to create a new Db instance implementing the database.Builder type
 func Builder(cfg juno.Config, encodingConfig *params.EncodingConfig) (db.Database, error) {
 	database, err := postgresql.Builder(cfg.GetDatabaseConfig(), encodingConfig)
 	if err != nil {
@@ -38,7 +38,7 @@ func Builder(cfg juno.Config, encodingConfig *params.EncodingConfig) (db.Databas
 		return nil, fmt.Errorf("invalid database type")
 	}
 
-	return &DesmosDb{
+	return &Db{
 		Database: psqlDb,
 		Sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
 	}, nil

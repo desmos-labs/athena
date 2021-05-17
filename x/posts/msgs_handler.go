@@ -3,6 +3,8 @@ package posts
 import (
 	"time"
 
+	"github.com/desmos-labs/djuno/x/posts/utils"
+
 	"github.com/desmos-labs/djuno/x/posts/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,11 +13,10 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/notifications"
 )
 
 // MsgHandler allows to handle different message types from the posts module
-func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.DesmosDb) error {
+func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.Db) error {
 	if len(tx.Logs) == 0 {
 		return nil
 	}
@@ -51,20 +52,20 @@ func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.DesmosDb
 // HandleMsgCreatePost allows to properly handle the given msg present inside the specified tx at the specific
 // index. It creates a new Post object from it, stores it inside the database and later sends out any
 // push notification using Firebase Cloud Messaging.
-func handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost, db *database.DesmosDb) error {
+func handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost, db *database.Db) error {
 	post, err := createAndStorePostFromMsgCreatePost(tx, index, msg, db)
 	if err != nil {
 		return err
 	}
 
-	return notifications.SendPostNotifications(*post, db)
+	return utils.SendPostNotifications(*post, db)
 }
 
 // createAndStorePostFromMsgCreatePost allows to properly handle a MsgCreatePostEvent by storing inside the
 // database the post that has been created with such message.
 // After the post has been saved, it is returned for other uses.
 func createAndStorePostFromMsgCreatePost(
-	tx *juno.Tx, index int, msg *poststypes.MsgCreatePost, db *database.DesmosDb,
+	tx *juno.Tx, index int, msg *poststypes.MsgCreatePost, db *database.Db,
 ) (*poststypes.Post, error) {
 	event, err := tx.FindEventByType(index, poststypes.EventTypePostCreated)
 	if err != nil {
@@ -117,7 +118,7 @@ func createAndStorePostFromMsgCreatePost(
 
 // HandleMsgEditPost allows to properly handle a MsgEditPost by updating the post inside
 // the database as well.
-func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *database.DesmosDb) error {
+func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *database.Db) error {
 	event, err := tx.FindEventByType(index, poststypes.EventTypePostCreated)
 	if err != nil {
 		return err
@@ -157,7 +158,7 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 
 // HandleMsgAnswerPoll allows to properly handle a MsgAnswerPoll message by
 // storing inside the database the new answer.
-func handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll, db *database.DesmosDb) error {
+func handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll, db *database.Db) error {
 	return db.SaveUserPollAnswer(types.NewUserPollAnswer(
 		msg.PostID,
 		poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer),
@@ -200,7 +201,7 @@ func getReactionFromTxEvent(tx *juno.Tx, index int, eventType string) (string, p
 
 // HandleMsgAddPostReaction allows to properly handle the adding of a reaction by storing the newly created
 // reaction inside the database and sending out push notifications to whoever might be interested in this event.
-func handleMsgAddPostReaction(tx *juno.Tx, index int, db *database.DesmosDb) error {
+func handleMsgAddPostReaction(tx *juno.Tx, index int, db *database.Db) error {
 	postID, reaction, err := getReactionFromTxEvent(tx, index, poststypes.EventTypePostReactionAdded)
 	if err != nil {
 		return err
@@ -211,12 +212,12 @@ func handleMsgAddPostReaction(tx *juno.Tx, index int, db *database.DesmosDb) err
 		return err
 	}
 
-	return notifications.SendReactionNotifications(postID, reaction, db)
+	return utils.SendReactionNotifications(postID, reaction, db)
 }
 
 // HandleMsgRemovePostReaction allows to properly handle the removal of a reaction from a post by
 // deleting the specified reaction from the database.
-func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.DesmosDb) error {
+func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.Db) error {
 	postID, reaction, err := getReactionFromTxEvent(tx, index, poststypes.EventTypePostReactionRemoved)
 	if err != nil {
 		return err
@@ -228,7 +229,7 @@ func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.DesmosDb) 
 // -----------------------------------------------------------------------------------------------------
 
 // HandleMsgRegisterReaction handles a MsgRegisterReaction by storing the new reaction inside the database.
-func handleMsgRegisterReaction(tx *juno.Tx, msg *poststypes.MsgRegisterReaction, db *database.DesmosDb) error {
+func handleMsgRegisterReaction(tx *juno.Tx, msg *poststypes.MsgRegisterReaction, db *database.Db) error {
 	return db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(
 		poststypes.NewRegisteredReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace),
 		tx.Height,

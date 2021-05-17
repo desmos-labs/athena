@@ -16,7 +16,7 @@ import (
 
 // HandleGenesis allows to properly handle the genesis state for the posts module
 func HandleGenesis(
-	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec *codec.LegacyAmino, db *desmosdb.DesmosDb,
+	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec *codec.LegacyAmino, db *desmosdb.Db,
 ) error {
 	// Get the posts state
 	var genState poststypes.GenesisState
@@ -56,7 +56,7 @@ func HandleGenesis(
 	return nil
 }
 
-func savePosts(height int64, posts []poststypes.Post, db *desmosdb.DesmosDb) error {
+func savePosts(height int64, posts []poststypes.Post, db *desmosdb.Db) error {
 	for index := range posts {
 		err := db.SavePost(types.NewPost(&posts[index], height))
 		if err != nil {
@@ -66,7 +66,7 @@ func savePosts(height int64, posts []poststypes.Post, db *desmosdb.DesmosDb) err
 	return nil
 }
 
-func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReaction, db *desmosdb.DesmosDb) error {
+func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReaction, db *desmosdb.Db) error {
 	for _, reaction := range reactions {
 		err := db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(reaction, height))
 		if err != nil {
@@ -76,7 +76,7 @@ func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReac
 	return nil
 }
 
-func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, db *desmosdb.DesmosDb) error {
+func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, db *desmosdb.Db) error {
 	for _, entry := range reactions {
 		for _, reaction := range entry.Reactions {
 			err := db.SavePostReaction(types.NewPostReaction(entry.PostID, reaction, height))
@@ -88,7 +88,7 @@ func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, 
 	return nil
 }
 
-func savePollAnswers(height int64, userAnswers []poststypes.UserAnswersEntry, db *desmosdb.DesmosDb) error {
+func savePollAnswers(height int64, userAnswers []poststypes.UserAnswersEntry, db *desmosdb.Db) error {
 	for _, entry := range userAnswers {
 		for _, answer := range entry.UserAnswers {
 			err := db.SaveUserPollAnswer(types.NewUserPollAnswer(entry.PostID, answer, height))
