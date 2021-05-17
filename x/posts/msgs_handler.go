@@ -90,7 +90,7 @@ func createAndStorePostFromMsgCreatePost(
 	// Create the post
 	post := poststypes.NewPost(
 		postID,
-		msg.ParentId,
+		msg.ParentID,
 		msg.Message,
 		msg.AllowsComments,
 		msg.Subspace,
@@ -133,7 +133,7 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 	}
 
 	// Get the post
-	post, err := db.GetPostByID(msg.PostId)
+	post, err := db.GetPostByID(msg.PostID)
 	if err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 // storing inside the database the new answer.
 func handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll, db *database.DesmosDb) error {
 	return db.SaveUserPollAnswer(types.NewUserPollAnswer(
-		msg.PostId,
+		msg.PostID,
 		poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer),
 		tx.Height,
 	))

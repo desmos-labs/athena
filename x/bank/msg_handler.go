@@ -17,34 +17,34 @@ func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 	switch cosmosMsg := msg.(type) {
 
 	case *banktypes.MsgSend:
-		return handleMsgSend(cosmosMsg, db)
+		return handleMsgSend(tx.Height, cosmosMsg, db)
 
 	case *banktypes.MsgMultiSend:
-		return handleMsgMultiSend(cosmosMsg, db)
+		return handleMsgMultiSend(tx.Height, cosmosMsg, db)
 	}
 
 	return nil
 }
 
-func handleMsgSend(msg *banktypes.MsgSend, database *desmosdb.DesmosDb) error {
-	err := database.SaveUserIfNotExisting(msg.FromAddress)
+func handleMsgSend(height int64, msg *banktypes.MsgSend, database *desmosdb.DesmosDb) error {
+	err := database.SaveUserIfNotExisting(msg.FromAddress, height)
 	if err != nil {
 		return err
 	}
 
-	return database.SaveUserIfNotExisting(msg.ToAddress)
+	return database.SaveUserIfNotExisting(msg.ToAddress, height)
 }
 
-func handleMsgMultiSend(msg *banktypes.MsgMultiSend, database *desmosdb.DesmosDb) error {
+func handleMsgMultiSend(height int64, msg *banktypes.MsgMultiSend, database *desmosdb.DesmosDb) error {
 	for _, input := range msg.Inputs {
-		err := database.SaveUserIfNotExisting(input.Address)
+		err := database.SaveUserIfNotExisting(input.Address, height)
 		if err != nil {
 			return err
 		}
 	}
 
 	for _, output := range msg.Outputs {
-		err := database.SaveUserIfNotExisting(output.Address)
+		err := database.SaveUserIfNotExisting(output.Address, height)
 		if err != nil {
 			return err
 		}

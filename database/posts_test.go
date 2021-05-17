@@ -54,7 +54,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	suite.Require().NoError(err)
 
 	// Get the data
-	stored, err := suite.database.GetPostByID(post.PostId)
+	stored, err := suite.database.GetPostByID(post.PostID)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(stored)
 	suite.Require().True(post.Equal(stored))
@@ -74,7 +74,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
 	// Save the answer
 	user := "cosmos184dqecwkwex2hv6ae8fhzkw0cwrn39aw2ncy7n"
 	err := suite.database.SaveUserPollAnswer(types.NewUserPollAnswer(
-		post.PostId,
+		post.PostID,
 		poststypes.NewUserAnswer([]string{"0", "1"}, user),
 		1,
 	))

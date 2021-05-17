@@ -47,7 +47,7 @@ var (
 // that a new comment has been added.
 func SendPostNotifications(post poststypes.Post, db *database.DesmosDb) error {
 	// Get the post parent
-	parent, err := db.GetPostByID(post.ParentId)
+	parent, err := db.GetPostByID(post.ParentID)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func sendCommentNotification(post poststypes.Post, parent *poststypes.Post) erro
 		NotificationTypeKey:   TypeComment,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:      post.PostId,
+		PostIDKey:      post.PostID,
 		PostMessageKey: post.Message,
 		PostCreatorKey: post.Creator,
 	}
@@ -158,7 +158,7 @@ func sendMentionNotification(post poststypes.Post, user string) error {
 		NotificationTypeKey:   TypeMention,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:          post.PostId,
+		PostIDKey:          post.PostID,
 		PostMentionUserKey: post.Creator,
 		PostMentionTextKey: post.Message,
 	}
@@ -198,7 +198,7 @@ func sendGenericReactionNotification(post *poststypes.Post, reaction poststypes.
 		NotificationTypeKey:   TypeReaction,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:                post.PostId,
+		PostIDKey:                post.PostID,
 		PostReactionValueKey:     reaction.Value,
 		PostReactionShortCodeKey: reaction.ShortCode,
 		PostReactionOwnerKey:     reaction.Owner,
@@ -219,7 +219,7 @@ func sendLikeNotification(post *poststypes.Post, reaction poststypes.PostReactio
 		NotificationTypeKey:   TypeLike,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:       post.PostId,
+		PostIDKey:       post.PostID,
 		PostLikeUserKey: reaction.Owner,
 	}
 

@@ -28,7 +28,7 @@ func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.DesmosDb) error {
 func handleMsgReport(tx *juno.Tx, msg *reportstypes.MsgReportPost, db *desmosdb.DesmosDb) error {
 	return db.SaveReport(types.NewReport(
 		reportstypes.NewReport(
-			msg.PostId,
+			msg.PostID,
 			msg.ReportType,
 			msg.Message,
 			msg.User,

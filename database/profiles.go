@@ -45,11 +45,11 @@ func (db DesmosDb) GetUserByAddress(address string) (*profilestypes.Profile, err
 // Returns the inserted row or an error if something goes wrong.
 func (db DesmosDb) SaveProfile(profile types.Profile) error {
 	stmt := `
-INSERT INTO profile (address, moniker, dtag, bio, profile_pic, cover_pic, creation_time, height) 
+INSERT INTO profile (address, nickname, dtag, bio, profile_pic, cover_pic, creation_time, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
 ON CONFLICT (address) DO UPDATE 
 	SET address = excluded.address, 
-		moniker = excluded.moniker, 
+		nickname = excluded.nickname, 
 		dtag = excluded.dtag,
 		bio = excluded.bio,
 		profile_pic = excluded.profile_pic,
@@ -60,7 +60,7 @@ WHERE profile.height <= excluded.height`
 
 	_, err := db.Sql.Exec(
 		stmt,
-		profile.GetAddress().String(), profile.Moniker, profile.DTag, profile.Bio,
+		profile.GetAddress().String(), profile.Nickname, profile.DTag, profile.Bio,
 		profile.Pictures.Profile, profile.Pictures.Cover, profile.CreationDate,
 		profile.Height,
 	)
@@ -71,7 +71,7 @@ WHERE profile.height <= excluded.height`
 func (db DesmosDb) DeleteProfile(address string, height int64) error {
 	stmt := `
 UPDATE profile 
-SET moniker = '', 
+SET nickname = '', 
     dtag = '', 
     bio = '', 
     profile_pic = '', 

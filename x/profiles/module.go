@@ -37,8 +37,8 @@ func (m *Module) Name() string {
 }
 
 // HandleGenesis implements modules.GenesisModule
-func (m *Module) HandleGenesis(_ *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
-	return HandleGenesis(appState, m.encodingConfig.Marshaler, m.db)
+func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
+	return HandleGenesis(doc, appState, m.encodingConfig.Marshaler, m.db)
 }
 
 // HandleMsg implements modules.MessageModule

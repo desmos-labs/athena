@@ -3,6 +3,8 @@ package notifications
 import (
 	"github.com/desmos-labs/juno/modules"
 	juno "github.com/desmos-labs/juno/types"
+
+	"github.com/desmos-labs/djuno/config"
 )
 
 var _ modules.Module = &Module{}
@@ -12,7 +14,14 @@ var _ modules.TransactionModule = &Module{}
 type Module struct{}
 
 // NewModule returns a new Module instance
-func NewModule() *Module {
+func NewModule(cfg *config.Config) *Module {
+	if cfg.Notifications.Enable {
+		err := setupNotifications(cfg.Notifications)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	return &Module{}
 }
 

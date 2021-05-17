@@ -15,11 +15,11 @@ import (
 
 // SavePost allows to store the given post inside the database properly.
 func (db DesmosDb) SavePost(post types.Post) error {
-	log.Info().Str("module", "posts").Str("post_id", post.PostId).Msg("saving post")
+	log.Info().Str("module", "posts").Str("post_id", post.PostID).Msg("saving post")
 
 	// Delete any previous posts
 	stmt := `DELETE FROM post WHERE id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, post.PostId, post.Height)
+	_, err := db.Sql.Exec(stmt, post.PostID, post.Height)
 	if err != nil {
 		return err
 	}
@@ -29,17 +29,17 @@ func (db DesmosDb) SavePost(post types.Post) error {
 		return err
 	}
 
-	err = db.saveOptionalData(post.PostId, post.OptionalData)
+	err = db.saveOptionalData(post.PostID, post.OptionalData)
 	if err != nil {
 		return err
 	}
 
-	err = db.saveAttachments(post.Height, post.PostId, post.Attachments)
+	err = db.saveAttachments(post.Height, post.PostID, post.Attachments)
 	if err != nil {
 		return err
 	}
 
-	err = db.savePollData(post.PostId, post.PollData)
+	err = db.savePollData(post.PostID, post.PollData)
 	if err != nil {
 		return err
 	}
@@ -62,13 +62,13 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	// Convert the parent id string
 	var parentID sql.NullString
-	if len(post.ParentId) > 0 {
-		parentID = sql.NullString{Valid: true, String: post.ParentId}
+	if len(post.ParentID) > 0 {
+		parentID = sql.NullString{Valid: true, String: post.ParentID}
 	}
 
 	_, err = db.Sql.Exec(
 		stmt,
-		post.PostId, parentID, post.Message, post.Created, post.LastEdited, post.AllowsComments,
+		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.DisableComments,
 		post.Subspace, post.Creator, false, post.Height,
 	)
 	return err
@@ -307,6 +307,6 @@ ON CONFLICT ON CONSTRAINT unique_report DO UPDATE
         reporter_address = excluded.reporter_address, 
         height = excluded.height
 WHERE report.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, report.PostId, report.Type, report.Message, report.User, report.Height)
+	_, err = db.Sql.Exec(stmt, report.PostID, report.Type, report.Message, report.User, report.Height)
 	return err
 }

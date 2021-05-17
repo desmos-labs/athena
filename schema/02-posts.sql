@@ -5,7 +5,7 @@ CREATE TABLE post
     message         TEXT                        NOT NULL,
     created         timestamp without time zone NOT NULL,
     last_edited     timestamp without time zone NOT NULL,
-    allows_comments boolean                     NOT NULL,
+    disable_comments boolean                     NOT NULL,
     subspace        TEXT                        NOT NULL,
     creator_address TEXT                        NOT NULL REFERENCES profile (address),
     hidden          BOOLEAN                     NOT NULL DEFAULT false,

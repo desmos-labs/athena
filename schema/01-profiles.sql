@@ -2,7 +2,7 @@ CREATE TABLE profile
 (
     address       TEXT                        NOT NULL UNIQUE PRIMARY KEY,
     dtag          TEXT                        NOT NULL DEFAULT '',
-    moniker       TEXT                        NOT NULL DEFAULT '',
+    nickname      TEXT                        NOT NULL DEFAULT '',
     bio           TEXT                        NOT NULL DEFAULT '',
     profile_pic   TEXT                        NOT NULL DEFAULT '',
     cover_pic     TEXT                        NOT NULL DEFAULT '',
