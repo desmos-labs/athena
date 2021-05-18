@@ -3,7 +3,6 @@ package profiles
 import (
 	"encoding/json"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/desmos-labs/juno/modules/messages"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -17,16 +16,14 @@ import (
 )
 
 var (
-	_ modules.Module            = &Module{}
-	_ modules.GenesisModule     = &Module{}
-	_ modules.TransactionModule = &Module{}
-	_ modules.MessageModule     = &Module{}
+	_ modules.Module        = &Module{}
+	_ modules.GenesisModule = &Module{}
+	_ modules.MessageModule = &Module{}
 )
 
 // Module represents the x/profiles module handler
 type Module struct {
 	encodingConfig *params.EncodingConfig
-	cdc            codec.Marshaler
 	db             *database.Db
 	getAccounts    messages.MessageAddressesParser
 }
@@ -50,11 +47,6 @@ func (m *Module) Name() string {
 // HandleGenesis implements modules.GenesisModule
 func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
 	return HandleGenesis(doc, appState, m.encodingConfig.Marshaler, m.db)
-}
-
-// HandleTx implements modules.TransactionModule
-func (m *Module) HandleTx(tx *juno.Tx) error {
-	panic("implement me")
 }
 
 // HandleMsg implements modules.MessageModule

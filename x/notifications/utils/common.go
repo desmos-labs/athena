@@ -22,12 +22,6 @@ const (
 // containing the given notification and data.
 // If some error rises during the process, it is returned.
 func SendNotification(topic string, notification *messaging.Notification, data map[string]string) error {
-	// TODO: Re-implement this
-	// If disabled, just return
-	//if !viper.GetBool(flags.FlagEnableNotifications) {
-	//	return nil
-	//}
-
 	// Set the default Flutter click action
 	data[ClickActionKey] = ClickActionValue
 

@@ -3,10 +3,10 @@ package profiles
 import (
 	"time"
 
+	types2 "github.com/desmos-labs/djuno/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/desmos-labs/juno/modules/messages"
-
-	"github.com/desmos-labs/djuno/x/profiles/types"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
@@ -108,7 +108,7 @@ func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProf
 
 	newProfile, err := profilestypes.NewProfile(
 		msg.DTag,
-		msg.Nickname,
+		msg.Moniker,
 		msg.Bio,
 		profilestypes.NewPictures(msg.ProfilePicture, msg.CoverPicture),
 		creationDate,
@@ -118,7 +118,7 @@ func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProf
 		return err
 	}
 
-	return db.SaveProfile(types.NewProfile(newProfile, tx.Height))
+	return db.SaveProfile(types2.NewProfile(newProfile, tx.Height))
 }
 
 // handleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
@@ -142,7 +142,7 @@ func handleMsgRequestDTagTransfer(
 		return err
 	}
 
-	return db.SaveDTagTransferRequest(types.NewDTagTransferRequest(
+	return db.SaveDTagTransferRequest(types2.NewDTagTransferRequest(
 		profilestypes.NewDTagTransferRequest(dTagToTrade, msg.Sender, msg.Receiver),
 		tx.Height,
 	))
@@ -150,8 +150,8 @@ func handleMsgRequestDTagTransfer(
 
 // handleMsgAcceptDTagTransfer handles a MsgAcceptDTagTransfer effectively transferring the DTag
 func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransfer, db *desmosdb.Db) error {
-	return db.TransferDTag(types.NewDTagTransferRequestAcceptance(
-		types.NewDTagTransferRequest(
+	return db.TransferDTag(types2.NewDTagTransferRequestAcceptance(
+		types2.NewDTagTransferRequest(
 			profilestypes.NewDTagTransferRequest(msg.NewDTag, msg.Sender, msg.Receiver),
 			tx.Height,
 		),
@@ -161,7 +161,7 @@ func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTr
 
 // handleDTagTransferRequestDeletion allows to delete an existing transfer request
 func handleDTagTransferRequestDeletion(height int64, sender, receiver string, db *desmosdb.Db) error {
-	return db.DeleteDTagTransferRequest(types.NewDTagTransferRequest(
+	return db.DeleteDTagTransferRequest(types2.NewDTagTransferRequest(
 		profilestypes.NewDTagTransferRequest("", sender, receiver),
 		height,
 	))
@@ -171,7 +171,7 @@ func handleDTagTransferRequestDeletion(height int64, sender, receiver string, db
 
 // handleMsgCreateRelationship allows to handle a MsgCreateRelationship properly
 func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelationship, db *desmosdb.Db) error {
-	return db.SaveRelationship(types.NewRelationship(
+	return db.SaveRelationship(types2.NewRelationship(
 		profilestypes.NewRelationship(msg.Sender, msg.Receiver, msg.Subspace),
 		tx.Height,
 	))
@@ -179,7 +179,7 @@ func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelati
 
 // HandleMsgDeleteRelationship allows to handle a MsgDeleteRelationship properly
 func HandleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelationship, db *desmosdb.Db) error {
-	return db.DeleteRelationship(types.NewRelationship(
+	return db.DeleteRelationship(types2.NewRelationship(
 		profilestypes.NewRelationship(msg.User, msg.Counterparty, msg.Subspace),
 		tx.Height,
 	))
@@ -187,7 +187,7 @@ func HandleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelati
 
 // HandleMsgBlockUser allows to handle a MsgBlockUser properly
 func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmosdb.Db) error {
-	return db.SaveBlockage(types.NewBlockage(
+	return db.SaveBlockage(types2.NewBlockage(
 		profilestypes.NewUserBlock(
 			msg.Blocker,
 			msg.Blocked,
@@ -200,7 +200,7 @@ func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmos
 
 // HandleMsgUnblockUser allows to handle a MsgUnblockUser properly
 func HandleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *desmosdb.Db) error {
-	return db.RemoveBlockage(types.NewBlockage(
+	return db.RemoveBlockage(types2.NewBlockage(
 		profilestypes.NewUserBlock(msg.Blocker, msg.Blocked, "", msg.Subspace),
 		tx.Height,
 	))

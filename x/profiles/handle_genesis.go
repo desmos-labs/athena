@@ -8,7 +8,7 @@ import (
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/desmos-labs/djuno/x/profiles/types"
+	"github.com/desmos-labs/djuno/types"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 )

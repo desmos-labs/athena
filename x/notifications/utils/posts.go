@@ -2,13 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
-
-	"github.com/desmos-labs/djuno/x/notifications/utils"
 
 	"firebase.google.com/go/messaging"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+
+	"github.com/desmos-labs/djuno/types"
+	postsutils "github.com/desmos-labs/djuno/x/posts/utils"
 
 	"github.com/desmos-labs/djuno/database"
 )
@@ -39,17 +38,13 @@ const (
 	PostMentionTextKey = "mention_text"
 )
 
-var (
-	mentionRegEx = regexp.MustCompile(`\s([@][a-zA-Z0-9]+)`)
-)
-
 // SendPostNotifications takes the given post and, upon having performed the necessary checks, sends
 // a push notification to the people that might somehow be interested into the creation of the post.
 // For example, if the post is a comment to another post, the creator of the latter will be notified
 // that a new comment has been added.
-func SendPostNotifications(post poststypes.Post, db *database.Db) error {
+func SendPostNotifications(post *types.Post, db *database.Db) error {
 	// Get the post parent
-	parent, err := db.GetPostByID(post.ParentID)
+	parent, err := db.GetPostByID(post.ParentId)
 	if err != nil {
 		return err
 	}
@@ -71,7 +66,7 @@ func SendPostNotifications(post poststypes.Post, db *database.Db) error {
 
 // sendCommentNotification sends the creator of the parent post a notification telling him
 // that the given post has been added as a comment to it's original post.
-func sendCommentNotification(post poststypes.Post, parent *poststypes.Post) error {
+func sendCommentNotification(post *types.Post, parent *types.Post) error {
 	// Not a comment, skip
 	if parent == nil {
 		return nil
@@ -91,27 +86,27 @@ func sendCommentNotification(post poststypes.Post, parent *poststypes.Post) erro
 		NotificationTypeKey:   TypeComment,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:      post.PostID,
+		PostIDKey:      post.PostId,
 		PostMessageKey: post.Message,
 		PostCreatorKey: post.Creator,
 	}
 
 	// Send a notification to the original post owner
-	return utils.SendNotification(parent.Creator, &notification, data)
+	return SendNotification(parent.Creator, &notification, data)
 }
 
 // sendMentionNotifications sends everyone who is tagged inside the given post message a notification.
 // If the given post is a comment to another post, the notification will not be sent to the user that has
 // created the post to which this post is a comment. He will already receive the comment notification,
 // so we need to avoid double notifications
-func sendMentionNotifications(parent *poststypes.Post, post poststypes.Post) error {
+func sendMentionNotifications(parent *types.Post, post *types.Post) error {
 
 	var originalPoster string
 	if parent != nil {
 		originalPoster = parent.Creator
 	}
 
-	mentions, err := GetPostMentions(post)
+	mentions, err := postsutils.GetPostMentions(post)
 	if err != nil {
 		return err
 	}
@@ -135,22 +130,9 @@ func sendMentionNotifications(parent *poststypes.Post, post poststypes.Post) err
 	return nil
 }
 
-// GetPostMentions returns the list of all the addresses that have been mentioned inside a post.
-// If no mentions are present, returns nil instead.
-func GetPostMentions(post poststypes.Post) ([]string, error) {
-	mentions := mentionRegEx.FindAllString(post.Message, -1)
-
-	addresses := make([]string, len(mentions))
-	for index, mention := range mentions {
-		addresses[index] = strings.Trim(strings.TrimSpace(mention), "@")
-	}
-
-	return addresses, nil
-}
-
 // sendMentionNotification sends a single notification to the given telling him that he's been mentioned
 // inside the given post.
-func sendMentionNotification(post poststypes.Post, user string) error {
+func sendMentionNotification(post *types.Post, user string) error {
 	// Get the mentions
 	notification := messaging.Notification{
 		Title: "You've been mentioned inside a post",
@@ -160,13 +142,15 @@ func sendMentionNotification(post poststypes.Post, user string) error {
 		NotificationTypeKey:   TypeMention,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:          post.PostID,
+		PostIDKey:          post.PostId,
 		PostMentionUserKey: post.Creator,
 		PostMentionTextKey: post.Message,
 	}
 
-	return utils.SendNotification(user, &notification, data)
+	return SendNotification(user, &notification, data)
 }
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
@@ -190,7 +174,7 @@ func SendReactionNotifications(postID string, reaction poststypes.PostReaction, 
 
 // sendGenericReactionNotification allows to send a notification for a generic given reaction
 // that has been added to the specified post
-func sendGenericReactionNotification(post *poststypes.Post, reaction poststypes.PostReaction) error {
+func sendGenericReactionNotification(post *types.Post, reaction poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone added a new reaction to one of your posts 🎉",
@@ -200,18 +184,18 @@ func sendGenericReactionNotification(post *poststypes.Post, reaction poststypes.
 		NotificationTypeKey:   TypeReaction,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:                post.PostID,
+		PostIDKey:                post.PostId,
 		PostReactionValueKey:     reaction.Value,
 		PostReactionShortCodeKey: reaction.ShortCode,
 		PostReactionOwnerKey:     reaction.Owner,
 	}
 
 	// Send a notification to the post creator
-	return utils.SendNotification(post.Creator, &notification, data)
+	return SendNotification(post.Creator, &notification, data)
 }
 
 // sendLikeNotification sends a push notification telling that a like has been added to the given post
-func sendLikeNotification(post *poststypes.Post, reaction poststypes.PostReaction) error {
+func sendLikeNotification(post *types.Post, reaction poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone like one of your posts ❤️",
@@ -221,10 +205,10 @@ func sendLikeNotification(post *poststypes.Post, reaction poststypes.PostReactio
 		NotificationTypeKey:   TypeLike,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:       post.PostID,
+		PostIDKey:       post.PostId,
 		PostLikeUserKey: reaction.Owner,
 	}
 
 	// Send a notification to the post creator
-	return utils.SendNotification(post.Creator, &notification, data)
+	return SendNotification(post.Creator, &notification, data)
 }

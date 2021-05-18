@@ -18,8 +18,7 @@ CREATE TABLE dtag_transfer_requests
     CONSTRAINT unique_request UNIQUE (sender_address, receiver_address)
 );
 
-
-CREATE TABLE relationship
+CREATE TABLE profile_relationship
 (
     sender_address   TEXT   NOT NULL REFERENCES profile (address),
     receiver_address TEXT   NOT NULL REFERENCES profile (address),

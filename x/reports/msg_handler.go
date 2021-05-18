@@ -5,7 +5,7 @@ import (
 	reportstypes "github.com/desmos-labs/desmos/x/staging/reports/types"
 	juno "github.com/desmos-labs/juno/types"
 
-	"github.com/desmos-labs/djuno/x/posts/types"
+	types2 "github.com/desmos-labs/djuno/types"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 )
@@ -26,9 +26,9 @@ func HandleMsg(tx *juno.Tx, msg sdk.Msg, db *desmosdb.Db) error {
 
 // handleMsgReport allows to handle a MsgReportPost properly
 func handleMsgReport(tx *juno.Tx, msg *reportstypes.MsgReportPost, db *desmosdb.Db) error {
-	return db.SaveReport(types.NewReport(
+	return db.SaveReport(types2.NewReport(
 		reportstypes.NewReport(
-			msg.PostID,
+			msg.PostId,
 			msg.ReportType,
 			msg.Message,
 			msg.User,

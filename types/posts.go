@@ -6,12 +6,12 @@ import (
 )
 
 type Post struct {
-	*poststypes.Post
+	poststypes.Post
 	Height int64
 }
 
-func NewPost(post *poststypes.Post, height int64) Post {
-	return Post{
+func NewPost(post poststypes.Post, height int64) *Post {
+	return &Post{
 		Post:   post,
 		Height: height,
 	}

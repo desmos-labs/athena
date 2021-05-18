@@ -43,3 +43,28 @@ func Builder(cfg juno.Config, encodingConfig *params.EncodingConfig) (db.Databas
 		Sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
 	}, nil
 }
+
+// SaveTx overrides postgresql.Database to perform a no-op
+func (db *Db) SaveTx(_ *juno.Tx) error {
+	return nil
+}
+
+// HasValidator overrides postgresql.Database to perform a no-op
+func (db *Db) HasValidator(_ string) (bool, error) {
+	return true, nil
+}
+
+// SaveValidators overrides postgresql.Database to perform a no-op
+func (db *Db) SaveValidators(_ []*juno.Validator) error {
+	return nil
+}
+
+// SaveCommitSignatures overrides postgresql.Database to perform a no-op
+func (db *Db) SaveCommitSignatures(_ []*juno.CommitSig) error {
+	return nil
+}
+
+// SaveMessage overrides postgresql.Database to perform a no-op
+func (db *Db) SaveMessage(_ *juno.Message) error {
+	return nil
+}

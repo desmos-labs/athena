@@ -81,6 +81,7 @@ func profilesMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, err
 }
 
 func reportsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
+	// nolint:singleCaseSwitch
 	switch msg := cosmosMsg.(type) {
 	case *reportstypes.MsgReportPost:
 		return []string{msg.User}, nil

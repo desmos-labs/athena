@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/desmos-labs/juno/cmd/init"
+	initcmd "github.com/desmos-labs/juno/cmd/init"
 	juno "github.com/desmos-labs/juno/types"
 	"github.com/pelletier/go-toml"
 	"github.com/spf13/cobra"
@@ -12,7 +12,7 @@ var _ juno.Config = &Config{}
 // Config contains the data used to configure DJuno
 type Config struct {
 	juno.Config
-	Notifications *NotificationsConfig
+	Notifications *NotificationsConfig `toml:"notifications"`
 }
 
 // NewConfig allows to build a new Config instance
@@ -25,15 +25,13 @@ func NewConfig(config juno.Config, notificationsConfig *NotificationsConfig) *Co
 
 // NotificationsConfig contains the configuration for the notifications of DJuno
 type NotificationsConfig struct {
-	Enable                  bool   `toml:"enable"`
 	FirebaseCredentialsFile string `toml:"firebase_credentials_file"`
 	FirebaseProjectID       string `toml:"firebase_project_id"`
 }
 
 // NewNotificationsConfig returns a new NotificationsConfig instance
-func NewNotificationsConfig(enable bool, firebaseFilePath, firebaseProjectID string) *NotificationsConfig {
+func NewNotificationsConfig(firebaseFilePath, firebaseProjectID string) *NotificationsConfig {
 	return &NotificationsConfig{
-		Enable:                  enable,
 		FirebaseCredentialsFile: firebaseFilePath,
 		FirebaseProjectID:       firebaseProjectID,
 	}
@@ -64,14 +62,12 @@ func ParseCfg(fileContents []byte) (juno.Config, error) {
 // -------------------------------------------------------------------------------------------------------------------
 
 const (
-	FlagNotificationsEnabled                = "notifications-enabled"
 	FlagNotificationsFirebaseCredentialFile = "notifications-firebase-credential-file"
 	FlagNotificationsFirebaseProjectID      = "notifications-firebase-project-id"
 )
 
 // SetupFlags adds the proper flags to the init command allowing to specify the notifications-related data
 func SetupFlags(cmd *cobra.Command) {
-	cmd.Flags().Bool(FlagNotificationsEnabled, false, "Enable the push notifications")
 	cmd.Flags().String(FlagNotificationsFirebaseCredentialFile, "", "Path to the Firebase credentials file")
 	cmd.Flags().String(FlagNotificationsFirebaseProjectID, "", "ID of the Firebase project to be used to send the notifications")
 }
@@ -79,14 +75,13 @@ func SetupFlags(cmd *cobra.Command) {
 // CreateConfigFromFlags returns a new Config instance based on the values provided to the "init"
 // command using the various flags
 func CreateConfigFromFlags(cmd *cobra.Command) juno.Config {
-	junoCfg := init.DefaultConfigCreator(cmd)
+	junoCfg := initcmd.DefaultConfigCreator(cmd)
 
-	notificationsEnabled, _ := cmd.Flags().GetBool(FlagNotificationsEnabled)
 	notificationsFirebaseFile, _ := cmd.Flags().GetString(FlagNotificationsFirebaseCredentialFile)
 	notificationsProjectID, _ := cmd.Flags().GetString(FlagNotificationsFirebaseProjectID)
 
 	return NewConfig(
 		junoCfg,
-		NewNotificationsConfig(notificationsEnabled, notificationsFirebaseFile, notificationsProjectID),
+		NewNotificationsConfig(notificationsFirebaseFile, notificationsProjectID),
 	)
 }

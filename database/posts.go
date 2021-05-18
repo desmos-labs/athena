@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/desmos-labs/djuno/x/posts/types"
+	"github.com/desmos-labs/djuno/types"
 
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
@@ -14,12 +14,12 @@ import (
 )
 
 // SavePost allows to store the given post inside the database properly.
-func (db Db) SavePost(post types.Post) error {
-	log.Info().Str("module", "posts").Str("post_id", post.PostID).Msg("saving post")
+func (db Db) SavePost(post *types.Post) error {
+	log.Info().Str("module", "posts").Str("post_id", post.PostId).Msg("saving post")
 
 	// Delete any previous posts
 	stmt := `DELETE FROM post WHERE id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, post.PostID, post.Height)
+	_, err := db.Sql.Exec(stmt, post.PostId, post.Height)
 	if err != nil {
 		return err
 	}
@@ -29,17 +29,17 @@ func (db Db) SavePost(post types.Post) error {
 		return err
 	}
 
-	err = db.saveOptionalData(post.PostID, post.OptionalData)
+	err = db.saveOptionalData(post.PostId, post.OptionalData)
 	if err != nil {
 		return err
 	}
 
-	err = db.saveAttachments(post.Height, post.PostID, post.Attachments)
+	err = db.saveAttachments(post.Height, post.PostId, post.Attachments)
 	if err != nil {
 		return err
 	}
 
-	err = db.savePollData(post.PostID, post.PollData)
+	err = db.savePollData(post.PostId, post.PollData)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (db Db) SavePost(post types.Post) error {
 }
 
 // savePostContent allows to store the content of the given post
-func (db Db) savePostContent(post types.Post) error {
+func (db Db) savePostContent(post *types.Post) error {
 	// Save the user
 	err := db.SaveUserIfNotExisting(post.Creator, post.Height)
 	if err != nil {
@@ -57,18 +57,18 @@ func (db Db) savePostContent(post types.Post) error {
 
 	// Save the post
 	stmt := `
-INSERT INTO post (id, parent_id, message, created, last_edited, allows_comments, subspace, creator_address, hidden, height)
+INSERT INTO post (id, parent_id, message, created, last_edited, disable_comments, subspace, creator_address, hidden, height)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	// Convert the parent id string
 	var parentID sql.NullString
-	if len(post.ParentID) > 0 {
-		parentID = sql.NullString{Valid: true, String: post.ParentID}
+	if len(post.ParentId) > 0 {
+		parentID = sql.NullString{Valid: true, String: post.ParentId}
 	}
 
 	_, err = db.Sql.Exec(
 		stmt,
-		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.DisableComments,
+		post.PostId, parentID, post.Message, post.Created, post.LastEdited, !post.AllowsComments,
 		post.Subspace, post.Creator, false, post.Height,
 	)
 	return err
@@ -77,7 +77,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 // saveOptionalData allows to save the specified optional data that are associated
 // to the post having the given postID
 func (db Db) saveOptionalData(postID string, data poststypes.OptionalData) error {
-	stmt := `INSERT INTO post_optional_data_entry (post_id, key, value) VALUES `
+	stmt := `INSERT INTO post_additional_attribute (post_id, key, value) VALUES `
 	var args []interface{}
 	for index, entry := range data {
 		oi := index * 3
@@ -160,7 +160,7 @@ func (db Db) savePollData(postID string, poll *poststypes.PollData) error {
 // GetPostByID returns the post having the specified id.
 // If some error raised during the read, it is returned.
 // If no post with the specified id is found, nil is returned instead.
-func (db Db) GetPostByID(id string) (*poststypes.Post, error) {
+func (db Db) GetPostByID(id string) (*types.Post, error) {
 	stmt := `SELECT * FROM post WHERE id = $1`
 
 	var rows []dbtypes.PostRow
@@ -191,13 +191,12 @@ func (db Db) GetPostByID(id string) (*poststypes.Post, error) {
 		return nil, err
 	}
 
-	post := dbtypes.ConvertPostRow(row, optionalData, attachments, poll)
-	return &post, nil
+	return dbtypes.ConvertPostRow(row, optionalData, attachments, poll), nil
 }
 
 // getOptionalData returns all the optional data associated to the post having the given id
 func (db Db) getOptionalData(postID string) (poststypes.OptionalData, error) {
-	stmt := `SELECT * FROM post_optional_data_entry WHERE post_id = $1`
+	stmt := `SELECT * FROM post_additional_attribute WHERE post_id = $1`
 
 	var rows []dbtypes.OptionalDataRow
 	err := db.Sqlx.Select(&rows, stmt, postID)
@@ -298,7 +297,7 @@ func (db Db) SaveReport(report types.Report) error {
 	}
 
 	stmt := `
-INSERT INTO report(post_id, type, message, reporter_address, height) 
+INSERT INTO post_report (post_id, type, message, reporter_address, height) 
 VALUES ($1, $2, $3, $4, $5) 
 ON CONFLICT ON CONSTRAINT unique_report DO UPDATE 
     SET post_id = excluded.post_id, 
@@ -306,7 +305,7 @@ ON CONFLICT ON CONSTRAINT unique_report DO UPDATE
         message = excluded.message,
         reporter_address = excluded.reporter_address, 
         height = excluded.height
-WHERE report.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, report.PostID, report.Type, report.Message, report.User, report.Height)
+WHERE post_report.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, report.PostId, report.Type, report.Message, report.User, report.Height)
 	return err
 }

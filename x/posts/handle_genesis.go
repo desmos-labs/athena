@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"sort"
 
-	tmtypes "github.com/tendermint/tendermint/types"
+	"github.com/desmos-labs/djuno/types"
 
-	"github.com/desmos-labs/djuno/x/posts/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
@@ -58,7 +58,7 @@ func HandleGenesis(
 
 func savePosts(height int64, posts []poststypes.Post, db *desmosdb.Db) error {
 	for index := range posts {
-		err := db.SavePost(types.NewPost(&posts[index], height))
+		err := db.SavePost(types.NewPost(posts[index], height))
 		if err != nil {
 			return err
 		}
@@ -79,7 +79,7 @@ func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReac
 func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, db *desmosdb.Db) error {
 	for _, entry := range reactions {
 		for _, reaction := range entry.Reactions {
-			err := db.SavePostReaction(types.NewPostReaction(entry.PostID, reaction, height))
+			err := db.SavePostReaction(types.NewPostReaction(entry.PostId, reaction, height))
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,7 @@ func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, 
 func savePollAnswers(height int64, userAnswers []poststypes.UserAnswersEntry, db *desmosdb.Db) error {
 	for _, entry := range userAnswers {
 		for _, answer := range entry.UserAnswers {
-			err := db.SaveUserPollAnswer(types.NewUserPollAnswer(entry.PostID, answer, height))
+			err := db.SaveUserPollAnswer(types.NewUserPollAnswer(entry.PostId, answer, height))
 			if err != nil {
 				return err
 			}

@@ -31,7 +31,7 @@ func NewModulesRegistrar() *ModulesRegistrar {
 
 // BuildModules implements modules.Registrar
 func (r *ModulesRegistrar) BuildModules(
-	cfg juno.Config, encodingConfig *params.EncodingConfig, _ *sdk.Config, db db.Database, cp *client.Proxy,
+	cfg juno.Config, encodingConfig *params.EncodingConfig, _ *sdk.Config, db db.Database, _ *client.Proxy,
 ) modules.Modules {
 	desmosDb := database.Cast(db)
 
@@ -41,7 +41,7 @@ func (r *ModulesRegistrar) BuildModules(
 	}
 
 	return []modules.Module{
-		notifications.NewModule(djunoCfg),
+		notifications.NewModule(djunoCfg.Notifications, desmosDb),
 		posts.NewModule(encodingConfig, desmosDb),
 		profiles.NewModule(common.MessagesParser, encodingConfig, desmosDb),
 		reports.NewModule(desmosDb),

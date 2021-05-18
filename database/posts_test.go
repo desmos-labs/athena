@@ -3,7 +3,7 @@ package database_test
 import (
 	"time"
 
-	"github.com/desmos-labs/djuno/x/posts/types"
+	types2 "github.com/desmos-labs/djuno/types"
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 
@@ -50,7 +50,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	)
 
 	// Save the data
-	err = suite.database.SavePost(types.NewPost(&post, 10))
+	err = suite.database.SavePost(types2.NewPost(&post, 10))
 	suite.Require().NoError(err)
 
 	// Get the data
@@ -62,7 +62,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 
 func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
 	post := suite.testData.post
-	err := suite.database.SavePost(types.NewPost(&post, 1))
+	err := suite.database.SavePost(types2.NewPost(&post, 1))
 	suite.Require().NoError(err)
 
 	return post, post.PollData
@@ -73,7 +73,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
 
 	// Save the answer
 	user := "cosmos184dqecwkwex2hv6ae8fhzkw0cwrn39aw2ncy7n"
-	err := suite.database.SaveUserPollAnswer(types.NewUserPollAnswer(
+	err := suite.database.SaveUserPollAnswer(types2.NewUserPollAnswer(
 		post.PostID,
 		poststypes.NewUserAnswer([]string{"0", "1"}, user),
 		1,

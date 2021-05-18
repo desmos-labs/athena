@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/desmos-labs/djuno/types"
+
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 )
 
@@ -25,24 +27,27 @@ type PostRow struct {
 func ConvertPostRow(
 	row PostRow, optionalData poststypes.OptionalData,
 	attachments []poststypes.Attachment, poll *poststypes.PollData,
-) poststypes.Post {
+) *types.Post {
 	var parentID string
 	if row.ParentID.Valid {
 		parentID = row.ParentID.String
 	}
 
-	return poststypes.NewPost(
-		row.PostID,
-		parentID,
-		row.Message,
-		row.AllowsComments,
-		row.Subspace,
-		optionalData,
-		attachments,
-		poll,
-		row.LastEdited,
-		row.Created,
-		row.Creator,
+	return types.NewPost(
+		poststypes.NewPost(
+			row.PostID,
+			parentID,
+			row.Message,
+			row.AllowsComments,
+			row.Subspace,
+			optionalData,
+			attachments,
+			poll,
+			row.LastEdited,
+			row.Created,
+			row.Creator,
+		),
+		row.Height,
 	)
 }
 

@@ -1,6 +1,8 @@
 package types
 
-import profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+import (
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+)
 
 type Profile struct {
 	*profilestypes.Profile

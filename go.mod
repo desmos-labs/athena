@@ -7,8 +7,8 @@ require (
 	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.42.4
-	github.com/desmos-labs/desmos v0.16.3-0.20210517103958-e847d726e914
-	github.com/desmos-labs/juno v0.0.0-20210513082948-fad7f160e2cd
+	github.com/desmos-labs/desmos v0.16.1
+	github.com/desmos-labs/juno v0.0.0-20210518101652-10c486c609cf
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/pelletier/go-toml v1.8.0
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
@@ -18,6 +18,7 @@ require (
 	github.com/tendermint/tendermint v0.34.9
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	google.golang.org/api v0.20.0
+	google.golang.org/genproto v0.0.0-20210510173355-fb37daa5cd7a // indirect
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

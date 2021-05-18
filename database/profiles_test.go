@@ -3,7 +3,7 @@ package database_test
 import (
 	"time"
 
-	"github.com/desmos-labs/djuno/x/profiles/types"
+	types2 "github.com/desmos-labs/djuno/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -50,7 +50,7 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 	suite.Require().NoError(err)
 
 	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(original, 10))
+	err = suite.database.SaveProfile(types2.NewProfile(original, 10))
 	suite.Require().NoError(err)
 
 	// Verify the storing
@@ -70,7 +70,7 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 	suite.Require().NoError(err)
 
 	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(updated, 9))
+	err = suite.database.SaveProfile(types2.NewProfile(updated, 9))
 	suite.Require().NoError(err)
 
 	// Verify the data
@@ -90,7 +90,7 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 	suite.Require().NoError(err)
 
 	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(updated, 10))
+	err = suite.database.SaveProfile(types2.NewProfile(updated, 10))
 	suite.Require().NoError(err)
 
 	// Verify the data
@@ -110,7 +110,7 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 	suite.Require().NoError(err)
 
 	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(updated, 11))
+	err = suite.database.SaveProfile(types2.NewProfile(updated, 11))
 	suite.Require().NoError(err)
 
 	// Verify the data
@@ -121,8 +121,8 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-func (suite *DbTestSuite) saveRelationship() types.Relationship {
-	relationship := types.NewRelationship(
+func (suite *DbTestSuite) saveRelationship() types2.Relationship {
+	relationship := types2.NewRelationship(
 		profilestypes.NewRelationship(
 			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 			"cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr",
@@ -175,11 +175,11 @@ func (suite *DbTestSuite) TestDesmosDb_DeleteRelationship() {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-func (suite *DbTestSuite) saveBlockage() types.Blockage {
+func (suite *DbTestSuite) saveBlockage() types2.Blockage {
 	suite.Require().NoError(suite.database.SaveUserIfNotExisting("cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s", 1))
 	suite.Require().NoError(suite.database.SaveUserIfNotExisting("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr", 1))
 
-	blockage := types.NewBlockage(
+	blockage := types2.NewBlockage(
 		profilestypes.NewUserBlock(
 			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 			"cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr",

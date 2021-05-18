@@ -4,24 +4,22 @@ import (
 	juno "github.com/desmos-labs/juno/types"
 	"github.com/rs/zerolog/log"
 	tmtypes "github.com/tendermint/tendermint/abci/types"
-
-	utils2 "github.com/desmos-labs/djuno/x/posts/utils"
 )
 
 const (
-	TypeTransactionSuccess = "transaction_success"
-	TypeTransactionFailed  = "transaction_fail"
+	NotificationTypeTxSuccess = "transaction_success"
+	NotificationTypeTxFailed  = "transaction_fail"
 
-	TransactionHashKey  = "tx_hash"
-	TransactionErrorKey = "tx_error"
+	AttributeKeyTxHash  = "tx_hash"
+	AttributeKeyTxError = "tx_error"
 )
 
 // SendTransactionResultNotification sends to the given user a notification telling him
 // that the specified transaction has either succeeded or failed
 func SendTransactionResultNotification(tx *juno.Tx, user string) error {
-	result := TypeTransactionSuccess
+	result := NotificationTypeTxSuccess
 	if tx.Code != tmtypes.CodeTypeOK {
-		result = TypeTransactionFailed
+		result = NotificationTypeTxFailed
 	}
 
 	log.Info().
@@ -31,10 +29,10 @@ func SendTransactionResultNotification(tx *juno.Tx, user string) error {
 		Msg("sending notification")
 
 	data := map[string]string{
-		utils2.NotificationTypeKey: result,
+		NotificationTypeKey: result,
 
-		TransactionHashKey:  tx.TxHash,
-		TransactionErrorKey: tx.RawLog,
+		AttributeKeyTxHash:  tx.TxHash,
+		AttributeKeyTxError: tx.RawLog,
 	}
 
 	// Send a notification to the original post owner
