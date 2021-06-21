@@ -1,6 +1,7 @@
 package database_test
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
@@ -40,13 +41,18 @@ func (suite *DbTestSuite) SetupTest() {
 		nil,
 		nil,
 		nil,
-		&juno.DatabaseConfig{
-			Name:     "juno",
-			Host:     "localhost",
-			Port:     5433,
-			User:     "juno",
-			Password: "password",
-		},
+		juno.NewDatabaseConfig(
+			"juno",
+			"localhost",
+			5433,
+			"juno",
+			"password",
+			"",
+			"public",
+			10,
+			10,
+		),
+		nil,
 		nil,
 		nil,
 	)
@@ -59,14 +65,14 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.Require().True(ok)
 
 	// Delete the public schema
-	_, err = desmosDb.Sql.Exec(`DROP SCHEMA public CASCADE;`)
+	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, config.GetDatabaseConfig().GetSchema()))
 	suite.Require().NoError(err)
 
 	// Re-create the schema
-	_, err = desmosDb.Sql.Exec(`CREATE SCHEMA public;`)
+	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, config.GetDatabaseConfig().GetSchema()))
 	suite.Require().NoError(err)
 
-	dirPath := "../schema"
+	dirPath := "schema"
 	dir, err := ioutil.ReadDir(dirPath)
 	for _, fileInfo := range dir {
 		if !strings.HasSuffix(fileInfo.Name(), ".sql") {
@@ -93,11 +99,11 @@ func (suite *DbTestSuite) setupTestData() {
 			"60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752",
 			"",
 			"Post message",
-			false,
+			poststypes.CommentsStateBlocked,
 			"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-			poststypes.OptionalData{
-				poststypes.NewOptionalDataEntry("first_key", "first_value"),
-				poststypes.NewOptionalDataEntry("second_key", "1"),
+			[]poststypes.Attribute{
+				poststypes.NewAttribute("first_key", "first_value"),
+				poststypes.NewAttribute("second_key", "1"),
 			},
 			poststypes.NewAttachments(
 				poststypes.NewAttachment(

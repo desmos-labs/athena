@@ -13,7 +13,7 @@ import (
 type ProfileRow struct {
 	Address      string    `db:"address"`
 	DTag         string    `db:"dtag"`
-	Moniker      string    `db:"moniker"`
+	Nickname     string    `db:"nickname"`
 	Bio          string    `db:"bio"`
 	ProfilePic   string    `db:"profile_pic"`
 	CoverPic     string    `db:"cover_pic"`
@@ -30,7 +30,7 @@ func ConvertProfileRow(row ProfileRow) (*profilestypes.Profile, error) {
 
 	profile, err := profilestypes.NewProfile(
 		row.DTag,
-		row.Moniker,
+		row.Nickname,
 		row.Bio,
 		profilestypes.NewPictures(row.ProfilePic, row.CoverPic),
 		row.CreationTime,

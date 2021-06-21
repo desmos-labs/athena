@@ -110,7 +110,6 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 // storing inside the database the new answer.
 func handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll, db *database.Db) error {
 	return db.SaveUserPollAnswer(types.NewUserPollAnswer(
-		msg.PostID,
 		poststypes.NewUserAnswer(msg.PostID, msg.Answerer, msg.Answers),
 		tx.Height,
 	))

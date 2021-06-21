@@ -8,15 +8,11 @@ import (
 
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
-	"github.com/rs/zerolog/log"
-
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
 
 // SavePost allows to store the given post inside the database properly.
 func (db Db) SavePost(post *types.Post) error {
-	log.Info().Str("module", "posts").Str("post_id", post.PostID).Msg("saving post")
-
 	// Delete any previous posts
 	stmt := `DELETE FROM post WHERE id = $1 AND height <= $2`
 	_, err := db.Sql.Exec(stmt, post.PostID, post.Height)
@@ -57,7 +53,7 @@ func (db Db) savePostContent(post *types.Post) error {
 
 	// Save the post
 	stmt := `
-INSERT INTO post (id, parent_id, message, created, last_edited, disable_comments, subspace, creator_address, hidden, height)
+INSERT INTO post (id, parent_id, message, created, last_edited, comments_state, subspace, creator_address, hidden, height)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	// Convert the parent id string
@@ -68,7 +64,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	_, err = db.Sql.Exec(
 		stmt,
-		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.CommentsState,
+		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.CommentsState.String(),
 		post.Subspace, post.Creator, false, post.Height,
 	)
 	return err
@@ -77,7 +73,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 // saveAttributes allows to save the specified attributes that are associated
 // to the post having the given postID
 func (db Db) saveAttributes(postID string, data []poststypes.Attribute) error {
-	stmt := `INSERT INTO post_additional_attribute (post_id, key, value) VALUES `
+	stmt := `INSERT INTO post_attribute (post_id, key, value) VALUES `
 	var args []interface{}
 	for index, entry := range data {
 		oi := index * 3
@@ -196,7 +192,7 @@ func (db Db) GetPostByID(id string) (*types.Post, error) {
 
 // getOptionalData returns all the optional data associated to the post having the given id
 func (db Db) getOptionalData(postID string) ([]poststypes.Attribute, error) {
-	stmt := `SELECT * FROM post_additional_attribute WHERE post_id = $1`
+	stmt := `SELECT * FROM post_attribute WHERE post_id = $1`
 
 	var rows []dbtypes.AttributeRow
 	err := db.Sqlx.Select(&rows, stmt, postID)

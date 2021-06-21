@@ -16,18 +16,24 @@ func NewPost(post poststypes.Post, height int64) *Post {
 	}
 }
 
+func (p *Post) Equal(other interface{}) bool {
+	post, ok := other.(*Post)
+	if !ok {
+		return false
+	}
+	return p.Height == post.Height && p.Post.Equal(post.Post)
+}
+
 // --------------------------------------------------------------------------------------------------------------------
 
 type UserPollAnswer struct {
 	poststypes.UserAnswer
-	PostID string
 	Height int64
 }
 
-func NewUserPollAnswer(postID string, answer poststypes.UserAnswer, height int64) UserPollAnswer {
+func NewUserPollAnswer(answer poststypes.UserAnswer, height int64) UserPollAnswer {
 	return UserPollAnswer{
 		UserAnswer: answer,
-		PostID:     postID,
 		Height:     height,
 	}
 }

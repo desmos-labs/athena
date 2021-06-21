@@ -3,7 +3,7 @@ package database
 import (
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
-	types2 "github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/types"
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
@@ -19,7 +19,7 @@ func convertReactionRow(row dbtypes.RegisteredReactionRow) poststypes.Registered
 }
 
 // SavePostReaction allows to save the given reaction into the database.
-func (db Db) SavePostReaction(reaction types2.PostReaction) error {
+func (db Db) SavePostReaction(reaction types.PostReaction) error {
 	err := db.SaveUserIfNotExisting(reaction.Owner, reaction.Height)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ WHERE post_reaction.height <= excluded.height`
 }
 
 // RemovePostReaction allows to remove an already existing reaction from the database.
-func (db Db) RemovePostReaction(reaction types2.PostReaction) error {
+func (db Db) RemovePostReaction(reaction types.PostReaction) error {
 	err := db.SaveUserIfNotExisting(reaction.Owner, reaction.Height)
 	if err != nil {
 		return err
@@ -76,7 +76,7 @@ func (db Db) GetRegisteredReactionByCodeOrValue(
 }
 
 // RegisterReactionIfNotPresent allows to register into the database the given reaction.
-func (db Db) RegisterReactionIfNotPresent(reaction types2.RegisteredReaction) error {
+func (db Db) RegisterReactionIfNotPresent(reaction types.RegisteredReaction) error {
 	react, err := db.GetRegisteredReactionByCodeOrValue(reaction.ShortCode, reaction.Subspace)
 	if err != nil {
 		return err

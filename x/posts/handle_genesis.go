@@ -90,7 +90,7 @@ func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, 
 
 func savePollAnswers(height int64, userAnswers []poststypes.UserAnswer, db *desmosdb.Db) error {
 	for _, answer := range userAnswers {
-		err := db.SaveUserPollAnswer(types.NewUserPollAnswer(answer.PostID, answer, height))
+		err := db.SaveUserPollAnswer(types.NewUserPollAnswer(answer, height))
 		if err != nil {
 			return err
 		}
