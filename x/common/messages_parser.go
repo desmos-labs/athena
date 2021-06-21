@@ -5,7 +5,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-	reportstypes "github.com/desmos-labs/desmos/x/staging/reports/types"
 	"github.com/desmos-labs/juno/modules/messages"
 )
 
@@ -83,7 +82,7 @@ func profilesMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, err
 func reportsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
 	// nolint:singleCaseSwitch
 	switch msg := cosmosMsg.(type) {
-	case *reportstypes.MsgReportPost:
+	case *poststypes.MsgReportPost:
 		return []string{msg.User}, nil
 	}
 

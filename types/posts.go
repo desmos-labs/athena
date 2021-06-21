@@ -2,7 +2,6 @@ package types
 
 import (
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-	reportstypes "github.com/desmos-labs/desmos/x/staging/reports/types"
 )
 
 type Post struct {
@@ -66,11 +65,11 @@ func NewPostReaction(postID string, reaction poststypes.PostReaction, height int
 // --------------------------------------------------------------------------------------------------------------------
 
 type Report struct {
-	reportstypes.Report
+	poststypes.Report
 	Height int64
 }
 
-func NewReport(report reportstypes.Report, height int64) Report {
+func NewReport(report poststypes.Report, height int64) Report {
 	return Report{
 		Report: report,
 		Height: height,

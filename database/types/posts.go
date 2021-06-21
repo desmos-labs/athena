@@ -11,26 +11,31 @@ import (
 
 // PostRow represents a single PostgreSQL row containing the data of a Post
 type PostRow struct {
-	ParentID       sql.NullString `db:"parent_id"`
-	Created        time.Time      `db:"created"`
-	LastEdited     time.Time      `db:"last_edited"`
-	PostID         string         `db:"id"`
-	Message        string         `db:"message"`
-	Subspace       string         `db:"subspace"`
-	Creator        string         `db:"creator_address"`
-	AllowsComments bool           `db:"allows_comments"`
-	Hidden         bool           `db:"hidden"`
-	Height         int64          `db:"height"`
+	ParentID     sql.NullString `db:"parent_id"`
+	Created      time.Time      `db:"created"`
+	LastEdited   time.Time      `db:"last_edited"`
+	PostID       string         `db:"id"`
+	Message      string         `db:"message"`
+	Subspace     string         `db:"subspace"`
+	Creator      string         `db:"creator_address"`
+	CommentState string         `db:"comments_state"`
+	Hidden       bool           `db:"hidden"`
+	Height       int64          `db:"height"`
 }
 
 // ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
 func ConvertPostRow(
-	row PostRow, optionalData poststypes.OptionalData,
+	row PostRow, attributes []poststypes.Attribute,
 	attachments []poststypes.Attachment, poll *poststypes.PollData,
-) *types.Post {
+) (*types.Post, error) {
 	var parentID string
 	if row.ParentID.Valid {
 		parentID = row.ParentID.String
+	}
+
+	state, err := poststypes.CommentsStateFromString(row.CommentState)
+	if err != nil {
+		return nil, err
 	}
 
 	return types.NewPost(
@@ -38,9 +43,9 @@ func ConvertPostRow(
 			row.PostID,
 			parentID,
 			row.Message,
-			row.AllowsComments,
+			state,
 			row.Subspace,
-			optionalData,
+			attributes,
 			attachments,
 			poll,
 			row.LastEdited,
@@ -48,30 +53,30 @@ func ConvertPostRow(
 			row.Creator,
 		),
 		row.Height,
-	)
+	), nil
 }
 
 // ---------------------------------------------------------------------------------------------------
 
-// OptionalDataRow represents a single row inside the optional_data table
-type OptionalDataRow struct {
+// AttributeRow represents a single row inside the optional_data table
+type AttributeRow struct {
 	PostID string `db:"post_id"`
 	Key    string `db:"key"`
 	Value  string `db:"value"`
 }
 
-// ConvertOptionalDataRows converts the given rows into an OptionalData object
-func ConvertOptionalDataRows(rows []OptionalDataRow) poststypes.OptionalData {
-	attachments := make(poststypes.OptionalData, len(rows))
+// ConvertAttributeRow converts the given rows into an OptionalData object
+func ConvertAttributeRow(rows []AttributeRow) []poststypes.Attribute {
+	var attributes = make([]poststypes.Attribute, len(rows))
 	for index, row := range rows {
-		attachments[index] = poststypes.NewOptionalDataEntry(row.Key, row.Value)
+		attributes[index] = poststypes.NewAttribute(row.Key, row.Value)
 	}
-	return attachments
+	return attributes
 }
 
 // ---------------------------------------------------------------------------------------------------
 
-// OptionalDataRow represents a single row inside the optional_data table
+// AttachmentRow represents a single row inside the optional_data table
 type AttachmentRow struct {
 	ID       int    `db:"id"`
 	PostID   string `db:"post_id"`

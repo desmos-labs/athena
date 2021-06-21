@@ -108,7 +108,7 @@ func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProf
 
 	newProfile, err := profilestypes.NewProfile(
 		msg.DTag,
-		msg.Moniker,
+		msg.Nickname,
 		msg.Bio,
 		profilestypes.NewPictures(msg.ProfilePicture, msg.CoverPicture),
 		creationDate,

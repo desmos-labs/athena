@@ -40,6 +40,10 @@ func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.Db) erro
 	// Polls
 	case *poststypes.MsgAnswerPoll:
 		return handleMsgAnswerPoll(tx, desmosMsg, database)
+
+	// Reports
+	case *poststypes.MsgReportPost:
+		return handleMsgReport(tx, desmosMsg, database)
 	}
 
 	return nil
@@ -80,7 +84,7 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 	}
 
 	// Get the post
-	post, err := db.GetPostByID(msg.PostId)
+	post, err := db.GetPostByID(msg.PostID)
 	if err != nil {
 		return err
 	}
@@ -106,8 +110,8 @@ func handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost, db *
 // storing inside the database the new answer.
 func handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll, db *database.Db) error {
 	return db.SaveUserPollAnswer(types.NewUserPollAnswer(
-		msg.PostId,
-		poststypes.NewUserAnswer(msg.UserAnswers, msg.Answerer),
+		msg.PostID,
+		poststypes.NewUserAnswer(msg.PostID, msg.Answerer, msg.Answers),
 		tx.Height,
 	))
 }
@@ -142,6 +146,21 @@ func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.Db) error 
 func handleMsgRegisterReaction(tx *juno.Tx, msg *poststypes.MsgRegisterReaction, db *database.Db) error {
 	return db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(
 		poststypes.NewRegisteredReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace),
+		tx.Height,
+	))
+}
+
+// -----------------------------------------------------------------------------------------------------
+
+// handleMsgReport allows to handle a MsgReportPost properly
+func handleMsgReport(tx *juno.Tx, msg *poststypes.MsgReportPost, db *database.Db) error {
+	return db.SaveReport(types.NewReport(
+		poststypes.NewReport(
+			msg.PostID,
+			msg.ReportType,
+			msg.Message,
+			msg.User,
+		),
 		tx.Height,
 	))
 }

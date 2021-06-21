@@ -15,11 +15,11 @@ import (
 
 // SavePost allows to store the given post inside the database properly.
 func (db Db) SavePost(post *types.Post) error {
-	log.Info().Str("module", "posts").Str("post_id", post.PostId).Msg("saving post")
+	log.Info().Str("module", "posts").Str("post_id", post.PostID).Msg("saving post")
 
 	// Delete any previous posts
 	stmt := `DELETE FROM post WHERE id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, post.PostId, post.Height)
+	_, err := db.Sql.Exec(stmt, post.PostID, post.Height)
 	if err != nil {
 		return err
 	}
@@ -29,17 +29,17 @@ func (db Db) SavePost(post *types.Post) error {
 		return err
 	}
 
-	err = db.saveOptionalData(post.PostId, post.OptionalData)
+	err = db.saveAttributes(post.PostID, post.AdditionalAttributes)
 	if err != nil {
 		return err
 	}
 
-	err = db.saveAttachments(post.Height, post.PostId, post.Attachments)
+	err = db.saveAttachments(post.Height, post.PostID, post.Attachments)
 	if err != nil {
 		return err
 	}
 
-	err = db.savePollData(post.PostId, post.PollData)
+	err = db.savePollData(post.PostID, post.PollData)
 	if err != nil {
 		return err
 	}
@@ -62,21 +62,21 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	// Convert the parent id string
 	var parentID sql.NullString
-	if len(post.ParentId) > 0 {
-		parentID = sql.NullString{Valid: true, String: post.ParentId}
+	if len(post.ParentID) > 0 {
+		parentID = sql.NullString{Valid: true, String: post.ParentID}
 	}
 
 	_, err = db.Sql.Exec(
 		stmt,
-		post.PostId, parentID, post.Message, post.Created, post.LastEdited, !post.AllowsComments,
+		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.CommentsState,
 		post.Subspace, post.Creator, false, post.Height,
 	)
 	return err
 }
 
-// saveOptionalData allows to save the specified optional data that are associated
+// saveAttributes allows to save the specified attributes that are associated
 // to the post having the given postID
-func (db Db) saveOptionalData(postID string, data poststypes.OptionalData) error {
+func (db Db) saveAttributes(postID string, data []poststypes.Attribute) error {
 	stmt := `INSERT INTO post_additional_attribute (post_id, key, value) VALUES `
 	var args []interface{}
 	for index, entry := range data {
@@ -191,20 +191,20 @@ func (db Db) GetPostByID(id string) (*types.Post, error) {
 		return nil, err
 	}
 
-	return dbtypes.ConvertPostRow(row, optionalData, attachments, poll), nil
+	return dbtypes.ConvertPostRow(row, optionalData, attachments, poll)
 }
 
 // getOptionalData returns all the optional data associated to the post having the given id
-func (db Db) getOptionalData(postID string) (poststypes.OptionalData, error) {
+func (db Db) getOptionalData(postID string) ([]poststypes.Attribute, error) {
 	stmt := `SELECT * FROM post_additional_attribute WHERE post_id = $1`
 
-	var rows []dbtypes.OptionalDataRow
+	var rows []dbtypes.AttributeRow
 	err := db.Sqlx.Select(&rows, stmt, postID)
 	if err != nil {
 		return nil, err
 	}
 
-	return dbtypes.ConvertOptionalDataRows(rows), nil
+	return dbtypes.ConvertAttributeRow(rows), nil
 }
 
 // getAttachments returns the attachments of the post having the given id
@@ -306,6 +306,6 @@ ON CONFLICT ON CONSTRAINT unique_report DO UPDATE
         reporter_address = excluded.reporter_address, 
         height = excluded.height
 WHERE post_report.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, report.PostId, report.Type, report.Message, report.User, report.Height)
+	_, err = db.Sql.Exec(stmt, report.PostID, report.Type, report.Message, report.User, report.Height)
 	return err
 }

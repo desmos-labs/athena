@@ -13,7 +13,7 @@ CREATE TABLE post
 );
 CREATE INDEX post_height_index ON post (height);
 
-CREATE TABLE post_additional_attribute
+CREATE TABLE post_attribute
 (
     post_id TEXT NOT NULL REFERENCES post (id) ON DELETE CASCADE,
     key     TEXT NOT NULL,

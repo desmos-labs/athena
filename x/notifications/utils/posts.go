@@ -44,7 +44,7 @@ const (
 // that a new comment has been added.
 func SendPostNotifications(post *types.Post, db *database.Db) error {
 	// Get the post parent
-	parent, err := db.GetPostByID(post.ParentId)
+	parent, err := db.GetPostByID(post.ParentID)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func sendCommentNotification(post *types.Post, parent *types.Post) error {
 		NotificationTypeKey:   TypeComment,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:      post.PostId,
+		PostIDKey:      post.PostID,
 		PostMessageKey: post.Message,
 		PostCreatorKey: post.Creator,
 	}
@@ -142,7 +142,7 @@ func sendMentionNotification(post *types.Post, user string) error {
 		NotificationTypeKey:   TypeMention,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:          post.PostId,
+		PostIDKey:          post.PostID,
 		PostMentionUserKey: post.Creator,
 		PostMentionTextKey: post.Message,
 	}
@@ -184,7 +184,7 @@ func sendGenericReactionNotification(post *types.Post, reaction poststypes.PostR
 		NotificationTypeKey:   TypeReaction,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:                post.PostId,
+		PostIDKey:                post.PostID,
 		PostReactionValueKey:     reaction.Value,
 		PostReactionShortCodeKey: reaction.ShortCode,
 		PostReactionOwnerKey:     reaction.Owner,
@@ -205,7 +205,7 @@ func sendLikeNotification(post *types.Post, reaction poststypes.PostReaction) er
 		NotificationTypeKey:   TypeLike,
 		NotificationActionKey: ActionOpenPost,
 
-		PostIDKey:       post.PostId,
+		PostIDKey:       post.PostID,
 		PostLikeUserKey: reaction.Owner,
 	}
 

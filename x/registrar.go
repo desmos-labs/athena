@@ -17,7 +17,6 @@ import (
 	"github.com/desmos-labs/djuno/x/notifications"
 	"github.com/desmos-labs/djuno/x/posts"
 	"github.com/desmos-labs/djuno/x/profiles"
-	"github.com/desmos-labs/djuno/x/reports"
 )
 
 // ModulesRegistrar represents the modules.Registrar that allows to register all custom BDJuno modules
@@ -44,6 +43,5 @@ func (r *ModulesRegistrar) BuildModules(
 		notifications.NewModule(djunoCfg.Notifications, desmosDb),
 		posts.NewModule(encodingConfig, desmosDb),
 		profiles.NewModule(common.MessagesParser, encodingConfig, desmosDb),
-		reports.NewModule(desmosDb),
 	}
 }

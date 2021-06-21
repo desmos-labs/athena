@@ -55,11 +55,11 @@ func GetPostFromMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreateP
 	return types.NewPost(
 		poststypes.NewPost(
 			postID,
-			msg.ParentId,
+			msg.ParentID,
 			msg.Message,
-			msg.AllowsComments,
+			msg.CommentsState,
 			msg.Subspace,
-			msg.OptionalData,
+			msg.AdditionalAttributes,
 			msg.Attachments,
 			msg.PollData,
 			creationTime,

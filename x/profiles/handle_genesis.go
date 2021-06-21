@@ -42,7 +42,7 @@ func HandleGenesis(
 	cdc.MustUnmarshalJSON(appState[profilestypes.ModuleName], &genState)
 
 	// Save DTag transfer requests
-	for _, request := range genState.DTagTransferRequest {
+	for _, request := range genState.DTagTransferRequests {
 		err = db.SaveDTagTransferRequest(types.NewDTagTransferRequest(request, doc.InitialHeight))
 		if err != nil {
 			return err
