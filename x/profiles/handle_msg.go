@@ -1,8 +1,11 @@
 package profiles
 
 import (
+	"context"
 	"fmt"
 	"time"
+
+	"github.com/desmos-labs/juno/client"
 
 	"github.com/desmos-labs/djuno/types"
 
@@ -21,7 +24,8 @@ import (
 // HandleMsg allows to handle different messages types for the profiles module
 func HandleMsg(
 	tx *juno.Tx, index int, msg sdk.Msg,
-	getAccounts messages.MessageAddressesParser, cdc codec.Marshaler, db *desmosdb.Db,
+	profilesClient profilestypes.QueryClient, getAccounts messages.MessageAddressesParser,
+	cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
 	if len(tx.Logs) == 0 {
 		return nil
@@ -63,6 +67,14 @@ func HandleMsg(
 
 	case *profilestypes.MsgUnlinkChainAccount:
 		return handleMsgUnlinkChainAccount(desmosMsg, db)
+
+	case *profilestypes.MsgLinkApplication:
+		return handleMsgLinkApplication(tx, desmosMsg, profilesClient, db)
+
+	// TODO: Handle MsgReceivPacket to update the application link state
+
+	case *profilestypes.MsgUnlinkApplication:
+		return handleMsgUnlinkApplication(desmosMsg, db)
 	}
 
 	return saveAccounts(tx.Height, msg, getAccounts, cdc, db)
@@ -245,4 +257,25 @@ func handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainA
 
 func handleMsgUnlinkChainAccount(msg *profilestypes.MsgUnlinkChainAccount, db *desmosdb.Db) error {
 	return db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName)
+}
+
+// -----------------------------------------------------------------------------------------------------
+
+func handleMsgLinkApplication(
+	tx *juno.Tx, msg *profilestypes.MsgLinkApplication, profilesClient profilestypes.QueryClient, db *desmosdb.Db,
+) error {
+	res, err := profilesClient.UserApplicationLink(
+		context.Background(),
+		profilestypes.NewQueryUserApplicationLinkRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username),
+		client.GetHeightRequestHeader(tx.Height),
+	)
+	if err != nil {
+		return fmt.Errorf("error while getting application link: %s", err)
+	}
+
+	return db.SaveApplicationLink(types.NewApplicationLink(res.Link, tx.Height))
+}
+
+func handleMsgUnlinkApplication(msg *profilestypes.MsgUnlinkApplication, db *desmosdb.Db) error {
+	return db.DeleteApplicationLink(msg.Signer, msg.Application, msg.Username)
 }

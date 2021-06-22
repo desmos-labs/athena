@@ -48,13 +48,13 @@ CREATE TABLE chain_link_chain_config
 
 CREATE TABLE chain_link
 (
-    id                   SERIAL                      NOT NULL PRIMARY KEY,
-    user_address         TEXT                        NOT NULL REFERENCES profile (address),
-    external_address     TEXT                        NOT NULL,
-    chain_config_id BIGINT                      NOT NULL REFERENCES chain_link_chain_config (id) ON DELETE CASCADE,
-    creation_time        TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    height               BIGINT                      NOT NULL,
-    CONSTRAINT unique_chain_link UNIQUE (user_address, external_address, height)
+    id               SERIAL                      NOT NULL PRIMARY KEY,
+    user_address     TEXT                        NOT NULL REFERENCES profile (address),
+    external_address TEXT                        NOT NULL,
+    chain_config_id  BIGINT                      NOT NULL REFERENCES chain_link_chain_config (id),
+    creation_time    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    height           BIGINT                      NOT NULL,
+    CONSTRAINT unique_chain_link UNIQUE (user_address, external_address)
 );
 
 CREATE TABLE chain_link_proof
@@ -65,6 +65,32 @@ CREATE TABLE chain_link_proof
     plain_text    TEXT   NOT NULL,
     signature     TEXT   NOT NULL,
     height        BIGINT NOT NULL,
-    CONSTRAINT unique_proof_for_link UNIQUE (chain_link_id, height)
+    CONSTRAINT unique_proof_for_link UNIQUE (chain_link_id)
 );
 
+/* --------------------------------------------------------------------------------------------------------------- */
+
+CREATE TABLE application_link
+(
+    id            SERIAL                      NOT NULL PRIMARY KEY,
+    user_address  TEXT                        NOT NULL REFERENCES profile (address),
+    application   TEXT                        NOT NULL,
+    username      TEXT                        NOT NULL,
+    state         TEXT                        NOT NULL,
+    result        JSONB                       NOT NULL,
+    creation_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    height        BIGINT                      NOT NULL,
+    CONSTRAINT unique_application_link UNIQUE (user_address, application, username)
+);
+
+CREATE TABLE application_link_oracle_request
+(
+    id                  SERIAL NOT NULL PRIMARY KEY,
+    application_link_id BIGINT NOT NULL REFERENCES application_link (id),
+    request_id          BIGINT NOT NULL,
+    script_id           BIGINT NOT NULL,
+    call_data           JSONB  NOT NULL,
+    client_id           TEXT   NOT NULL,
+    height              BIGINT NOT NULL,
+    CONSTRAINT unique_oracle_request UNIQUE (application_link_id, client_id)
+);

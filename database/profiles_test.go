@@ -1,8 +1,9 @@
 package database_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"time"
+
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 
 	"github.com/desmos-labs/djuno/types"
 
@@ -288,17 +289,16 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
 	)
 	suite.Require().NoError(err)
 
-	var count int64
-	err = suite.database.Sql.QueryRow(
-		"SELECT COUNT(id) FROM chain_link WHERE user_address = $1",
-		"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
-	).Scan(&count)
+	var count int
+	err = suite.database.Sql.QueryRow("SELECT COUNT(id) FROM chain_link").Scan(&count)
 	suite.Require().NoError(err)
 	suite.Require().Zero(count)
 
-	err = suite.database.Sql.
-		QueryRow("SELECT COUNT(id) FROM chain_link_proof WHERE signature = $1", "74657874").
-		Scan(&count)
+	err = suite.database.Sql.QueryRow("SELECT COUNT(id) FROM chain_link_proof").Scan(&count)
 	suite.Require().NoError(err)
 	suite.Require().Zero(count)
+
+	err = suite.database.Sql.QueryRow("SELECT COUNT(id) FROM chain_link_chain_config").Scan(&count)
+	suite.Require().NoError(err)
+	suite.Require().Equal(1, count)
 }

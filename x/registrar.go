@@ -3,6 +3,8 @@ package x
 import (
 	"fmt"
 
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/juno/client"
@@ -39,9 +41,11 @@ func (r *ModulesRegistrar) BuildModules(
 		panic(fmt.Errorf("invalid configuration type: %T", cfg))
 	}
 
+	grpcConnection := client.MustCreateGrpcConnection(cfg)
+
 	return []modules.Module{
 		notifications.NewModule(djunoCfg.Notifications, desmosDb),
 		posts.NewModule(encodingConfig, desmosDb),
-		profiles.NewModule(common.MessagesParser, encodingConfig, desmosDb),
+		profiles.NewModule(common.MessagesParser, profilestypes.NewQueryClient(grpcConnection), encodingConfig, desmosDb),
 	}
 }

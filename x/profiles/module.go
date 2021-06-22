@@ -3,6 +3,8 @@ package profiles
 import (
 	"encoding/json"
 
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+
 	"github.com/desmos-labs/juno/modules/messages"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -25,17 +27,20 @@ var (
 type Module struct {
 	encodingConfig *params.EncodingConfig
 	db             *database.Db
+	profilesClient profilestypes.QueryClient
 	getAccounts    messages.MessageAddressesParser
 }
 
 // NewModule allows to build a new Module instance
 func NewModule(
-	getAccounts messages.MessageAddressesParser, encodingConfig *params.EncodingConfig, db *database.Db,
+	getAccounts messages.MessageAddressesParser, profilesClient profilestypes.QueryClient,
+	encodingConfig *params.EncodingConfig, db *database.Db,
 ) *Module {
 	return &Module{
 		encodingConfig: encodingConfig,
 		db:             db,
 		getAccounts:    getAccounts,
+		profilesClient: profilesClient,
 	}
 }
 
@@ -51,5 +56,5 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	return HandleMsg(tx, index, msg, m.getAccounts, m.encodingConfig.Marshaler, m.db)
+	return HandleMsg(tx, index, msg, m.profilesClient, m.getAccounts, m.encodingConfig.Marshaler, m.db)
 }

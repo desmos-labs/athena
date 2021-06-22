@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/types"
@@ -241,16 +242,16 @@ RETURNING id`
 		return fmt.Errorf("error while reading link address as AddressData: %s", err)
 	}
 
-	var chainLinkId int64
+	var chainLinkID int64
 	err = db.Sql.
 		QueryRow(stmt, link.User, address.GetAddress(), chainConfigID, link.CreationTime, link.Height).
-		Scan(&chainLinkId)
+		Scan(&chainLinkID)
 	if err != nil {
 		return err
 	}
 
 	// Insert the proof
-	return db.saveChainLinkProof(chainLinkId, link.Proof, link.Height)
+	return db.saveChainLinkProof(chainLinkID, link.Proof, link.Height)
 }
 
 // saveChainLinkProof stores the given proof as associated with the chain link having the given id
@@ -297,5 +298,73 @@ WHERE user_address = $1
   AND external_address = $2
   AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)`
 	_, err := db.Sql.Exec(stmt, user, externalAddress, chainName)
+	return err
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+// SaveApplicationLink stores the given application link inside the database
+func (db Db) SaveApplicationLink(link types.ApplicationLink) error {
+	// Save the link
+	stmt := `
+INSERT INTO application_link (user_address, application, username, state, result, creation_time, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+ON CONFLICT ON CONSTRAINT unique_application_link DO UPDATE 
+    SET user_address = excluded.user_address, 
+    	application = excluded.application,
+    	username = excluded.username,
+    	state = excluded.state,
+    	result = excluded.result, 
+    	creation_time = excluded.creation_time,
+    	height = excluded.height
+WHERE application_link.height <= excluded.height
+RETURNING id`
+
+	resultBz, err := db.EncodingConfig.Marshaler.MarshalJSON(link.Result)
+	if err != nil {
+		return fmt.Errorf("error while serializing result: %s", err)
+	}
+
+	var linkID int64
+	err = db.Sql.QueryRow(stmt,
+		link.User, link.Data.Application, link.Data.Username, link.State.String(),
+		string(resultBz), link.CreationTime, link.Height,
+	).Scan(&linkID)
+	if err != nil {
+		return err
+	}
+
+	// Save the oracle request
+	return db.saveOracleRequest(linkID, link.OracleRequest, link.Height)
+}
+
+// saveOracleRequest stores the given oracle request associating it with the link having the provided id
+func (db Db) saveOracleRequest(linkID int64, request profilestypes.OracleRequest, height int64) error {
+	stmt := `
+INSERT INTO application_link_oracle_request (application_link_id, request_id, script_id, call_data, client_id, height) 
+VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT ON CONSTRAINT unique_oracle_request DO UPDATE 
+    SET application_link_id = excluded.application_link_id,
+        request_id = excluded.request_id, 
+        script_id = excluded.script_id, 
+        call_data = excluded.call_data, 
+        client_id = excluded.client_id,
+        height = excluded.height
+WHERE application_link_oracle_request.height <= excluded.height`
+
+	callDataBz, err := db.EncodingConfig.Marshaler.MarshalJSON(&request.CallData)
+	if err != nil {
+		return fmt.Errorf("error while serializing oracle request call data: %s", err)
+	}
+
+	_, err = db.Sql.Exec(stmt, linkID, request.ID, request.OracleScriptID, string(callDataBz), request.ClientID, height)
+	return err
+}
+
+// DeleteApplicationLink allows to delete the application link associated to the given user,
+// having the given application and username values
+func (db Db) DeleteApplicationLink(user, application, username string) error {
+	stmt := `DELETE FROM application_link WHERE user_address = $1 AND application = $2 AND username = $3`
+	_, err := db.Sql.Exec(stmt, user, application, username)
 	return err
 }

@@ -83,3 +83,17 @@ func NewChainLink(link profilestypes.ChainLink, height int64) ChainLink {
 		Height:    height,
 	}
 }
+
+// -------------------------------------------------------------------------------------------------------------------
+
+type ApplicationLink struct {
+	profilestypes.ApplicationLink
+	Height int64
+}
+
+func NewApplicationLink(link profilestypes.ApplicationLink, height int64) ApplicationLink {
+	return ApplicationLink{
+		ApplicationLink: link,
+		Height:          height,
+	}
+}
