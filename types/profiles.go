@@ -69,3 +69,17 @@ func NewBlockage(blockage profilestypes.UserBlock, height int64) Blockage {
 		Height:    height,
 	}
 }
+
+// -------------------------------------------------------------------------------------------------------------------
+
+type ChainLink struct {
+	profilestypes.ChainLink
+	Height int64
+}
+
+func NewChainLink(link profilestypes.ChainLink, height int64) ChainLink {
+	return ChainLink{
+		ChainLink: link,
+		Height:    height,
+	}
+}

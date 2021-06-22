@@ -1,6 +1,7 @@
 package database_test
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"time"
 
 	"github.com/desmos-labs/djuno/types"
@@ -229,4 +230,75 @@ func (suite *DbTestSuite) TestDesmosDB_RemoveUserBlockage() {
 
 	err = suite.database.RemoveBlockage(blockage)
 	suite.Require().NoError(err, "deleting non existing blockage should return no error")
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+func (suite *DbTestSuite) TestDesmosDB_SaveChainLink() {
+	bz, err := sdk.GetFromBech32("desmospub1addwnpepqvczf60q448expz77knqhwfpw8nyrrx38vyzu7nmc0ks2vf2pdqh63tcdmy", "desmospub")
+	suite.Require().NoError(err)
+
+	pubKey, err := legacy.PubKeyFromBytes(bz)
+	suite.Require().NoError(err)
+
+	chainLink := types.NewChainLink(
+		profilestypes.NewChainLink(
+			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
+			profilestypes.NewProof(pubKey, "74657874", "text"),
+			profilestypes.NewChainConfig("desmos"),
+			time.Now(),
+		),
+		10,
+	)
+	err = suite.database.SaveUserIfNotExisting("cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f", 10)
+	suite.Require().NoError(err)
+
+	err = suite.database.SaveChainLink(chainLink)
+	suite.Require().NoError(err)
+}
+
+func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
+	bz, err := sdk.GetFromBech32("desmospub1addwnpepqvczf60q448expz77knqhwfpw8nyrrx38vyzu7nmc0ks2vf2pdqh63tcdmy", "desmospub")
+	suite.Require().NoError(err)
+
+	pubKey, err := legacy.PubKeyFromBytes(bz)
+	suite.Require().NoError(err)
+
+	chainLink := types.NewChainLink(
+		profilestypes.NewChainLink(
+			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
+			profilestypes.NewProof(pubKey, "74657874", "text"),
+			profilestypes.NewChainConfig("desmos"),
+			time.Now(),
+		),
+		10,
+	)
+	err = suite.database.SaveUserIfNotExisting("cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f", 10)
+	suite.Require().NoError(err)
+
+	err = suite.database.SaveChainLink(chainLink)
+	suite.Require().NoError(err)
+
+	err = suite.database.DeleteChainLink(
+		"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+		"desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu",
+		"desmos",
+	)
+	suite.Require().NoError(err)
+
+	var count int64
+	err = suite.database.Sql.QueryRow(
+		"SELECT COUNT(id) FROM chain_link WHERE user_address = $1",
+		"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+	).Scan(&count)
+	suite.Require().NoError(err)
+	suite.Require().Zero(count)
+
+	err = suite.database.Sql.
+		QueryRow("SELECT COUNT(id) FROM chain_link_proof WHERE signature = $1", "74657874").
+		Scan(&count)
+	suite.Require().NoError(err)
+	suite.Require().Zero(count)
 }

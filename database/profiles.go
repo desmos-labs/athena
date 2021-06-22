@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/types"
@@ -208,5 +209,93 @@ func (db Db) RemoveBlockage(block types.Blockage) error {
 DELETE FROM user_block 
 WHERE blocker_address = $1 AND blocked_user_address = $2 AND subspace = $3 AND height <= $4`
 	_, err := db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.Subspace, block.Height)
+	return err
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+// SaveChainLink allows to store inside the db the provided chain link
+func (db Db) SaveChainLink(link types.ChainLink) error {
+	// Insert the chain config
+	chainConfigID, err := db.saveChainLinkChainConfig(link.ChainConfig)
+	if err != nil {
+		return err
+	}
+
+	// Insert the link details and get the id
+	stmt := `
+INSERT INTO chain_link (user_address, external_address, chain_config_id, creation_time, height)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT ON CONSTRAINT unique_chain_link DO UPDATE 
+    SET user_address = excluded.user_address, 
+        external_address = excluded.external_address,
+        chain_config_id = excluded.chain_config_id,
+        creation_time = excluded.creation_time,
+        height = excluded.height
+WHERE chain_link.height <= excluded.height
+RETURNING id`
+
+	var address profilestypes.AddressData
+	err = db.EncodingConfig.Marshaler.UnpackAny(link.Address, &address)
+	if err != nil {
+		return fmt.Errorf("error while reading link address as AddressData: %s", err)
+	}
+
+	var chainLinkId int64
+	err = db.Sql.
+		QueryRow(stmt, link.User, address.GetAddress(), chainConfigID, link.CreationTime, link.Height).
+		Scan(&chainLinkId)
+	if err != nil {
+		return err
+	}
+
+	// Insert the proof
+	return db.saveChainLinkProof(chainLinkId, link.Proof, link.Height)
+}
+
+// saveChainLinkProof stores the given proof as associated with the chain link having the given id
+func (db Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, height int64) error {
+	publicKeyBz, err := db.EncodingConfig.Marshaler.MarshalJSON(proof.PubKey)
+	if err != nil {
+		return fmt.Errorf("error serializing chain link proof public key: %s", err)
+	}
+
+	stmt := `
+INSERT INTO chain_link_proof(chain_link_id, public_key, plain_text, signature, height) 
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT ON CONSTRAINT unique_proof_for_link DO UPDATE
+    SET chain_link_id = excluded.chain_link_id, 
+        public_key = excluded.public_key, 
+        plain_text = excluded.plain_text, 
+        signature = excluded.signature, 
+        height = excluded.height
+WHERE chain_link_proof.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt, chainLinkID, string(publicKeyBz), proof.PlainText, proof.Signature, height)
+	return err
+}
+
+// saveChainLinkChainConfig stores the given chain config and returns the row id
+func (db Db) saveChainLinkChainConfig(config profilestypes.ChainConfig) (int64, error) {
+	stmt := `
+INSERT INTO chain_link_chain_config (name) 
+VALUES ($1)
+ON CONFLICT ON CONSTRAINT unique_chain_config DO UPDATE 
+    SET name = excluded.name
+RETURNING id`
+
+	var id int64
+	err := db.Sql.QueryRow(stmt, config.Name).Scan(&id)
+	return id, err
+}
+
+// DeleteChainLink removes from the database the chain link made for the given user and having the provided
+// external address and linked to the chain with the given name
+func (db Db) DeleteChainLink(user string, externalAddress string, chainName string) error {
+	stmt := `
+DELETE FROM chain_link 
+WHERE user_address = $1 
+  AND external_address = $2
+  AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)`
+	_, err := db.Sql.Exec(stmt, user, externalAddress, chainName)
 	return err
 }

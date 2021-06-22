@@ -65,5 +65,13 @@ func HandleGenesis(
 		}
 	}
 
+	// Save chain links
+	for _, link := range genState.ChainLinks {
+		err = db.SaveChainLink(types.NewChainLink(link, doc.InitialHeight))
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

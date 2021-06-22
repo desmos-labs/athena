@@ -1,6 +1,7 @@
 package profiles
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/desmos-labs/djuno/types"
@@ -49,13 +50,19 @@ func HandleMsg(
 		return handleMsgCreateRelationship(tx, desmosMsg, db)
 
 	case *profilestypes.MsgDeleteRelationship:
-		return HandleMsgDeleteRelationship(tx, desmosMsg, db)
+		return handleMsgDeleteRelationship(tx, desmosMsg, db)
 
 	case *profilestypes.MsgBlockUser:
-		return HandleMsgBlockUser(tx, desmosMsg, db)
+		return handleMsgBlockUser(tx, desmosMsg, db)
 
 	case *profilestypes.MsgUnblockUser:
-		return HandleMsgUnblockUser(tx, desmosMsg, db)
+		return handleMsgUnblockUser(tx, desmosMsg, db)
+
+	case *profilestypes.MsgLinkChainAccount:
+		return handleMsgChainLink(tx, index, desmosMsg, cdc, db)
+
+	case *profilestypes.MsgUnlinkChainAccount:
+		return handleMsgUnlinkChainAccount(desmosMsg, db)
 	}
 
 	return saveAccounts(tx.Height, msg, getAccounts, cdc, db)
@@ -177,16 +184,16 @@ func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelati
 	))
 }
 
-// HandleMsgDeleteRelationship allows to handle a MsgDeleteRelationship properly
-func HandleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelationship, db *desmosdb.Db) error {
+// handleMsgDeleteRelationship allows to handle a MsgDeleteRelationship properly
+func handleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelationship, db *desmosdb.Db) error {
 	return db.DeleteRelationship(types.NewRelationship(
 		profilestypes.NewRelationship(msg.User, msg.Counterparty, msg.Subspace),
 		tx.Height,
 	))
 }
 
-// HandleMsgBlockUser allows to handle a MsgBlockUser properly
-func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmosdb.Db) error {
+// handleMsgBlockUser allows to handle a MsgBlockUser properly
+func handleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmosdb.Db) error {
 	return db.SaveBlockage(types.NewBlockage(
 		profilestypes.NewUserBlock(
 			msg.Blocker,
@@ -198,10 +205,44 @@ func HandleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmos
 	))
 }
 
-// HandleMsgUnblockUser allows to handle a MsgUnblockUser properly
-func HandleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *desmosdb.Db) error {
+// handleMsgUnblockUser allows to handle a MsgUnblockUser properly
+func handleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *desmosdb.Db) error {
 	return db.RemoveBlockage(types.NewBlockage(
 		profilestypes.NewUserBlock(msg.Blocker, msg.Blocked, "", msg.Subspace),
 		tx.Height,
 	))
+}
+
+// -----------------------------------------------------------------------------------------------------
+
+func handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount, cdc codec.Marshaler, db *desmosdb.Db) error {
+	// Get the creation time
+	event, err := tx.FindEventByType(index, profilestypes.EventTypeLinkChainAccount)
+	if err != nil {
+		return err
+	}
+	creationTimeStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeChainLinkCreationTime)
+	if err != nil {
+		return err
+	}
+	creationTime, err := time.Parse(time.RFC3339, creationTimeStr)
+	if err != nil {
+		return err
+	}
+
+	// Unpack the address data
+	var address profilestypes.AddressData
+	err = cdc.UnpackAny(msg.ChainAddress, &address)
+	if err != nil {
+		return fmt.Errorf("error while unpacking address data: %s", err)
+	}
+
+	return db.SaveChainLink(types.NewChainLink(
+		profilestypes.NewChainLink(msg.Signer, address, msg.Proof, msg.ChainConfig, creationTime),
+		tx.Height,
+	))
+}
+
+func handleMsgUnlinkChainAccount(msg *profilestypes.MsgUnlinkChainAccount, db *desmosdb.Db) error {
+	return db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName)
 }

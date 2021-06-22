@@ -42,10 +42,10 @@ func (suite *DbTestSuite) SetupTest() {
 		nil,
 		nil,
 		juno.NewDatabaseConfig(
-			"juno",
+			"djuno",
 			"localhost",
 			5433,
-			"juno",
+			"djuno",
 			"password",
 			"",
 			"public",

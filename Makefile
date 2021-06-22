@@ -38,11 +38,11 @@ coverage:
 
 stop-docker-test:
 	@echo "Stopping Docker container..."
-	@docker stop juno-test-db || true && docker rm juno-test-db || true
+	@docker stop djuno-test-db || true && docker rm djuno-test-db || true
 
 start-docker-test: stop-docker-test
 	@echo "Starting Docker container..."
-	@docker run --name juno-test-db -e POSTGRES_USER=juno -e POSTGRES_PASSWORD=password -e POSTGRES_DB=juno -d -p 5433:5432 postgres
+	@docker run --name djuno-test-db -e POSTGRES_USER=djuno -e POSTGRES_PASSWORD=password -e POSTGRES_DB=djuno -d -p 5433:5432 postgres
 
 test-unit: start-docker-test
 	@echo "Executing unit tests..."
