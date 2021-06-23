@@ -77,7 +77,7 @@ CREATE TABLE application_link
     application   TEXT                        NOT NULL,
     username      TEXT                        NOT NULL,
     state         TEXT                        NOT NULL,
-    result        JSONB                       NOT NULL,
+    result        JSONB,
     creation_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     height        BIGINT                      NOT NULL,
     CONSTRAINT unique_application_link UNIQUE (user_address, application, username)

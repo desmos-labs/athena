@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
@@ -320,15 +321,19 @@ ON CONFLICT ON CONSTRAINT unique_application_link DO UPDATE
 WHERE application_link.height <= excluded.height
 RETURNING id`
 
-	resultBz, err := db.EncodingConfig.Marshaler.MarshalJSON(link.Result)
-	if err != nil {
-		return fmt.Errorf("error while serializing result: %s", err)
+	var result sql.NullString
+	if link.Result != nil {
+		resultBz, err := db.EncodingConfig.Marshaler.MarshalJSON(link.Result)
+		if err != nil {
+			return fmt.Errorf("error while serializing result: %s", err)
+		}
+		result = sql.NullString{Valid: true, String: string(resultBz)}
 	}
 
 	var linkID int64
-	err = db.Sql.QueryRow(stmt,
+	err := db.Sql.QueryRow(stmt,
 		link.User, link.Data.Application, link.Data.Username, link.State.String(),
-		string(resultBz), link.CreationTime, link.Height,
+		result, link.CreationTime, link.Height,
 	).Scan(&linkID)
 	if err != nil {
 		return err

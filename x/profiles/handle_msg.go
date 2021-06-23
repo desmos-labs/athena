@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/rs/zerolog/log"
+
+	"github.com/desmos-labs/djuno/x/profiles/ibc"
+
 	"github.com/desmos-labs/juno/client"
 
 	"github.com/desmos-labs/djuno/types"
@@ -12,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/desmos-labs/juno/modules/messages"
 
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,6 +34,11 @@ func HandleMsg(
 ) error {
 	if len(tx.Logs) == 0 {
 		return nil
+	}
+
+	err := saveAccounts(tx.Height, msg, getAccounts, cdc, db)
+	if err != nil {
+		log.Error().Err(err).Int64("height", tx.Height).Msg("error while saving accounts")
 	}
 
 	switch desmosMsg := msg.(type) {
@@ -71,13 +81,20 @@ func HandleMsg(
 	case *profilestypes.MsgLinkApplication:
 		return handleMsgLinkApplication(tx, desmosMsg, profilesClient, db)
 
-	// TODO: Handle MsgReceivPacket to update the application link state
+	case *channeltypes.MsgRecvPacket:
+		return ibc.HandlePacket(tx.Height, desmosMsg.Packet, profilesClient, cdc, db)
+
+	case *channeltypes.MsgAcknowledgement:
+		return ibc.HandlePacket(tx.Height, desmosMsg.Packet, profilesClient, cdc, db)
+
+	case *channeltypes.MsgTimeout:
+		return ibc.HandlePacket(tx.Height, desmosMsg.Packet, profilesClient, cdc, db)
 
 	case *profilestypes.MsgUnlinkApplication:
 		return handleMsgUnlinkApplication(desmosMsg, db)
 	}
 
-	return saveAccounts(tx.Height, msg, getAccounts, cdc, db)
+	return nil
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -227,7 +244,10 @@ func handleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *de
 
 // -----------------------------------------------------------------------------------------------------
 
-func handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount, cdc codec.Marshaler, db *desmosdb.Db) error {
+// handleMsgChainLink allows to handle a MsgLinkChainAccount properly
+func handleMsgChainLink(
+	tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
 	// Get the creation time
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeLinkChainAccount)
 	if err != nil {
@@ -255,12 +275,14 @@ func handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainA
 	))
 }
 
+// handleMsgUnlinkChainAccount allows to handle a MsgUnlinkChainAccount properly
 func handleMsgUnlinkChainAccount(msg *profilestypes.MsgUnlinkChainAccount, db *desmosdb.Db) error {
 	return db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName)
 }
 
 // -----------------------------------------------------------------------------------------------------
 
+// handleMsgLinkApplication allows to handle a MsgLinkApplication properly
 func handleMsgLinkApplication(
 	tx *juno.Tx, msg *profilestypes.MsgLinkApplication, profilesClient profilestypes.QueryClient, db *desmosdb.Db,
 ) error {
@@ -276,6 +298,7 @@ func handleMsgLinkApplication(
 	return db.SaveApplicationLink(types.NewApplicationLink(res.Link, tx.Height))
 }
 
+// handleMsgUnlinkApplication allows to handle a MsgUnlinkApplication properly
 func handleMsgUnlinkApplication(msg *profilestypes.MsgUnlinkApplication, db *desmosdb.Db) error {
 	return db.DeleteApplicationLink(msg.Signer, msg.Application, msg.Username)
 }

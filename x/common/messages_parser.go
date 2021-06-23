@@ -3,12 +3,14 @@ package common
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	"github.com/desmos-labs/juno/modules/messages"
 )
 
 var MessagesParser = messages.JoinMessageParsers(
+	ibcMessagesParser,
 	messages.CosmosMessageAddressesParser,
 	desmosMessagesParser,
 )
@@ -18,6 +20,19 @@ var desmosMessagesParser = messages.JoinMessageParsers(
 	profilesMessagesParser,
 	reportsMessagesParser,
 )
+
+func ibcMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
+	switch msg := cosmosMsg.(type) {
+	case *channeltypes.MsgRecvPacket:
+		return []string{msg.Signer}, nil
+	case *channeltypes.MsgAcknowledgement:
+		return []string{msg.Signer}, nil
+	case *channeltypes.MsgTimeout:
+		return []string{msg.Signer}, nil
+	}
+
+	return nil, messages.MessageNotSupported(cosmosMsg)
+}
 
 func postsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
 	switch msg := cosmosMsg.(type) {
@@ -74,6 +89,12 @@ func profilesMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, err
 
 	case *profilestypes.MsgUnblockUser:
 		return []string{msg.Blocker, msg.Blocked}, nil
+
+	case *profilestypes.MsgLinkChainAccount:
+		return []string{msg.Signer}, nil
+
+	case *profilestypes.MsgLinkApplication:
+		return []string{msg.Sender}, nil
 	}
 
 	return nil, messages.MessageNotSupported(cosmosMsg)
