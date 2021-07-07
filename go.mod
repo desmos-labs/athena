@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.42.4
-	github.com/desmos-labs/desmos v0.16.4-0.20210623074556-645a35fbdedc
+	github.com/desmos-labs/desmos v0.17.0
 	github.com/desmos-labs/juno v0.0.0-20210622105611-8862204c82fc
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/pelletier/go-toml v1.8.0

@@ -18,7 +18,6 @@ var MessagesParser = messages.JoinMessageParsers(
 var desmosMessagesParser = messages.JoinMessageParsers(
 	postsMessagesParser,
 	profilesMessagesParser,
-	reportsMessagesParser,
 )
 
 func ibcMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
@@ -53,6 +52,9 @@ func postsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error)
 
 	case *poststypes.MsgAnswerPoll:
 		return []string{msg.Answerer}, nil
+
+	case *poststypes.MsgReportPost:
+		return []string{msg.User}, nil
 	}
 
 	return nil, messages.MessageNotSupported(cosmosMsg)
@@ -69,13 +71,13 @@ func profilesMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, err
 	case *profilestypes.MsgRequestDTagTransfer:
 		return []string{msg.Sender, msg.Receiver}, nil
 
-	case *profilestypes.MsgCancelDTagTransfer:
+	case *profilestypes.MsgCancelDTagTransferRequest:
 		return []string{msg.Sender, msg.Receiver}, nil
 
-	case *profilestypes.MsgAcceptDTagTransfer:
+	case *profilestypes.MsgAcceptDTagTransferRequest:
 		return []string{msg.Sender, msg.Receiver}, nil
 
-	case *profilestypes.MsgRefuseDTagTransfer:
+	case *profilestypes.MsgRefuseDTagTransferRequest:
 		return []string{msg.Sender, msg.Receiver}, nil
 
 	case *profilestypes.MsgCreateRelationship:
@@ -95,16 +97,6 @@ func profilesMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, err
 
 	case *profilestypes.MsgLinkApplication:
 		return []string{msg.Sender}, nil
-	}
-
-	return nil, messages.MessageNotSupported(cosmosMsg)
-}
-
-func reportsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
-	// nolint:singleCaseSwitch
-	switch msg := cosmosMsg.(type) {
-	case *poststypes.MsgReportPost:
-		return []string{msg.User}, nil
 	}
 
 	return nil, messages.MessageNotSupported(cosmosMsg)

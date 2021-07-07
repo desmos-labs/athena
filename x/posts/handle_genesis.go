@@ -76,13 +76,11 @@ func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReac
 	return nil
 }
 
-func savePostReactions(height int64, reactions []poststypes.PostReactionsEntry, db *desmosdb.Db) error {
-	for _, entry := range reactions {
-		for _, reaction := range entry.Reactions {
-			err := db.SavePostReaction(types.NewPostReaction(entry.PostID, reaction, height))
-			if err != nil {
-				return err
-			}
+func savePostReactions(height int64, reactions []poststypes.PostReaction, db *desmosdb.Db) error {
+	for _, reaction := range reactions {
+		err := db.SavePostReaction(types.NewPostReaction(reaction.PostID, reaction, height))
+		if err != nil {
+			return err
 		}
 	}
 	return nil

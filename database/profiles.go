@@ -245,7 +245,7 @@ RETURNING id`
 
 	var chainLinkID int64
 	err = db.Sql.
-		QueryRow(stmt, link.User, address.GetAddress(), chainConfigID, link.CreationTime, link.Height).
+		QueryRow(stmt, link.User, address.GetValue(), chainConfigID, link.CreationTime, link.Height).
 		Scan(&chainLinkID)
 	if err != nil {
 		return err

@@ -51,13 +51,13 @@ func HandleMsg(
 	case *profilestypes.MsgRequestDTagTransfer:
 		return handleMsgRequestDTagTransfer(tx, index, desmosMsg, db)
 
-	case *profilestypes.MsgAcceptDTagTransfer:
+	case *profilestypes.MsgAcceptDTagTransferRequest:
 		return handleMsgAcceptDTagTransfer(tx, desmosMsg, db)
 
-	case *profilestypes.MsgCancelDTagTransfer:
+	case *profilestypes.MsgCancelDTagTransferRequest:
 		return handleDTagTransferRequestDeletion(tx.Height, desmosMsg.Sender, desmosMsg.Receiver, db)
 
-	case *profilestypes.MsgRefuseDTagTransfer:
+	case *profilestypes.MsgRefuseDTagTransferRequest:
 		return handleDTagTransferRequestDeletion(tx.Height, desmosMsg.Sender, desmosMsg.Receiver, db)
 
 	case *profilestypes.MsgCreateRelationship:
@@ -185,7 +185,7 @@ func handleMsgRequestDTagTransfer(
 }
 
 // handleMsgAcceptDTagTransfer handles a MsgAcceptDTagTransfer effectively transferring the DTag
-func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransfer, db *desmosdb.Db) error {
+func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransferRequest, db *desmosdb.Db) error {
 	return db.TransferDTag(types.NewDTagTransferRequestAcceptance(
 		types.NewDTagTransferRequest(
 			profilestypes.NewDTagTransferRequest(msg.NewDTag, msg.Sender, msg.Receiver),

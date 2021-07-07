@@ -38,7 +38,7 @@ func handleLinkChainAccountPacketData(
 		&profilestypes.QueryUserChainLinkRequest{
 			User:      packetData.DestinationAddress,
 			ChainName: packetData.SourceChainConfig.Name,
-			Target:    sourceAddr.GetAddress(),
+			Target:    sourceAddr.GetValue(),
 		},
 		client.GetHeightRequestHeader(height),
 	)

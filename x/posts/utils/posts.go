@@ -98,5 +98,5 @@ func GetReactionFromTxEvent(tx *juno.Tx, index int, eventType string) (string, p
 		return "", poststypes.PostReaction{}, err
 	}
 
-	return postID, poststypes.NewPostReaction(shortCode, value, user), nil
+	return postID, poststypes.NewPostReaction(postID, shortCode, value, user), nil
 }
