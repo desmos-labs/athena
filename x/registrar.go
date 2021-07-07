@@ -21,7 +21,7 @@ import (
 	"github.com/desmos-labs/djuno/x/profiles"
 )
 
-// ModulesRegistrar represents the modules.Registrar that allows to register all custom BDJuno modules
+// ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules
 type ModulesRegistrar struct {
 }
 
