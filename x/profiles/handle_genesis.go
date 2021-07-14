@@ -73,5 +73,13 @@ func HandleGenesis(
 		}
 	}
 
+	// Save application links
+	for _, link := range genState.ApplicationLinks {
+		err = db.SaveApplicationLink(types.NewApplicationLink(link, doc.InitialHeight))
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
