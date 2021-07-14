@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"github.com/rs/zerolog/log"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
@@ -42,6 +43,8 @@ func (db Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 // SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
 func (db Db) SaveProfile(profile types.Profile) error {
+	log.Info().Str("dtag", profile.DTag).Msg("saving profile")
+
 	stmt := `
 INSERT INTO profile (address, nickname, dtag, bio, profile_pic, cover_pic, creation_time, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
@@ -67,6 +70,8 @@ WHERE profile.height <= excluded.height`
 
 // DeleteProfile allows to delete the profile of the user having the given address
 func (db Db) DeleteProfile(address string, height int64) error {
+	log.Info().Str("address", address).Msg("deleting profile")
+
 	stmt := `
 UPDATE profile 
 SET nickname = '', 
