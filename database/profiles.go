@@ -15,12 +15,7 @@ import (
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
 func (db Db) SaveUserIfNotExisting(address string, height int64) error {
-	stmt := `
-INSERT INTO profile (address, height) 
-VALUES ($1, $2)
-ON CONFLICT (address) DO UPDATE 
-    SET height = excluded.height
-WHERE profile.height <= excluded.height`
+	stmt := `INSERT INTO profile (address, height) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 	_, err := db.Sqlx.Exec(stmt, address, height)
 	return err
 }
@@ -88,16 +83,6 @@ WHERE address = $1 AND height <= $2`
 
 // SaveDTagTransferRequest saves a new transfer request from sender to receiver
 func (db Db) SaveDTagTransferRequest(request types.DTagTransferRequest) error {
-	err := db.SaveUserIfNotExisting(request.Sender, request.Height)
-	if err != nil {
-		return err
-	}
-
-	err = db.SaveUserIfNotExisting(request.Receiver, request.Height)
-	if err != nil {
-		return err
-	}
-
 	stmt := `
 INSERT INTO dtag_transfer_requests (sender_address, receiver_address, height) 
 VALUES ($1, $2, $3) 
@@ -106,7 +91,7 @@ ON CONFLICT ON CONSTRAINT unique_request DO UPDATE
     	receiver_address = excluded.receiver_address
 WHERE dtag_transfer_requests.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt, request.Sender, request.Receiver, request.Height)
+	_, err := db.Sql.Exec(stmt, request.Sender, request.Receiver, request.Height)
 	return err
 }
 
@@ -148,16 +133,6 @@ WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
 
 // SaveRelationship allows to save a relationship between the sender and receiver on the given subspace
 func (db Db) SaveRelationship(relationship types.Relationship) error {
-	err := db.SaveUserIfNotExisting(relationship.Creator, relationship.Height)
-	if err != nil {
-		return err
-	}
-
-	err = db.SaveUserIfNotExisting(relationship.Recipient, relationship.Height)
-	if err != nil {
-		return err
-	}
-
 	stmt := `
 INSERT INTO profile_relationship (sender_address, receiver_address, subspace, height) 
 VALUES ($1, $2, $3, $4) 
@@ -166,7 +141,7 @@ ON CONFLICT ON CONSTRAINT unique_relationship DO UPDATE
 		receiver_address = excluded.receiver_address,
 		subspace = excluded.subspace
 WHERE profile_relationship.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, relationship.Creator, relationship.Recipient, relationship.Subspace, relationship.Height)
+	_, err := db.Sql.Exec(stmt, relationship.Creator, relationship.Recipient, relationship.Subspace, relationship.Height)
 	return err
 }
 
@@ -180,18 +155,10 @@ WHERE sender_address = $1 AND receiver_address = $2 AND subspace = $3 AND height
 	return err
 }
 
+// ---------------------------------------------------------------------------------------------------
+
 // SaveBlockage allows to save a user blockage
 func (db Db) SaveBlockage(block types.Blockage) error {
-	err := db.SaveUserIfNotExisting(block.Blocker, block.Height)
-	if err != nil {
-		return err
-	}
-
-	err = db.SaveUserIfNotExisting(block.Blocker, block.Height)
-	if err != nil {
-		return err
-	}
-
 	stmt := `
 INSERT INTO user_block(blocker_address, blocked_user_address, reason, subspace, height) 
 VALUES ($1, $2, $3, $4, $5) 
@@ -201,7 +168,7 @@ ON CONFLICT ON CONSTRAINT unique_blockage DO UPDATE
     	reason = excluded.reason, 
     	subspace = excluded.subspace
 WHERE user_block.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.Reason, block.Subspace, block.Height)
+	_, err := db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.Reason, block.Subspace, block.Height)
 	return err
 }
 

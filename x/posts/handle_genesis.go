@@ -16,7 +16,7 @@ import (
 
 // HandleGenesis allows to properly handle the genesis state for the posts module
 func HandleGenesis(
-	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec *codec.LegacyAmino, db *desmosdb.Db,
+	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec codec.Marshaler, db *desmosdb.Db,
 ) error {
 	// Get the posts state
 	var genState poststypes.GenesisState

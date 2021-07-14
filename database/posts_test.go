@@ -11,7 +11,7 @@ import (
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SavePost() {
-	created, err := time.Parse(time.RFC3339, "2020-10-10T15:00:00Z")
+	err := suite.database.SaveUserIfNotExisting("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", 1)
 	suite.Require().NoError(err)
 
 	post := types.NewPost(
@@ -46,7 +46,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 				false,
 			),
 			time.Time{},
-			created,
+			time.Date(2020, 10, 10, 15, 00, 00, 000, time.UTC),
 			"cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d",
 		),
 		10,
@@ -65,7 +65,10 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 
 func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
 	post := suite.testData.post
-	err := suite.database.SavePost(types.NewPost(post, 1))
+	err := suite.database.SaveUserIfNotExisting(post.Creator, 1)
+	suite.Require().NoError(err)
+
+	err = suite.database.SavePost(types.NewPost(post, 1))
 	suite.Require().NoError(err)
 
 	return post, post.PollData
@@ -76,7 +79,10 @@ func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
 
 	// Save the answer
 	user := "cosmos184dqecwkwex2hv6ae8fhzkw0cwrn39aw2ncy7n"
-	err := suite.database.SaveUserPollAnswer(types.NewUserPollAnswer(
+	err := suite.database.SaveUserIfNotExisting(user, 1)
+	suite.Require().NoError(err)
+
+	err = suite.database.SaveUserPollAnswer(types.NewUserPollAnswer(
 		poststypes.NewUserAnswer(post.PostID, user, []string{"0", "1"}),
 		1,
 	))

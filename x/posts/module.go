@@ -3,6 +3,8 @@ package posts
 import (
 	"encoding/json"
 
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 
 	"github.com/desmos-labs/djuno/database"
@@ -21,13 +23,15 @@ var _ modules.MessageModule = &Module{}
 type Module struct {
 	encodingConfig *params.EncodingConfig
 	db             *database.Db
+	profilesClient profilestypes.QueryClient
 }
 
 // NewModule allows to build a new Module instance
-func NewModule(encodingConfig *params.EncodingConfig, db *database.Db) *Module {
+func NewModule(profilesClient profilestypes.QueryClient, encodingConfig *params.EncodingConfig, db *database.Db) *Module {
 	return &Module{
 		encodingConfig: encodingConfig,
 		db:             db,
+		profilesClient: profilesClient,
 	}
 }
 
@@ -38,10 +42,10 @@ func (m *Module) Name() string {
 
 // HandleGenesis implements modules.GenesisModule
 func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
-	return HandleGenesis(doc, appState, m.encodingConfig.Amino, m.db)
+	return HandleGenesis(doc, appState, m.encodingConfig.Marshaler, m.db)
 }
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	return MsgHandler(tx, index, msg, m.db)
+	return MsgHandler(tx, index, msg, m.profilesClient, m.encodingConfig.Marshaler, m.db)
 }

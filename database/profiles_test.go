@@ -124,6 +124,12 @@ func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
 // --------------------------------------------------------------------------------------------------------------------
 
 func (suite *DbTestSuite) saveRelationship() types.Relationship {
+	err := suite.database.SaveUserIfNotExisting("cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s", 1)
+	suite.Require().NoError(err)
+
+	err = suite.database.SaveUserIfNotExisting("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr", 1)
+	suite.Require().NoError(err)
+
 	relationship := types.NewRelationship(
 		profilestypes.NewRelationship(
 			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
@@ -134,7 +140,7 @@ func (suite *DbTestSuite) saveRelationship() types.Relationship {
 	)
 
 	// Save the relationship
-	err := suite.database.SaveRelationship(relationship)
+	err = suite.database.SaveRelationship(relationship)
 	suite.Require().NoError(err)
 
 	return relationship

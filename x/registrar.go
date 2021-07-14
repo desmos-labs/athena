@@ -42,10 +42,11 @@ func (r *ModulesRegistrar) BuildModules(
 	}
 
 	grpcConnection := client.MustCreateGrpcConnection(cfg)
+	profilesClient := profilestypes.NewQueryClient(grpcConnection)
 
 	return []modules.Module{
 		notifications.NewModule(djunoCfg.Notifications, desmosDb),
-		posts.NewModule(encodingConfig, desmosDb),
-		profiles.NewModule(common.MessagesParser, profilestypes.NewQueryClient(grpcConnection), encodingConfig, desmosDb),
+		posts.NewModule(profilesClient, encodingConfig, desmosDb),
+		profiles.NewModule(common.MessagesParser, profilesClient, encodingConfig, desmosDb),
 	}
 }

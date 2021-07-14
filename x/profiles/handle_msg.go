@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rs/zerolog/log"
+	profilesutils "github.com/desmos-labs/djuno/x/profiles/utils"
 
 	"github.com/desmos-labs/djuno/x/profiles/ibc"
 
@@ -14,8 +14,6 @@ import (
 	"github.com/desmos-labs/djuno/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/desmos-labs/juno/modules/messages"
-
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
@@ -29,16 +27,10 @@ import (
 // HandleMsg allows to handle different messages types for the profiles module
 func HandleMsg(
 	tx *juno.Tx, index int, msg sdk.Msg,
-	profilesClient profilestypes.QueryClient, getAccounts messages.MessageAddressesParser,
-	cdc codec.Marshaler, db *desmosdb.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
 	if len(tx.Logs) == 0 {
 		return nil
-	}
-
-	err := saveAccounts(tx.Height, msg, getAccounts, cdc, db)
-	if err != nil {
-		log.Error().Err(err).Int64("height", tx.Height).Msg("error while saving accounts")
 	}
 
 	switch desmosMsg := msg.(type) {
@@ -49,10 +41,10 @@ func HandleMsg(
 		return handleMsgDeleteProfile(tx, desmosMsg, db)
 
 	case *profilestypes.MsgRequestDTagTransfer:
-		return handleMsgRequestDTagTransfer(tx, index, desmosMsg, db)
+		return handleMsgRequestDTagTransfer(tx, index, desmosMsg, profilesClient, cdc, db)
 
 	case *profilestypes.MsgAcceptDTagTransferRequest:
-		return handleMsgAcceptDTagTransfer(tx, desmosMsg, db)
+		return handleMsgAcceptDTagTransfer(tx, desmosMsg, profilesClient, cdc, db)
 
 	case *profilestypes.MsgCancelDTagTransferRequest:
 		return handleDTagTransferRequestDeletion(tx.Height, desmosMsg.Sender, desmosMsg.Receiver, db)
@@ -61,25 +53,25 @@ func HandleMsg(
 		return handleDTagTransferRequestDeletion(tx.Height, desmosMsg.Sender, desmosMsg.Receiver, db)
 
 	case *profilestypes.MsgCreateRelationship:
-		return handleMsgCreateRelationship(tx, desmosMsg, db)
+		return handleMsgCreateRelationship(tx, desmosMsg, profilesClient, cdc, db)
 
 	case *profilestypes.MsgDeleteRelationship:
 		return handleMsgDeleteRelationship(tx, desmosMsg, db)
 
 	case *profilestypes.MsgBlockUser:
-		return handleMsgBlockUser(tx, desmosMsg, db)
+		return handleMsgBlockUser(tx, desmosMsg, profilesClient, cdc, db)
 
 	case *profilestypes.MsgUnblockUser:
 		return handleMsgUnblockUser(tx, desmosMsg, db)
 
 	case *profilestypes.MsgLinkChainAccount:
-		return handleMsgChainLink(tx, index, desmosMsg, cdc, db)
+		return handleMsgChainLink(tx, index, desmosMsg, profilesClient, cdc, db)
 
 	case *profilestypes.MsgUnlinkChainAccount:
 		return handleMsgUnlinkChainAccount(desmosMsg, db)
 
 	case *profilestypes.MsgLinkApplication:
-		return handleMsgLinkApplication(tx, desmosMsg, profilesClient, db)
+		return handleMsgLinkApplication(tx, desmosMsg, profilesClient, cdc, db)
 
 	case *channeltypes.MsgRecvPacket:
 		return ibc.HandlePacket(tx.Height, desmosMsg.Packet, profilesClient, cdc, db)
@@ -92,27 +84,6 @@ func HandleMsg(
 
 	case *profilestypes.MsgUnlinkApplication:
 		return handleMsgUnlinkApplication(desmosMsg, db)
-	}
-
-	return nil
-}
-
-// -------------------------------------------------------------------------------------------------------------------
-
-// saveAccounts stores the accounts included in the given messages inside the profile table
-func saveAccounts(
-	height int64, msg sdk.Msg, getAccounts messages.MessageAddressesParser, cdc codec.Marshaler, db *desmosdb.Db,
-) error {
-	accounts, err := getAccounts(cdc, msg)
-	if err != nil {
-		return err
-	}
-
-	for _, account := range accounts {
-		err = db.SaveUserIfNotExisting(account, height)
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
@@ -166,7 +137,8 @@ func handleMsgDeleteProfile(tx *juno.Tx, msg *profilestypes.MsgDeleteProfile, db
 
 // handleMsgRequestDTagTransfer handles a MsgRequestDTagTransfer storing the request into the database
 func handleMsgRequestDTagTransfer(
-	tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer, db *desmosdb.Db,
+	tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeDTagTransferRequest)
 	if err != nil {
@@ -178,6 +150,13 @@ func handleMsgRequestDTagTransfer(
 		return err
 	}
 
+	// Update the involved accounts profiles
+	addresses := []string{msg.Receiver, msg.Sender}
+	err = profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return err
+	}
+
 	return db.SaveDTagTransferRequest(types.NewDTagTransferRequest(
 		profilestypes.NewDTagTransferRequest(dTagToTrade, msg.Sender, msg.Receiver),
 		tx.Height,
@@ -185,7 +164,17 @@ func handleMsgRequestDTagTransfer(
 }
 
 // handleMsgAcceptDTagTransfer handles a MsgAcceptDTagTransfer effectively transferring the DTag
-func handleMsgAcceptDTagTransfer(tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransferRequest, db *desmosdb.Db) error {
+func handleMsgAcceptDTagTransfer(
+	tx *juno.Tx, msg *profilestypes.MsgAcceptDTagTransferRequest,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
+	// Update the involved accounts profiles
+	addresses := []string{msg.Receiver, msg.Sender}
+	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return err
+	}
+
 	return db.TransferDTag(types.NewDTagTransferRequestAcceptance(
 		types.NewDTagTransferRequest(
 			profilestypes.NewDTagTransferRequest(msg.NewDTag, msg.Sender, msg.Receiver),
@@ -206,7 +195,17 @@ func handleDTagTransferRequestDeletion(height int64, sender, receiver string, db
 // -----------------------------------------------------------------------------------------------------
 
 // handleMsgCreateRelationship allows to handle a MsgCreateRelationship properly
-func handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelationship, db *desmosdb.Db) error {
+func handleMsgCreateRelationship(
+	tx *juno.Tx, msg *profilestypes.MsgCreateRelationship,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
+	// Update the involved accounts profiles
+	addresses := []string{msg.Receiver, msg.Sender}
+	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return err
+	}
+
 	return db.SaveRelationship(types.NewRelationship(
 		profilestypes.NewRelationship(msg.Sender, msg.Receiver, msg.Subspace),
 		tx.Height,
@@ -221,8 +220,20 @@ func handleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelati
 	))
 }
 
+// -----------------------------------------------------------------------------------------------------
+
 // handleMsgBlockUser allows to handle a MsgBlockUser properly
-func handleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser, db *desmosdb.Db) error {
+func handleMsgBlockUser(
+	tx *juno.Tx, msg *profilestypes.MsgBlockUser,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
+	// Update the involved accounts profiles
+	addresses := []string{msg.Blocked, msg.Blocker}
+	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return err
+	}
+
 	return db.SaveBlockage(types.NewBlockage(
 		profilestypes.NewUserBlock(
 			msg.Blocker,
@@ -246,8 +257,16 @@ func handleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser, db *de
 
 // handleMsgChainLink allows to handle a MsgLinkChainAccount properly
 func handleMsgChainLink(
-	tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount, cdc codec.Marshaler, db *desmosdb.Db,
+	tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
+	// Update the involved account profile
+	addresses := []string{msg.Signer}
+	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return err
+	}
+
 	// Get the creation time
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeLinkChainAccount)
 	if err != nil {
@@ -284,8 +303,16 @@ func handleMsgUnlinkChainAccount(msg *profilestypes.MsgUnlinkChainAccount, db *d
 
 // handleMsgLinkApplication allows to handle a MsgLinkApplication properly
 func handleMsgLinkApplication(
-	tx *juno.Tx, msg *profilestypes.MsgLinkApplication, profilesClient profilestypes.QueryClient, db *desmosdb.Db,
+	tx *juno.Tx, msg *profilestypes.MsgLinkApplication,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
+	// Update the involved account profile
+	addresses := []string{msg.Sender}
+	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return err
+	}
+
 	res, err := profilesClient.UserApplicationLink(
 		context.Background(),
 		profilestypes.NewQueryUserApplicationLinkRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username),

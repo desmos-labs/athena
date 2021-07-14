@@ -45,12 +45,6 @@ func (db Db) SavePost(post *types.Post) error {
 
 // savePostContent allows to store the content of the given post
 func (db Db) savePostContent(post *types.Post) error {
-	// Save the user
-	err := db.SaveUserIfNotExisting(post.Creator, post.Height)
-	if err != nil {
-		return err
-	}
-
 	// Save the post
 	stmt := `
 INSERT INTO post (id, parent_id, message, created, last_edited, comments_state, subspace, creator_address, hidden, height)
@@ -62,7 +56,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 		parentID = sql.NullString{Valid: true, String: post.ParentID}
 	}
 
-	_, err = db.Sql.Exec(
+	_, err := db.Sql.Exec(
 		stmt,
 		post.PostID, parentID, post.Message, post.Created, post.LastEdited, post.CommentsState.String(),
 		post.Subspace, post.Creator, false, post.Height,
@@ -259,11 +253,6 @@ func (db Db) getPollData(postID string) (*poststypes.PollData, error) {
 // SaveUserPollAnswer allows to save the given answers from the specified user for the poll
 // post having the specified postID.
 func (db Db) SaveUserPollAnswer(answer types.UserPollAnswer) error {
-	err := db.SaveUserIfNotExisting(answer.User, answer.Height)
-	if err != nil {
-		return err
-	}
-
 	statement := `
 INSERT INTO user_poll_answer (poll_id, answer, answerer_address, height) 
 VALUES ((SELECT id FROM poll WHERE post_id = $1), $2, $3, $4)
@@ -274,7 +263,7 @@ ON CONFLICT ON CONSTRAINT unique_user_answer DO UPDATE
 WHERE user_poll_answer.height <= excluded.height`
 
 	for _, answerText := range answer.Answers {
-		_, err = db.Sql.Exec(statement, answer.PostID, answerText, answer.User, answer.Height)
+		_, err := db.Sql.Exec(statement, answer.PostID, answerText, answer.User, answer.Height)
 		if err != nil {
 			return err
 		}
@@ -287,11 +276,6 @@ WHERE user_poll_answer.height <= excluded.height`
 
 // SaveReport allows to store the given report properly
 func (db Db) SaveReport(report types.Report) error {
-	err := db.SaveUserIfNotExisting(report.User, report.Height)
-	if err != nil {
-		return err
-	}
-
 	stmt := `
 INSERT INTO post_report (post_id, type, message, reporter_address, height) 
 VALUES ($1, $2, $3, $4, $5) 
@@ -302,6 +286,6 @@ ON CONFLICT ON CONSTRAINT unique_report DO UPDATE
         reporter_address = excluded.reporter_address, 
         height = excluded.height
 WHERE post_report.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, report.PostID, report.Type, report.Message, report.User, report.Height)
+	_, err := db.Sql.Exec(stmt, report.PostID, report.Type, report.Message, report.User, report.Height)
 	return err
 }

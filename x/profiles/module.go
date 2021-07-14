@@ -56,5 +56,5 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	return HandleMsg(tx, index, msg, m.profilesClient, m.getAccounts, m.encodingConfig.Marshaler, m.db)
+	return HandleMsg(tx, index, msg, m.profilesClient, m.encodingConfig.Marshaler, m.db)
 }
