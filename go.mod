@@ -6,9 +6,9 @@ require (
 	cloud.google.com/go v0.55.0 // indirect
 	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.12.0+incompatible
-	github.com/cosmos/cosmos-sdk v0.42.4
+	github.com/cosmos/cosmos-sdk v0.42.7
 	github.com/desmos-labs/desmos v0.17.2
-	github.com/desmos-labs/juno v0.0.0-20210622105611-8862204c82fc
+	github.com/desmos-labs/juno v0.0.0-20210713123934-7ec5fe9a798f
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/pelletier/go-toml v1.8.1
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
