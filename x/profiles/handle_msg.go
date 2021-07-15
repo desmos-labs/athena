@@ -3,7 +3,10 @@ package profiles
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	profilesutils "github.com/desmos-labs/djuno/x/profiles/utils"
 
@@ -86,6 +89,9 @@ func HandleMsg(
 		return handleMsgUnlinkApplication(desmosMsg, db)
 	}
 
+	log.Info().Str("module", "profiles").Str("message", msg.Type()).Int64("height", tx.Height).
+		Msg("handled message")
+
 	return nil
 }
 
@@ -140,19 +146,19 @@ func handleMsgRequestDTagTransfer(
 	tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer,
 	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
 ) error {
+	// Update the involved accounts profiles
+	addresses := []string{msg.Receiver, msg.Sender}
+	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	if err != nil {
+		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
+	}
+
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeDTagTransferRequest)
 	if err != nil {
 		return err
 	}
 
 	dTagToTrade, err := tx.FindAttributeByKey(event, profilestypes.AttributeDTagToTrade)
-	if err != nil {
-		return err
-	}
-
-	// Update the involved accounts profiles
-	addresses := []string{msg.Receiver, msg.Sender}
-	err = profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 	if err != nil {
 		return err
 	}
@@ -172,7 +178,7 @@ func handleMsgAcceptDTagTransfer(
 	addresses := []string{msg.Receiver, msg.Sender}
 	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
 	return db.TransferDTag(types.NewDTagTransferRequestAcceptance(
@@ -203,7 +209,7 @@ func handleMsgCreateRelationship(
 	addresses := []string{msg.Receiver, msg.Sender}
 	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
 	return db.SaveRelationship(types.NewRelationship(
@@ -231,7 +237,7 @@ func handleMsgBlockUser(
 	addresses := []string{msg.Blocked, msg.Blocker}
 	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
 	return db.SaveBlockage(types.NewBlockage(
@@ -264,7 +270,7 @@ func handleMsgChainLink(
 	addresses := []string{msg.Signer}
 	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
 	// Get the creation time
@@ -310,7 +316,7 @@ func handleMsgLinkApplication(
 	addresses := []string{msg.Sender}
 	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
 	res, err := profilesClient.UserApplicationLink(

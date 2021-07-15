@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/rs/zerolog/log"
 
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
