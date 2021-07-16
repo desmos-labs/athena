@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
@@ -27,13 +28,13 @@ func UpdateProfiles(
 		}
 
 		if res.Profile != nil {
-			var p profilestypes.Profile
-			err = cdc.UnpackAny(res.Profile, &p)
+			var account authtypes.AccountI
+			err = cdc.UnpackAny(res.Profile, &account)
 			if err != nil {
 				return fmt.Errorf("error while unpacking profile: %s", err)
 			}
 
-			err = db.SaveProfile(types.NewProfile(&p, height))
+			err = db.SaveProfile(types.NewProfile(account.(*profilestypes.Profile), height))
 			if err != nil {
 				return fmt.Errorf("error while saving profile: %s", err)
 			}
