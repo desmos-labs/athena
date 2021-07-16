@@ -21,7 +21,6 @@ import (
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	juno "github.com/desmos-labs/juno/types"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
@@ -38,7 +37,7 @@ func HandleMsg(
 
 	switch desmosMsg := msg.(type) {
 	case *profilestypes.MsgSaveProfile:
-		return handleMsgSaveProfile(tx, index, desmosMsg, db)
+		return handleMsgSaveProfile(tx, desmosMsg, profilesClient, cdc, db)
 
 	case *profilestypes.MsgDeleteProfile:
 		return handleMsgDeleteProfile(tx, desmosMsg, db)
@@ -98,40 +97,12 @@ func HandleMsg(
 // -------------------------------------------------------------------------------------------------------------------
 
 // handleMsgSaveProfile handles a MsgCreateProfile and properly stores the new profile inside the database
-func handleMsgSaveProfile(tx *juno.Tx, index int, msg *profilestypes.MsgSaveProfile, db *desmosdb.Db) error {
-	event, err := tx.FindEventByType(index, profilestypes.EventTypeProfileSaved)
-	if err != nil {
-		return err
-	}
-
-	// Get creation date
-	creationDateStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeProfileCreationTime)
-	if err != nil {
-		return err
-	}
-	creationDate, err := time.Parse(time.RFC3339, creationDateStr)
-	if err != nil {
-		return err
-	}
-
-	address, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return err
-	}
-
-	newProfile, err := profilestypes.NewProfile(
-		msg.DTag,
-		msg.Nickname,
-		msg.Bio,
-		profilestypes.NewPictures(msg.ProfilePicture, msg.CoverPicture),
-		creationDate,
-		authtypes.NewBaseAccountWithAddress(address),
-	)
-	if err != nil {
-		return err
-	}
-
-	return db.SaveProfile(types.NewProfile(newProfile, tx.Height))
+func handleMsgSaveProfile(
+	tx *juno.Tx, msg *profilestypes.MsgSaveProfile,
+	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+) error {
+	addresses := []string{msg.Creator}
+	return profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 }
 
 // handleMsgDeleteProfile handles a MsgDeleteProfile correctly deleting the account present inside the database
