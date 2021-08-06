@@ -3,14 +3,12 @@ package x
 import (
 	"fmt"
 
+	"github.com/desmos-labs/juno/modules/registrar"
+
 	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/desmos-labs/juno/client"
-	"github.com/desmos-labs/juno/db"
 	"github.com/desmos-labs/juno/modules"
-	juno "github.com/desmos-labs/juno/types"
 
 	"github.com/desmos-labs/djuno/types"
 	"github.com/desmos-labs/djuno/x/common"
@@ -31,22 +29,20 @@ func NewModulesRegistrar() *ModulesRegistrar {
 }
 
 // BuildModules implements modules.Registrar
-func (r *ModulesRegistrar) BuildModules(
-	cfg juno.Config, encodingConfig *params.EncodingConfig, _ *sdk.Config, db db.Database, _ *client.Proxy,
-) modules.Modules {
-	desmosDb := database.Cast(db)
+func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
+	desmosDb := database.Cast(ctx.Database)
 
-	djunoCfg, ok := cfg.(*types.Config)
+	djunoCfg, ok := ctx.ParsingConfig.(*types.Config)
 	if !ok {
-		panic(fmt.Errorf("invalid configuration type: %T", cfg))
+		panic(fmt.Errorf("invalid configuration type: %T", ctx.ParsingConfig))
 	}
 
-	grpcConnection := client.MustCreateGrpcConnection(cfg)
+	grpcConnection := client.MustCreateGrpcConnection(ctx.ParsingConfig)
 	profilesClient := profilestypes.NewQueryClient(grpcConnection)
 
 	return []modules.Module{
 		notifications.NewModule(djunoCfg.Notifications, desmosDb),
-		posts.NewModule(profilesClient, encodingConfig, desmosDb),
-		profiles.NewModule(common.MessagesParser, profilesClient, encodingConfig, desmosDb),
+		posts.NewModule(profilesClient, ctx.EncodingConfig, desmosDb),
+		profiles.NewModule(common.MessagesParser, profilesClient, ctx.EncodingConfig, desmosDb),
 	}
 }

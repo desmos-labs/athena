@@ -1,0 +1,31 @@
+table:
+  name: chain_link
+  schema: public
+object_relationships:
+- name: chain_config
+  using:
+    foreign_key_constraint_on: chain_config_id
+- name: profile
+  using:
+    foreign_key_constraint_on: user_address
+- name: proof
+  using:
+    manual_configuration:
+      column_mapping:
+        id: chain_link_id
+      insertion_order: null
+      remote_table:
+        name: chain_link_proof
+        schema: public
+select_permissions:
+- permission:
+    allow_aggregations: true
+    columns:
+    - id
+    - user_address
+    - external_address
+    - chain_config_id
+    - creation_time
+    - height
+    filter: {}
+  role: anonymous

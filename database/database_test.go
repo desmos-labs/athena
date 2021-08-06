@@ -9,6 +9,9 @@ import (
 	"testing"
 	"time"
 
+	junodb "github.com/desmos-labs/juno/db"
+	"github.com/desmos-labs/juno/types/logging"
+
 	juno "github.com/desmos-labs/juno/types"
 
 	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
@@ -37,39 +40,31 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.setupTestData()
 
 	// Build the database
-	config := juno.NewConfig(
-		nil,
-		nil,
-		nil,
-		juno.NewDatabaseConfig(
-			"djuno",
-			"localhost",
-			5433,
-			"djuno",
-			"password",
-			"",
-			"public",
-			10,
-			10,
-		),
-		nil,
-		nil,
-		nil,
+	encodingConfig := desmosapp.MakeTestEncodingConfig()
+	databaseConfig := juno.NewDatabaseConfig(
+		"djuno",
+		"localhost",
+		5433,
+		"djuno",
+		"password",
+		"",
+		"public",
+		10,
+		10,
 	)
 
-	encodingConfig := desmosapp.MakeTestEncodingConfig()
-	db, err := database.Builder(config, &encodingConfig)
+	db, err := database.Builder(junodb.NewContext(databaseConfig, &encodingConfig, logging.DefaultLogger()))
 	suite.Require().NoError(err)
 
 	desmosDb, ok := (db).(*database.Db)
 	suite.Require().True(ok)
 
 	// Delete the public schema
-	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, config.GetDatabaseConfig().GetSchema()))
+	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.GetSchema()))
 	suite.Require().NoError(err)
 
 	// Re-create the schema
-	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, config.GetDatabaseConfig().GetSchema()))
+	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.GetSchema()))
 	suite.Require().NoError(err)
 
 	dirPath := "schema"
