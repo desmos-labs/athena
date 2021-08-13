@@ -308,3 +308,42 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
 	suite.Require().NoError(err)
 	suite.Require().Equal(1, count)
 }
+
+// --------------------------------------------------------------------------------------------------------------------
+
+func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
+	user := "cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47"
+	err := suite.database.SaveUserIfNotExisting(user, 1)
+	suite.Require().NoError(err)
+
+	applicationLink := types.NewApplicationLink(
+		profilestypes.NewApplicationLink(
+			user,
+			profilestypes.NewData("twitter", "twitteruser"),
+			profilestypes.ApplicationLinkStateInitialized,
+			profilestypes.NewOracleRequest(
+				-1,
+				1,
+				profilestypes.NewOracleRequestCallData(
+					"twitter",
+					"7B22757365726E616D65223A22526963636172646F4D222C22676973745F6964223A223732306530303732333930613930316262383065353966643630643766646564227D",
+				),
+				"client_id",
+			),
+			nil,
+			time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+		),
+		100,
+	)
+
+	err = suite.database.SaveApplicationLink(applicationLink)
+	suite.Require().NoError(err)
+
+	var count int
+	err = suite.database.Sql.QueryRow("SELECT COUNT(*) FROM application_link").Scan(&count)
+	suite.Require().NoError(err)
+	suite.Require().Equal(1, count)
+
+	err = suite.database.DeleteApplicationLink(user, "twitter", "twitteruser")
+	suite.Require().NoError(err)
+}
