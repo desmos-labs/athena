@@ -147,18 +147,7 @@ func handleMsgAcceptDTagTransfer(
 ) error {
 	// Update the involved accounts profiles
 	addresses := []string{msg.Receiver, msg.Sender}
-	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
-	return db.TransferDTag(types.NewDTagTransferRequestAcceptance(
-		types.NewDTagTransferRequest(
-			profilestypes.NewDTagTransferRequest(msg.NewDTag, msg.Sender, msg.Receiver),
-			tx.Height,
-		),
-		msg.NewDTag,
-	))
+	return profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
 }
 
 // handleDTagTransferRequestDeletion allows to delete an existing transfer request
