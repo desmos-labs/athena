@@ -101,31 +101,6 @@ WHERE dtag_transfer_requests.height <= excluded.height`
 	return err
 }
 
-// TransferDTag transfers the DTag from the sender to the receiver, and sets the sender DTag to the new one provided
-func (db Db) TransferDTag(acceptance types.DTagTransferRequestAcceptance) error {
-	// Get the old DTag
-	var oldDTag string
-	stmt := `SELECT dtag FROM profile WHERE address = $1 AND height <= $2`
-	err := db.Sql.QueryRow(stmt, acceptance.Receiver, acceptance.Height).Scan(&oldDTag)
-	if err != nil {
-		return err
-	}
-
-	// Save the new DTags
-	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, acceptance.NewDTag, acceptance.Receiver)
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Sql.Exec(`UPDATE profile SET dtag = $1 WHERE address = $2`, oldDTag, acceptance.Sender)
-	if err != nil {
-		return err
-	}
-
-	// Delete the transfer request
-	return db.DeleteDTagTransferRequest(acceptance.DTagTransferRequest)
-}
-
 // DeleteDTagTransferRequest deletes the DTag requests from sender to receiver
 func (db Db) DeleteDTagTransferRequest(request types.DTagTransferRequest) error {
 	stmt := `
