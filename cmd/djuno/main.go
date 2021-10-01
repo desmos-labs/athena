@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/djuno/types"
 
-	desmosapp "github.com/desmos-labs/desmos/app"
+	desmosapp "github.com/desmos-labs/desmos/v2/app"
 	junocmd "github.com/desmos-labs/juno/cmd"
 	initcmd "github.com/desmos-labs/juno/cmd/init"
 	parsecmd "github.com/desmos-labs/juno/cmd/parse"

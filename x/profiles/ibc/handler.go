@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 )
@@ -22,12 +22,12 @@ var (
 // It returns true iff it was able to handle the packet, and an error if something goes wrong.
 type packetHandler = func(
 	height int64, packet channeltypes.Packet,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *desmosdb.Db,
 ) (bool, error)
 
 // HandlePacket tries handling the given packet that was received at the given height
 func HandlePacket(
-	height int64, packet channeltypes.Packet, client profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+	height int64, packet channeltypes.Packet, client profilestypes.QueryClient, cdc codec.Codec, db *desmosdb.Db,
 ) error {
 	// Try handling the packet
 	for _, handler := range handlers {

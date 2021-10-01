@@ -6,7 +6,7 @@ import (
 
 	"github.com/desmos-labs/djuno/types"
 
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
@@ -35,7 +35,7 @@ func (db Db) SavePost(post *types.Post) error {
 		return err
 	}
 
-	err = db.savePollData(post.PostID, post.PollData)
+	err = db.savePollData(post.PostID, post.Poll)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func (db Db) saveAttachments(height int64, postID string, attachments []poststyp
 // savePollData allows to properly store the given poll inside the database, returning the
 // id of the newly created (or updated) row inside the database itself.
 // If the given poll is nil, it will not be inserted and nil will be returned as the id.
-func (db Db) savePollData(postID string, poll *poststypes.PollData) error {
+func (db Db) savePollData(postID string, poll *poststypes.Poll) error {
 	// Nil data, do nothing
 	if poll == nil {
 		return nil
@@ -223,7 +223,7 @@ func (db Db) getAttachments(postID string) ([]poststypes.Attachment, error) {
 
 // getPollData returns the poll row associated to the post having the specified id.
 // If the post with the same id has no poll associated to it, nil is returned instead.
-func (db Db) getPollData(postID string) (*poststypes.PollData, error) {
+func (db Db) getPollData(postID string) (*poststypes.Poll, error) {
 	sqlStmt := `SELECT * FROM poll WHERE post_id = $1`
 
 	var rows []dbtypes.PollRow

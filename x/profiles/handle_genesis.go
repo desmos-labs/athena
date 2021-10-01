@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/desmos-labs/djuno/types"
@@ -15,7 +15,7 @@ import (
 
 // HandleGenesis allows to properly handle the genesis state for the posts module
 func HandleGenesis(
-	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, cdc codec.Marshaler, db *desmosdb.Db,
+	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, cdc codec.Codec, db *desmosdb.Db,
 ) error {
 	var authGenState authtypes.GenesisState
 	cdc.MustUnmarshalJSON(appState[authtypes.ModuleName], &authGenState)

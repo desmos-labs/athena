@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 
 	profilesutils "github.com/desmos-labs/djuno/x/profiles/utils"
 
@@ -12,7 +12,7 @@ import (
 	"github.com/desmos-labs/djuno/x/posts/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 	juno "github.com/desmos-labs/juno/types"
 
 	"github.com/desmos-labs/djuno/database"
@@ -21,7 +21,7 @@ import (
 // MsgHandler allows to handle different message types from the posts module
 func MsgHandler(
 	tx *juno.Tx, index int, msg sdk.Msg,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, database *database.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, database *database.Db,
 ) error {
 	if len(tx.Logs) == 0 {
 		return nil
@@ -64,7 +64,7 @@ func MsgHandler(
 // push notification using Firebase Cloud Messaging.
 func handleMsgCreatePost(
 	tx *juno.Tx, index int, msg *poststypes.MsgCreatePost,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *database.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
 ) error {
 	// Update the involved account profile
 	addresses := []string{msg.Creator}
@@ -88,7 +88,7 @@ func handleMsgCreatePost(
 // the database as well.
 func handleMsgEditPost(
 	tx *juno.Tx, index int, msg *poststypes.MsgEditPost,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *database.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
 ) error {
 	// Update the involved accounts profiles
 	addresses := []string{msg.Editor}
@@ -125,8 +125,8 @@ func handleMsgEditPost(
 		post.Attachments = msg.Attachments
 	}
 
-	if msg.PollData != nil {
-		post.PollData = msg.PollData
+	if msg.Poll != nil {
+		post.Poll = msg.Poll
 	}
 
 	return db.SavePost(post)
@@ -138,7 +138,7 @@ func handleMsgEditPost(
 // storing inside the database the new answer.
 func handleMsgAnswerPoll(
 	tx *juno.Tx, msg *poststypes.MsgAnswerPoll,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *database.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
 ) error {
 	// Update the involved account profile
 	addresses := []string{msg.Answerer}
@@ -159,7 +159,7 @@ func handleMsgAnswerPoll(
 // reaction inside the database and sending out push notifications to whoever might be interested in this event.
 func handleMsgAddPostReaction(
 	tx *juno.Tx, index int, msg *poststypes.MsgAddPostReaction,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *database.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
 ) error {
 	// Update the involved account profile
 	addresses := []string{msg.User}
@@ -192,7 +192,7 @@ func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.Db) error 
 // HandleMsgRegisterReaction handles a MsgRegisterReaction by storing the new reaction inside the database.
 func handleMsgRegisterReaction(
 	tx *juno.Tx, msg *poststypes.MsgRegisterReaction,
-	profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *database.Db,
+	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
 ) error {
 	// Update the involved account profile
 	addresses := []string{msg.Creator}

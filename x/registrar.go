@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/juno/modules/registrar"
 
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 
 	"github.com/desmos-labs/juno/client"
 	"github.com/desmos-labs/juno/modules"

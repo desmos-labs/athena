@@ -9,14 +9,14 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 )
 
 // HandleGenesis allows to properly handle the genesis state for the posts module
 func HandleGenesis(
-	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec codec.Marshaler, db *desmosdb.Db,
+	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec codec.Codec, db *desmosdb.Db,
 ) error {
 	// Get the posts state
 	var genState poststypes.GenesisState

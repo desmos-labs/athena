@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
-	oracletypes "github.com/desmos-labs/desmos/x/oracle/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	oracletypes "github.com/desmos-labs/desmos/v2/x/oracle/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	"github.com/desmos-labs/juno/client"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
@@ -17,7 +17,7 @@ import (
 // handleLinkChainAccountPacketData tries handling the given packet as it contains a LinkChainAccountPacketData
 // instance. This is done to store chain links that are created using IBC.
 func handleLinkChainAccountPacketData(
-	height int64, packet channeltypes.Packet, profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+	height int64, packet channeltypes.Packet, profilesClient profilestypes.QueryClient, cdc codec.Codec, db *desmosdb.Db,
 ) (bool, error) {
 	// Try reading the packet data
 	var packetData profilestypes.LinkChainAccountPacketData
@@ -54,7 +54,7 @@ func handleLinkChainAccountPacketData(
 // instance. This is done in order to update existing application links when their state changes after
 // Band Protocol ends the verification process.
 func handleOracleRequestPacketData(
-	height int64, packet channeltypes.Packet, profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+	height int64, packet channeltypes.Packet, profilesClient profilestypes.QueryClient, cdc codec.Codec, db *desmosdb.Db,
 ) (bool, error) {
 	var data oracletypes.OracleRequestPacketData
 	if err := cdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
@@ -77,7 +77,7 @@ func handleOracleRequestPacketData(
 // instance. This is done in order to update existing application links when their state changes after
 // Band Protocol ends the verification process.
 func handleOracleResponsePacketData(
-	height int64, packet channeltypes.Packet, profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *desmosdb.Db,
+	height int64, packet channeltypes.Packet, profilesClient profilestypes.QueryClient, cdc codec.Codec, db *desmosdb.Db,
 ) (bool, error) {
 	var data oracletypes.OracleResponsePacketData
 	if err := cdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
