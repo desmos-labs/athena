@@ -5,9 +5,9 @@ go 1.13
 require (
 	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.12.0+incompatible
-	github.com/cosmos/cosmos-sdk v0.44.1
-	github.com/cosmos/ibc-go v1.2.0
-	github.com/desmos-labs/desmos/v2 v2.0.1
+	github.com/cosmos/cosmos-sdk v0.44.2
+	github.com/cosmos/ibc-go v1.2.2
+	github.com/desmos-labs/desmos/v2 v2.1.0-testnet
 	github.com/desmos-labs/juno v0.0.0-20210824054319-93b61f171e01
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.2.0
@@ -16,7 +16,7 @@ require (
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
-	github.com/tendermint/tendermint v0.34.13
+	github.com/tendermint/tendermint v0.34.14
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	google.golang.org/api v0.44.0
 )
