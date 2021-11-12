@@ -97,3 +97,17 @@ func NewApplicationLink(link profilestypes.ApplicationLink, height int64) Applic
 		Height:          height,
 	}
 }
+
+// -------------------------------------------------------------------------------------------------------------------
+
+type ProfilesParams struct {
+	profilestypes.Params
+	Height int64
+}
+
+func NewProfilesParams(params profilestypes.Params, height int64) ProfilesParams {
+	return ProfilesParams{
+		Params: params,
+		Height: height,
+	}
+}

@@ -6,7 +6,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
-	"github.com/desmos-labs/juno/modules/messages"
+	"github.com/forbole/juno/v2/modules/messages"
 )
 
 var MessagesParser = messages.JoinMessageParsers(

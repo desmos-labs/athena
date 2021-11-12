@@ -1,7 +1,7 @@
 package utils
 
 import (
-	juno "github.com/desmos-labs/juno/types"
+	juno "github.com/forbole/juno/v2/types"
 	"github.com/rs/zerolog/log"
 	tmtypes "github.com/tendermint/tendermint/abci/types"
 )

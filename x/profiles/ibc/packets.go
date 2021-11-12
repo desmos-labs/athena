@@ -8,7 +8,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	oracletypes "github.com/desmos-labs/desmos/v2/x/oracle/types"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	"github.com/desmos-labs/juno/client"
+	"github.com/forbole/juno/v2/node/remote"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/types"
@@ -40,7 +40,7 @@ func handleLinkChainAccountPacketData(
 			ChainName: packetData.SourceChainConfig.Name,
 			Target:    sourceAddr.GetValue(),
 		},
-		client.GetHeightRequestHeader(height),
+		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return true, err
@@ -64,7 +64,7 @@ func handleOracleRequestPacketData(
 	res, err := profilesClient.ApplicationLinkByClientID(
 		context.Background(),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
-		client.GetHeightRequestHeader(height),
+		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return true, fmt.Errorf("error while getting application link by client id: %s", err)
@@ -87,7 +87,7 @@ func handleOracleResponsePacketData(
 	res, err := profilesClient.ApplicationLinkByClientID(
 		context.Background(),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
-		client.GetHeightRequestHeader(height),
+		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return true, fmt.Errorf("error while getting application link by client id: %s", err)

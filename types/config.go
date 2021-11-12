@@ -1,22 +1,22 @@
 package types
 
 import (
-	initcmd "github.com/desmos-labs/juno/cmd/init"
-	juno "github.com/desmos-labs/juno/types"
+	initcmd "github.com/forbole/juno/v2/cmd/init"
+	junocfg "github.com/forbole/juno/v2/types/config"
 	"github.com/pelletier/go-toml"
 	"github.com/spf13/cobra"
 )
 
-var _ juno.Config = &Config{}
+var _ junocfg.Config = &Config{}
 
 // Config contains the data used to configure DJuno
 type Config struct {
-	juno.Config
+	junocfg.Config
 	Notifications *NotificationsConfig `toml:"notifications"`
 }
 
 // NewConfig allows to build a new Config instance
-func NewConfig(config juno.Config, notificationsConfig *NotificationsConfig) *Config {
+func NewConfig(config junocfg.Config, notificationsConfig *NotificationsConfig) *Config {
 	return &Config{
 		Config:        config,
 		Notifications: notificationsConfig,
@@ -44,8 +44,8 @@ type configToml struct {
 }
 
 // ParseCfg parses the given file contents into a configuration object
-func ParseCfg(fileContents []byte) (juno.Config, error) {
-	junoCfg, err := juno.DefaultConfigParser(fileContents)
+func ParseCfg(fileContents []byte) (junocfg.Config, error) {
+	junoCfg, err := junocfg.DefaultConfigParser(fileContents)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func SetupFlags(cmd *cobra.Command) {
 
 // CreateConfigFromFlags returns a new Config instance based on the values provided to the "init"
 // command using the various flags
-func CreateConfigFromFlags(cmd *cobra.Command) juno.Config {
+func CreateConfigFromFlags(cmd *cobra.Command) junocfg.Config {
 	junoCfg := initcmd.DefaultConfigCreator(cmd)
 
 	notificationsFirebaseFile, _ := cmd.Flags().GetString(FlagNotificationsFirebaseCredentialFile)

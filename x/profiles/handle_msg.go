@@ -10,20 +10,18 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	profilesutils "github.com/desmos-labs/djuno/x/profiles/utils"
-
-	"github.com/desmos-labs/djuno/x/profiles/ibc"
-
 	"github.com/desmos-labs/juno/client"
 
 	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/x/profiles/ibc"
+	profilesutils "github.com/desmos-labs/djuno/x/profiles/utils"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	juno "github.com/desmos-labs/juno/types"
+	juno "github.com/forbole/juno/v2/types"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 )

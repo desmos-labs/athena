@@ -6,9 +6,9 @@ import (
 	"github.com/desmos-labs/djuno/types"
 
 	desmosapp "github.com/desmos-labs/desmos/v2/app"
-	junocmd "github.com/desmos-labs/juno/cmd"
-	initcmd "github.com/desmos-labs/juno/cmd/init"
-	parsecmd "github.com/desmos-labs/juno/cmd/parse"
+	junocmd "github.com/forbole/juno/v2/cmd"
+	initcmd "github.com/forbole/juno/v2/cmd/init"
+	parsecmd "github.com/forbole/juno/v2/cmd/parse"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x"

@@ -4,7 +4,7 @@
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/desmos-labs/djuno/Tests)](https://github.com/desmos-labs/djuno/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/desmos-labs/djuno)](https://goreportcard.com/report/github.com/desmos-labs/djuno)
 
-This project represents the [Juno](https://github.com/desmos-labs/juno) implementation for
+This project represents the [Juno](https://github.com/forbole/juno/v2) implementation for
 the [Desmos blockchain](https://github.com/desmos-labs/desmos).
 
 It extends the custom Juno behavior with custom message handlers for all the Desmos messages. This allows to store

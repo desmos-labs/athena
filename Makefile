@@ -10,8 +10,8 @@ all: ci-lint ci-test install
 # Build / Install
 ###############################################################################
 
-LD_FLAGS = -X github.com/desmos-labs/juno/version.Version=$(VERSION) \
-	-X github.com/desmos-labs/juno/version.Commit=$(COMMIT)
+LD_FLAGS = -X github.com/forbole/juno/v2/version.Version=$(VERSION) \
+	-X github.com/forbole/juno/v2/version.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
 

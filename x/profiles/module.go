@@ -5,15 +5,15 @@ import (
 
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 
-	"github.com/desmos-labs/juno/modules/messages"
+	"github.com/forbole/juno/v2/modules/messages"
 
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 
 	"github.com/desmos-labs/djuno/database"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/juno/modules"
-	juno "github.com/desmos-labs/juno/types"
+	"github.com/forbole/juno/v2/modules"
+	juno "github.com/forbole/juno/v2/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 

@@ -81,5 +81,11 @@ func HandleGenesis(
 		}
 	}
 
+	// Save params
+	err = db.SaveProfilesParams(types.NewProfilesParams(genState.Params, doc.InitialHeight))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

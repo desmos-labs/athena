@@ -3,12 +3,12 @@ package x
 import (
 	"fmt"
 
-	"github.com/desmos-labs/juno/modules/registrar"
+	"github.com/forbole/juno/v2/modules/registrar"
 
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-
 	"github.com/desmos-labs/juno/client"
-	"github.com/desmos-labs/juno/modules"
+
+	"github.com/forbole/juno/v2/modules"
 
 	"github.com/desmos-labs/djuno/types"
 	"github.com/desmos-labs/djuno/x/common"
@@ -32,9 +32,9 @@ func NewModulesRegistrar() *ModulesRegistrar {
 func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	desmosDb := database.Cast(ctx.Database)
 
-	djunoCfg, ok := ctx.ParsingConfig.(*types.Config)
+	djunoCfg, ok := ctx.JunoConfig.(*types.Config)
 	if !ok {
-		panic(fmt.Errorf("invalid configuration type: %T", ctx.ParsingConfig))
+		panic(fmt.Errorf("invalid configuration type: %T", ctx.JunoConfig))
 	}
 
 	grpcConnection := client.MustCreateGrpcConnection(ctx.ParsingConfig)
