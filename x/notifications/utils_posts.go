@@ -1,4 +1,4 @@
-package utils
+package notifications
 
 import (
 	"fmt"
@@ -8,8 +8,6 @@ import (
 
 	"github.com/desmos-labs/djuno/types"
 	postsutils "github.com/desmos-labs/djuno/x/posts/utils"
-
-	"github.com/desmos-labs/djuno/database"
 )
 
 const (
@@ -38,24 +36,24 @@ const (
 	PostMentionTextKey = "mention_text"
 )
 
-// SendPostNotifications takes the given post and, upon having performed the necessary checks, sends
+// sendPostNotifications takes the given post and, upon having performed the necessary checks, sends
 // a push notification to the people that might somehow be interested into the creation of the post.
 // For example, if the post is a comment to another post, the creator of the latter will be notified
 // that a new comment has been added.
-func SendPostNotifications(post *types.Post, db *database.Db) error {
+func (m *Module) sendPostNotifications(post *types.Post) error {
 	// Get the post parent
-	parent, err := db.GetPostByID(post.ParentID)
+	parent, err := m.db.GetPostByID(post.ParentID)
 	if err != nil {
 		return err
 	}
 
 	// Send the notification as it's a comment
-	if err := sendCommentNotification(post, parent); err != nil {
+	if err := m.sendCommentNotification(post, parent); err != nil {
 		return err
 	}
 
 	// Send the mentions notifications
-	if err := sendMentionNotifications(parent, post); err != nil {
+	if err := m.sendMentionNotifications(parent, post); err != nil {
 		return err
 	}
 
@@ -66,7 +64,7 @@ func SendPostNotifications(post *types.Post, db *database.Db) error {
 
 // sendCommentNotification sends the creator of the parent post a notification telling him
 // that the given post has been added as a comment to it's original post.
-func sendCommentNotification(post *types.Post, parent *types.Post) error {
+func (m *Module) sendCommentNotification(post *types.Post, parent *types.Post) error {
 	// Not a comment, skip
 	if parent == nil {
 		return nil
@@ -99,7 +97,7 @@ func sendCommentNotification(post *types.Post, parent *types.Post) error {
 // If the given post is a comment to another post, the notification will not be sent to the user that has
 // created the post to which this post is a comment. He will already receive the comment notification,
 // so we need to avoid double notifications
-func sendMentionNotifications(parent *types.Post, post *types.Post) error {
+func (m *Module) sendMentionNotifications(parent *types.Post, post *types.Post) error {
 
 	var originalPoster string
 	if parent != nil {
@@ -122,7 +120,7 @@ func sendMentionNotifications(parent *types.Post, post *types.Post) error {
 			continue
 		}
 
-		err := sendMentionNotification(post, address)
+		err := m.sendMentionNotification(post, address)
 		if err != nil {
 			return err
 		}
@@ -132,7 +130,7 @@ func sendMentionNotifications(parent *types.Post, post *types.Post) error {
 
 // sendMentionNotification sends a single notification to the given telling him that he's been mentioned
 // inside the given post.
-func sendMentionNotification(post *types.Post, user string) error {
+func (m *Module) sendMentionNotification(post *types.Post, user string) error {
 	// Get the mentions
 	notification := messaging.Notification{
 		Title: "You've been mentioned inside a post",
@@ -152,11 +150,11 @@ func sendMentionNotification(post *types.Post, user string) error {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// SendReactionNotifications takes the given reaction (which has been added to the post having the given id)
+// sendReactionNotifications takes the given reaction (which has been added to the post having the given id)
 // and sends out push notifications to all the users that might be interested in the reaction creation event.
 // For example, a push notification is send to the user that has created the post.
-func SendReactionNotifications(postID string, reaction poststypes.PostReaction, db *database.Db) error {
-	post, err := db.GetPostByID(postID)
+func (m *Module) sendReactionNotifications(postID string, reaction poststypes.PostReaction) error {
+	post, err := m.db.GetPostByID(postID)
 	if err != nil {
 		return err
 	}

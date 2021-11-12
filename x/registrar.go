@@ -3,14 +3,13 @@ package x
 import (
 	"fmt"
 
+	"github.com/forbole/juno/v2/node/remote"
+
 	"github.com/forbole/juno/v2/modules/registrar"
 
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	"github.com/desmos-labs/juno/client"
-
 	"github.com/forbole/juno/v2/modules"
 
-	"github.com/desmos-labs/djuno/types"
 	"github.com/desmos-labs/djuno/x/common"
 
 	"github.com/desmos-labs/djuno/database"
@@ -32,17 +31,19 @@ func NewModulesRegistrar() *ModulesRegistrar {
 func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	desmosDb := database.Cast(ctx.Database)
 
-	djunoCfg, ok := ctx.JunoConfig.(*types.Config)
+	remoteCfg, ok := ctx.JunoConfig.Node.Details.(*remote.Details)
 	if !ok {
-		panic(fmt.Errorf("invalid configuration type: %T", ctx.JunoConfig))
+		panic(fmt.Errorf("cannot run DJuno on local node"))
 	}
 
-	grpcConnection := client.MustCreateGrpcConnection(ctx.ParsingConfig)
+	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 	profilesClient := profilestypes.NewQueryClient(grpcConnection)
 
+	profilesModule := profiles.NewModule(common.MessagesParser, profilesClient, ctx.EncodingConfig.Marshaler, desmosDb)
+
 	return []modules.Module{
-		notifications.NewModule(djunoCfg.Notifications, desmosDb),
-		posts.NewModule(profilesClient, ctx.EncodingConfig, desmosDb),
-		profiles.NewModule(common.MessagesParser, profilesClient, ctx.EncodingConfig, desmosDb),
+		profilesModule,
+		notifications.NewModule(ctx.JunoConfig, desmosDb),
+		posts.NewModule(ctx.EncodingConfig.Marshaler, desmosDb, profilesModule),
 	}
 }

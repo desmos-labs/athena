@@ -3,26 +3,16 @@ package posts
 import (
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-
-	profilesutils "github.com/desmos-labs/djuno/x/profiles/utils"
-
 	"github.com/desmos-labs/djuno/types"
 	"github.com/desmos-labs/djuno/x/posts/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 	juno "github.com/forbole/juno/v2/types"
-
-	"github.com/desmos-labs/djuno/database"
 )
 
-// MsgHandler allows to handle different message types from the posts module
-func MsgHandler(
-	tx *juno.Tx, index int, msg sdk.Msg,
-	profilesClient profilestypes.QueryClient, cdc codec.Codec, database *database.Db,
-) error {
+// HandleMsg implements modules.MessageModule
+func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 	if len(tx.Logs) == 0 {
 		return nil
 	}
@@ -30,28 +20,28 @@ func MsgHandler(
 	switch desmosMsg := msg.(type) {
 	// Posts
 	case *poststypes.MsgCreatePost:
-		return handleMsgCreatePost(tx, index, desmosMsg, profilesClient, cdc, database)
+		return m.handleMsgCreatePost(tx, index, desmosMsg)
 
 	case *poststypes.MsgEditPost:
-		return handleMsgEditPost(tx, index, desmosMsg, profilesClient, cdc, database)
+		return m.handleMsgEditPost(tx, index, desmosMsg)
 
 	// Reactions
 	case *poststypes.MsgRegisterReaction:
-		return handleMsgRegisterReaction(tx, desmosMsg, profilesClient, cdc, database)
+		return m.handleMsgRegisterReaction(tx, desmosMsg)
 
 	case *poststypes.MsgAddPostReaction:
-		return handleMsgAddPostReaction(tx, index, desmosMsg, profilesClient, cdc, database)
+		return m.handleMsgAddPostReaction(tx, index, desmosMsg)
 
 	case *poststypes.MsgRemovePostReaction:
-		return handleMsgRemovePostReaction(tx, index, database)
+		return m.handleMsgRemovePostReaction(tx, index)
 
 	// Polls
 	case *poststypes.MsgAnswerPoll:
-		return handleMsgAnswerPoll(tx, desmosMsg, profilesClient, cdc, database)
+		return m.handleMsgAnswerPoll(tx, desmosMsg)
 
 	// Reports
 	case *poststypes.MsgReportPost:
-		return handleMsgReport(tx, desmosMsg, database)
+		return m.handleMsgReport(tx, desmosMsg)
 	}
 
 	return nil
@@ -62,13 +52,10 @@ func MsgHandler(
 // HandleMsgCreatePost allows to properly handle the given msg present inside the specified tx at the specific
 // index. It creates a new Post object from it, stores it inside the database and later sends out any
 // push notification using Firebase Cloud Messaging.
-func handleMsgCreatePost(
-	tx *juno.Tx, index int, msg *poststypes.MsgCreatePost,
-	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
-) error {
+func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
 	// Update the involved account profile
 	addresses := []string{msg.Creator}
-	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
 	if err != nil {
 		return err
 	}
@@ -79,20 +66,17 @@ func handleMsgCreatePost(
 	}
 
 	// Save the post
-	return db.SavePost(post)
+	return m.db.SavePost(post)
 }
 
 // -----------------------------------------------------------------------------------------------------
 
 // HandleMsgEditPost allows to properly handle a MsgEditPost by updating the post inside
 // the database as well.
-func handleMsgEditPost(
-	tx *juno.Tx, index int, msg *poststypes.MsgEditPost,
-	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
-) error {
+func (m *Module) handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEditPost) error {
 	// Update the involved accounts profiles
 	addresses := []string{msg.Editor}
-	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
 	if err != nil {
 		return err
 	}
@@ -112,7 +96,7 @@ func handleMsgEditPost(
 	}
 
 	// Get the post
-	post, err := db.GetPostByID(msg.PostID)
+	post, err := m.db.GetPostByID(msg.PostID)
 	if err != nil {
 		return err
 	}
@@ -129,25 +113,22 @@ func handleMsgEditPost(
 		post.Poll = msg.Poll
 	}
 
-	return db.SavePost(post)
+	return m.db.SavePost(post)
 }
 
 // -----------------------------------------------------------------------------------------------------
 
 // HandleMsgAnswerPoll allows to properly handle a MsgAnswerPoll message by
 // storing inside the database the new answer.
-func handleMsgAnswerPoll(
-	tx *juno.Tx, msg *poststypes.MsgAnswerPoll,
-	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
-) error {
+func (m *Module) handleMsgAnswerPoll(tx *juno.Tx, msg *poststypes.MsgAnswerPoll) error {
 	// Update the involved account profile
 	addresses := []string{msg.Answerer}
-	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
 	if err != nil {
 		return err
 	}
 
-	return db.SaveUserPollAnswer(types.NewUserPollAnswer(
+	return m.db.SaveUserPollAnswer(types.NewUserPollAnswer(
 		poststypes.NewUserAnswer(msg.PostID, msg.Answerer, msg.Answers),
 		tx.Height,
 	))
@@ -157,13 +138,10 @@ func handleMsgAnswerPoll(
 
 // HandleMsgAddPostReaction allows to properly handle the adding of a reaction by storing the newly created
 // reaction inside the database and sending out push notifications to whoever might be interested in this event.
-func handleMsgAddPostReaction(
-	tx *juno.Tx, index int, msg *poststypes.MsgAddPostReaction,
-	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
-) error {
+func (m *Module) handleMsgAddPostReaction(tx *juno.Tx, index int, msg *poststypes.MsgAddPostReaction) error {
 	// Update the involved account profile
 	addresses := []string{msg.User}
-	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
 	if err != nil {
 		return err
 	}
@@ -173,35 +151,32 @@ func handleMsgAddPostReaction(
 		return err
 	}
 
-	return db.SavePostReaction(types.NewPostReaction(postID, reaction, tx.Height))
+	return m.db.SavePostReaction(types.NewPostReaction(postID, reaction, tx.Height))
 }
 
 // HandleMsgRemovePostReaction allows to properly handle the removal of a reaction from a post by
 // deleting the specified reaction from the database.
-func handleMsgRemovePostReaction(tx *juno.Tx, index int, db *database.Db) error {
+func (m *Module) handleMsgRemovePostReaction(tx *juno.Tx, index int) error {
 	postID, reaction, err := utils.GetReactionFromTxEvent(tx, index, poststypes.EventTypePostReactionRemoved)
 	if err != nil {
 		return err
 	}
 
-	return db.RemovePostReaction(types.NewPostReaction(postID, reaction, tx.Height))
+	return m.db.RemovePostReaction(types.NewPostReaction(postID, reaction, tx.Height))
 }
 
 // -----------------------------------------------------------------------------------------------------
 
 // HandleMsgRegisterReaction handles a MsgRegisterReaction by storing the new reaction inside the database.
-func handleMsgRegisterReaction(
-	tx *juno.Tx, msg *poststypes.MsgRegisterReaction,
-	profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
-) error {
+func (m *Module) handleMsgRegisterReaction(tx *juno.Tx, msg *poststypes.MsgRegisterReaction) error {
 	// Update the involved account profile
 	addresses := []string{msg.Creator}
-	err := profilesutils.UpdateProfiles(tx.Height, addresses, profilesClient, cdc, db)
+	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
 	if err != nil {
 		return err
 	}
 
-	return db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(
+	return m.db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(
 		poststypes.NewRegisteredReaction(msg.Creator, msg.ShortCode, msg.Value, msg.Subspace),
 		tx.Height,
 	))
@@ -210,8 +185,8 @@ func handleMsgRegisterReaction(
 // -----------------------------------------------------------------------------------------------------
 
 // handleMsgReport allows to handle a MsgReportPost properly
-func handleMsgReport(tx *juno.Tx, msg *poststypes.MsgReportPost, db *database.Db) error {
-	return db.SaveReport(types.NewReport(
+func (m *Module) handleMsgReport(tx *juno.Tx, msg *poststypes.MsgReportPost) error {
+	return m.db.SaveReport(types.NewReport(
 		poststypes.NewReport(
 			msg.PostID,
 			msg.ReportType,

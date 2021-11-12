@@ -1,31 +1,25 @@
 package profiles
 
 import (
-	"encoding/json"
-
+	"github.com/cosmos/cosmos-sdk/codec"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-
 	"github.com/forbole/juno/v2/modules/messages"
-
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 
 	"github.com/desmos-labs/djuno/database"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/forbole/juno/v2/modules"
-	juno "github.com/forbole/juno/v2/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 var (
-	_ modules.Module        = &Module{}
-	_ modules.GenesisModule = &Module{}
-	_ modules.MessageModule = &Module{}
+	_ modules.Module                   = &Module{}
+	_ modules.PeriodicOperationsModule = &Module{}
+	_ modules.GenesisModule            = &Module{}
+	_ modules.MessageModule            = &Module{}
 )
 
 // Module represents the x/profiles module handler
 type Module struct {
-	encodingConfig *params.EncodingConfig
+	cdc            codec.Codec
 	db             *database.Db
 	profilesClient profilestypes.QueryClient
 	getAccounts    messages.MessageAddressesParser
@@ -33,11 +27,10 @@ type Module struct {
 
 // NewModule allows to build a new Module instance
 func NewModule(
-	getAccounts messages.MessageAddressesParser, profilesClient profilestypes.QueryClient,
-	encodingConfig *params.EncodingConfig, db *database.Db,
+	getAccounts messages.MessageAddressesParser, profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
 ) *Module {
 	return &Module{
-		encodingConfig: encodingConfig,
+		cdc:            cdc,
 		db:             db,
 		getAccounts:    getAccounts,
 		profilesClient: profilesClient,
@@ -47,14 +40,4 @@ func NewModule(
 // Name implements modules.Module
 func (m *Module) Name() string {
 	return "profiles"
-}
-
-// HandleGenesis implements modules.GenesisModule
-func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
-	return HandleGenesis(doc, appState, m.encodingConfig.Marshaler, m.db)
-}
-
-// HandleMsg implements modules.MessageModule
-func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	return HandleMsg(tx, index, msg, m.profilesClient, m.encodingConfig.Marshaler, m.db)
 }

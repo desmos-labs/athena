@@ -1,4 +1,4 @@
-package utils
+package notifications
 
 import (
 	juno "github.com/forbole/juno/v2/types"
@@ -14,9 +14,9 @@ const (
 	AttributeKeyTxError = "tx_error"
 )
 
-// SendTransactionResultNotification sends to the given user a notification telling him
+// sendTransactionResultNotification sends to the given user a notification telling him
 // that the specified transaction has either succeeded or failed
-func SendTransactionResultNotification(tx *juno.Tx, user string) error {
+func (m *Module) sendTransactionResultNotification(tx *juno.Tx, user string) error {
 	result := NotificationTypeTxSuccess
 	if tx.Code != tmtypes.CodeTypeOK {
 		result = NotificationTypeTxFailed
@@ -36,5 +36,5 @@ func SendTransactionResultNotification(tx *juno.Tx, user string) error {
 	}
 
 	// Send a notification to the original post owner
-	return SendNotification(user, nil, data)
+	return m.sendNotification(user, nil, data)
 }

@@ -8,19 +8,14 @@ import (
 
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
-
-	desmosdb "github.com/desmos-labs/djuno/database"
 )
 
-// HandleGenesis allows to properly handle the genesis state for the posts module
-func HandleGenesis(
-	doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage, codec codec.Codec, db *desmosdb.Db,
-) error {
+// HandleGenesis implements modules.GenesisModule
+func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
 	// Get the posts state
 	var genState poststypes.GenesisState
-	codec.MustUnmarshalJSON(appState[poststypes.ModuleName], &genState)
+	m.cdc.MustUnmarshalJSON(appState[poststypes.ModuleName], &genState)
 
 	// Order the posts based on the ids
 	genPosts := genState.Posts
@@ -30,25 +25,25 @@ func HandleGenesis(
 	})
 
 	// Save the posts
-	err := savePosts(doc.InitialHeight, genPosts, db)
+	err := m.savePosts(doc.InitialHeight, genPosts)
 	if err != nil {
 		return err
 	}
 
 	// Save the registered reactions
-	err = saveRegisteredReactions(doc.InitialHeight, genState.RegisteredReactions, db)
+	err = m.saveRegisteredReactions(doc.InitialHeight, genState.RegisteredReactions)
 	if err != nil {
 		return err
 	}
 
 	// Save the reactions
-	err = savePostReactions(doc.InitialHeight, genState.PostsReactions, db)
+	err = m.savePostReactions(doc.InitialHeight, genState.PostsReactions)
 	if err != nil {
 		return err
 	}
 
 	// Save poll answers
-	err = savePollAnswers(doc.InitialHeight, genState.UsersPollAnswers, db)
+	err = m.savePollAnswers(doc.InitialHeight, genState.UsersPollAnswers)
 	if err != nil {
 		return err
 	}
@@ -56,9 +51,9 @@ func HandleGenesis(
 	return nil
 }
 
-func savePosts(height int64, posts []poststypes.Post, db *desmosdb.Db) error {
+func (m *Module) savePosts(height int64, posts []poststypes.Post) error {
 	for index := range posts {
-		err := db.SavePost(types.NewPost(posts[index], height))
+		err := m.db.SavePost(types.NewPost(posts[index], height))
 		if err != nil {
 			return err
 		}
@@ -66,9 +61,9 @@ func savePosts(height int64, posts []poststypes.Post, db *desmosdb.Db) error {
 	return nil
 }
 
-func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReaction, db *desmosdb.Db) error {
+func (m *Module) saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReaction) error {
 	for _, reaction := range reactions {
-		err := db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(reaction, height))
+		err := m.db.RegisterReactionIfNotPresent(types.NewRegisteredReaction(reaction, height))
 		if err != nil {
 			return err
 		}
@@ -76,9 +71,9 @@ func saveRegisteredReactions(height int64, reactions []poststypes.RegisteredReac
 	return nil
 }
 
-func savePostReactions(height int64, reactions []poststypes.PostReaction, db *desmosdb.Db) error {
+func (m *Module) savePostReactions(height int64, reactions []poststypes.PostReaction) error {
 	for _, reaction := range reactions {
-		err := db.SavePostReaction(types.NewPostReaction(reaction.PostID, reaction, height))
+		err := m.db.SavePostReaction(types.NewPostReaction(reaction.PostID, reaction, height))
 		if err != nil {
 			return err
 		}
@@ -86,9 +81,9 @@ func savePostReactions(height int64, reactions []poststypes.PostReaction, db *de
 	return nil
 }
 
-func savePollAnswers(height int64, userAnswers []poststypes.UserAnswer, db *desmosdb.Db) error {
+func (m *Module) savePollAnswers(height int64, userAnswers []poststypes.UserAnswer) error {
 	for _, answer := range userAnswers {
-		err := db.SaveUserPollAnswer(types.NewUserPollAnswer(answer, height))
+		err := m.db.SaveUserPollAnswer(types.NewUserPollAnswer(answer, height))
 		if err != nil {
 			return err
 		}
