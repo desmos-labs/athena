@@ -1,17 +1,17 @@
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
-COMMIT  := $(shell git log -1 --format='%H')
+VERSION := $(shell echo $(shell git describe --always) | sed 's/^v//')
+COMMIT := $(shell git log -1 --format='%H')
 DOCKER := $(shell which docker)
 
 export GO111MODULE = on
 
-all: ci-lint ci-test install
+all: lint test-unit install
 
 ###############################################################################
 # Build / Install
 ###############################################################################
 
-LD_FLAGS = -X github.com/forbole/juno/v2/version.Version=$(VERSION) \
-	-X github.com/forbole/juno/v2/version.Commit=$(COMMIT)
+LD_FLAGS = -X github.com/forbole/juno/v2/cmd.Version=$(VERSION) \
+	-X github.com/forbole/juno/v2/cmd.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
 

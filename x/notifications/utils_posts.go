@@ -90,7 +90,7 @@ func (m *Module) sendCommentNotification(post *types.Post, parent *types.Post) e
 	}
 
 	// Send a notification to the original post owner
-	return SendNotification(parent.Creator, &notification, data)
+	return m.sendNotification(parent.Creator, &notification, data)
 }
 
 // sendMentionNotifications sends everyone who is tagged inside the given post message a notification.
@@ -145,7 +145,7 @@ func (m *Module) sendMentionNotification(post *types.Post, user string) error {
 		PostMentionTextKey: post.Message,
 	}
 
-	return SendNotification(user, &notification, data)
+	return m.sendNotification(user, &notification, data)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -165,14 +165,14 @@ func (m *Module) sendReactionNotifications(postID string, reaction poststypes.Po
 	}
 
 	if reaction.Value == LikeReactionValue {
-		return sendLikeNotification(post, reaction)
+		return m.sendLikeNotification(post, reaction)
 	}
-	return sendGenericReactionNotification(post, reaction)
+	return m.sendGenericReactionNotification(post, reaction)
 }
 
 // sendGenericReactionNotification allows to send a notification for a generic given reaction
 // that has been added to the specified post
-func sendGenericReactionNotification(post *types.Post, reaction poststypes.PostReaction) error {
+func (m *Module) sendGenericReactionNotification(post *types.Post, reaction poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone added a new reaction to one of your posts 🎉",
@@ -189,11 +189,11 @@ func sendGenericReactionNotification(post *types.Post, reaction poststypes.PostR
 	}
 
 	// Send a notification to the post creator
-	return SendNotification(post.Creator, &notification, data)
+	return m.sendNotification(post.Creator, &notification, data)
 }
 
 // sendLikeNotification sends a push notification telling that a like has been added to the given post
-func sendLikeNotification(post *types.Post, reaction poststypes.PostReaction) error {
+func (m *Module) sendLikeNotification(post *types.Post, reaction poststypes.PostReaction) error {
 	// Build the notification
 	notification := messaging.Notification{
 		Title: "Someone like one of your posts ❤️",
@@ -208,5 +208,5 @@ func sendLikeNotification(post *types.Post, reaction poststypes.PostReaction) er
 	}
 
 	// Send a notification to the post creator
-	return SendNotification(post.Creator, &notification, data)
+	return m.sendNotification(post.Creator, &notification, data)
 }
