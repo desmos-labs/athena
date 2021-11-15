@@ -3,11 +3,11 @@ package database_test
 import (
 	"time"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 
-	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SavePost() {
@@ -35,12 +35,12 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 					},
 				),
 			),
-			poststypes.NewPoll(
+			poststypes.NewPollData(
 				"Do you like dogs?",
 				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				[]poststypes.ProvidedAnswer{
-					poststypes.NewProvidedAnswer("1", "Yes"),
-					poststypes.NewProvidedAnswer("2", "No"),
+				[]poststypes.PollAnswer{
+					poststypes.NewPollAnswer("1", "Yes"),
+					poststypes.NewPollAnswer("2", "No"),
 				},
 				true,
 				false,
@@ -63,7 +63,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	suite.Require().True(post.Equal(stored))
 }
 
-func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.Poll) {
+func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
 	post := suite.testData.post
 	err := suite.database.SaveUserIfNotExisting(post.Creator, 1)
 	suite.Require().NoError(err)
@@ -71,7 +71,7 @@ func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.Poll) {
 	err = suite.database.SavePost(types.NewPost(post, 1))
 	suite.Require().NoError(err)
 
-	return post, post.Poll
+	return post, post.PollData
 }
 
 func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {

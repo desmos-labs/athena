@@ -7,11 +7,11 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 )
 
 // SaveProfilesParams allows to store the given profiles params

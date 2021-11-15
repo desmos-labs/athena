@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	juno "github.com/forbole/juno/v2/types"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 )
 
 var (
@@ -61,7 +61,7 @@ func GetPostFromMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreateP
 			msg.Subspace,
 			msg.AdditionalAttributes,
 			msg.Attachments,
-			msg.Poll,
+			msg.PollData,
 			creationTime,
 			time.Time{},
 			msg.Creator,

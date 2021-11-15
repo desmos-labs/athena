@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	"github.com/forbole/juno/v2/node/remote"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 )
 
 // UpdateProfiles updates the profiles associated with the given addresses, if any.

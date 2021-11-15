@@ -13,12 +13,12 @@ import (
 	junodbcfg "github.com/forbole/juno/v2/database/config"
 	"github.com/forbole/juno/v2/logging"
 
-	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
-	desmosapp "github.com/desmos-labs/desmos/v2/app"
+	desmosapp "github.com/desmos-labs/desmos/app"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/v2/database"
 
 	_ "github.com/proullon/ramsql/driver"
 )
@@ -109,12 +109,12 @@ func (suite *DbTestSuite) setupTestData() {
 					},
 				),
 			),
-			poststypes.NewPoll(
+			poststypes.NewPollData(
 				"Do you like dogs?",
 				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				[]poststypes.ProvidedAnswer{
-					poststypes.NewProvidedAnswer("1", "Yes"),
-					poststypes.NewProvidedAnswer("2", "No"),
+				[]poststypes.PollAnswer{
+					poststypes.NewPollAnswer("1", "Yes"),
+					poststypes.NewPollAnswer("2", "No"),
 				},
 				true,
 				false,

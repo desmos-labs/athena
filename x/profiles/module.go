@@ -2,10 +2,10 @@ package profiles
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	"github.com/forbole/juno/v2/modules/messages"
 
-	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/v2/database"
 
 	"github.com/forbole/juno/v2/modules"
 )
@@ -19,7 +19,7 @@ var (
 
 // Module represents the x/profiles module handler
 type Module struct {
-	cdc            codec.Codec
+	cdc            codec.Marshaler
 	db             *database.Db
 	profilesClient profilestypes.QueryClient
 	getAccounts    messages.MessageAddressesParser
@@ -27,7 +27,7 @@ type Module struct {
 
 // NewModule allows to build a new Module instance
 func NewModule(
-	getAccounts messages.MessageAddressesParser, profilesClient profilestypes.QueryClient, cdc codec.Codec, db *database.Db,
+	getAccounts messages.MessageAddressesParser, profilesClient profilestypes.QueryClient, cdc codec.Marshaler, db *database.Db,
 ) *Module {
 	return &Module{
 		cdc:            cdc,

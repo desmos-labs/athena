@@ -13,11 +13,11 @@ import (
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 	juno "github.com/forbole/juno/v2/types"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 )
 
 // HandleMsg implements modules.MessageModule

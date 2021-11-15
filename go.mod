@@ -1,4 +1,4 @@
-module github.com/desmos-labs/djuno
+module github.com/desmos-labs/djuno/v2
 
 go 1.13
 
@@ -7,7 +7,7 @@ require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.42.9
 	github.com/desmos-labs/desmos v1.0.1
-	github.com/forbole/juno/v2 v2.0.0-20211020184842-e358a33007ff
+	github.com/forbole/juno/v2 v2.0.0-20211018083707-de5b5378416e
 	github.com/go-co-op/gocron v1.9.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.3.4
@@ -24,6 +24,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.42.5-0.20210826081936-864fc99bab62
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
+replace google.golang.org/grpc => google.golang.org/grpc v1.42.0
 
 replace github.com/cosmos/ledger-cosmos-go => github.com/desmos-labs/ledger-desmos-go v0.11.2-0.20210814121638-5d87e392e8a9

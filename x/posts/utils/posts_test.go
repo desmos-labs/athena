@@ -3,10 +3,10 @@ package utils_test
 import (
 	"testing"
 
-	"github.com/desmos-labs/djuno/types"
-	"github.com/desmos-labs/djuno/x/posts/utils"
+	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/djuno/v2/x/posts/utils"
 
-	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 	"github.com/stretchr/testify/require"
 )
 

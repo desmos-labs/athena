@@ -5,14 +5,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SaveUserIfNotExisting() {

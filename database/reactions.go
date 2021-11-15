@@ -1,11 +1,11 @@
 package database
 
 import (
-	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 )
 
 // convertPostRow takes the given row and returns a RegisteredReaction
