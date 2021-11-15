@@ -192,6 +192,8 @@ WHERE blocker_address = $1 AND blocked_user_address = $2 AND subspace = $3 AND h
 
 // SaveChainLink allows to store inside the db the provided chain link
 func (db Db) SaveChainLink(link types.ChainLink) error {
+	log.Info().Str("user", link.User).Str("address", link.GetAddressData().String()).Msg("saving chain link")
+
 	// Insert the chain config
 	chainConfigID, err := db.saveChainLinkChainConfig(link.ChainConfig)
 	if err != nil {
@@ -267,6 +269,8 @@ RETURNING id`
 // DeleteChainLink removes from the database the chain link made for the given user and having the provided
 // external address and linked to the chain with the given name
 func (db Db) DeleteChainLink(user string, externalAddress string, chainName string) error {
+	log.Info().Str("user", user).Str("address", externalAddress).Msg("deleting chain link")
+
 	stmt := `
 DELETE FROM chain_link 
 WHERE user_address = $1 
@@ -280,6 +284,9 @@ WHERE user_address = $1
 
 // SaveApplicationLink stores the given application link inside the database
 func (db Db) SaveApplicationLink(link types.ApplicationLink) error {
+	log.Info().Str("user", link.User).Str("app", link.Data.Application).
+		Str("username", link.Data.Username).Msg("saving app link")
+
 	// Save the link
 	stmt := `
 INSERT INTO application_link (user_address, application, username, state, result, creation_time, height) 
@@ -343,6 +350,8 @@ WHERE application_link_oracle_request.height <= excluded.height`
 // DeleteApplicationLink allows to delete the application link associated to the given user,
 // having the given application and username values
 func (db Db) DeleteApplicationLink(user, application, username string) error {
+	log.Info().Str("user", user).Str("app", application).Str("username", username).Msg("deleting app link")
+
 	stmt := `DELETE FROM application_link WHERE user_address = $1 AND application = $2 AND username = $3`
 	_, err := db.Sql.Exec(stmt, user, application, username)
 	return err

@@ -79,7 +79,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgUnlinkApplication(desmosMsg)
 	}
 
-	log.Info().Str("module", "profiles").Str("message", proto.MessageName(msg)).
+	log.Debug().Str("module", "profiles").Str("message", proto.MessageName(msg)).
 		Int64("height", tx.Height).Msg("handled message")
 
 	return nil
