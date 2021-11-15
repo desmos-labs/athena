@@ -9,14 +9,13 @@ import (
 	"testing"
 	"time"
 
-	junodb "github.com/desmos-labs/juno/db"
-	"github.com/desmos-labs/juno/types/logging"
+	junodb "github.com/forbole/juno/v2/database"
+	junodbcfg "github.com/forbole/juno/v2/database/config"
+	"github.com/forbole/juno/v2/logging"
 
-	juno "github.com/desmos-labs/juno/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-
-	desmosapp "github.com/desmos-labs/desmos/app"
+	desmosapp "github.com/desmos-labs/desmos/v2/app"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/desmos-labs/djuno/database"
@@ -41,10 +40,10 @@ func (suite *DbTestSuite) SetupTest() {
 
 	// Build the database
 	encodingConfig := desmosapp.MakeTestEncodingConfig()
-	databaseConfig := juno.NewDatabaseConfig(
+	databaseConfig := junodbcfg.NewDatabaseConfig(
 		"djuno",
 		"localhost",
-		5433,
+		6432,
 		"djuno",
 		"password",
 		"",
@@ -60,11 +59,11 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.Require().True(ok)
 
 	// Delete the public schema
-	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.GetSchema()))
+	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.Schema))
 	suite.Require().NoError(err)
 
 	// Re-create the schema
-	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.GetSchema()))
+	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.Schema))
 	suite.Require().NoError(err)
 
 	dirPath := "schema"
@@ -110,12 +109,12 @@ func (suite *DbTestSuite) setupTestData() {
 					},
 				),
 			),
-			poststypes.NewPollData(
+			poststypes.NewPoll(
 				"Do you like dogs?",
 				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				[]poststypes.PollAnswer{
-					poststypes.NewPollAnswer("1", "Yes"),
-					poststypes.NewPollAnswer("2", "No"),
+				[]poststypes.ProvidedAnswer{
+					poststypes.NewProvidedAnswer("1", "Yes"),
+					poststypes.NewProvidedAnswer("2", "No"),
 				},
 				true,
 				false,

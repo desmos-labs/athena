@@ -1,7 +1,7 @@
 package types
 
 import (
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 )
 
 type Profile struct {
@@ -27,18 +27,6 @@ func NewDTagTransferRequest(request profilestypes.DTagTransferRequest, height in
 	return DTagTransferRequest{
 		DTagTransferRequest: request,
 		Height:              height,
-	}
-}
-
-type DTagTransferRequestAcceptance struct {
-	DTagTransferRequest
-	NewDTag string
-}
-
-func NewDTagTransferRequestAcceptance(request DTagTransferRequest, newDTag string) DTagTransferRequestAcceptance {
-	return DTagTransferRequestAcceptance{
-		DTagTransferRequest: request,
-		NewDTag:             newDTag,
 	}
 }
 
@@ -95,5 +83,19 @@ func NewApplicationLink(link profilestypes.ApplicationLink, height int64) Applic
 	return ApplicationLink{
 		ApplicationLink: link,
 		Height:          height,
+	}
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+
+type ProfilesParams struct {
+	profilestypes.Params
+	Height int64
+}
+
+func NewProfilesParams(params profilestypes.Params, height int64) ProfilesParams {
+	return ProfilesParams{
+		Params: params,
+		Height: height,
 	}
 }

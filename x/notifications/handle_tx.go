@@ -1,17 +1,15 @@
 package notifications
 
 import (
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-	juno "github.com/desmos-labs/juno/types"
-
-	"github.com/desmos-labs/djuno/x/notifications/utils"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	juno "github.com/forbole/juno/v2/types"
 )
 
-// TxHandler allows to handle a transaction in order to send the
-func TxHandler(tx *juno.Tx) error {
+// HandleTx implements modules.TransactionModule
+func (m *Module) HandleTx(tx *juno.Tx) error {
 	if hasDesmosMsg, desmosUser := getDesmosUser(tx); hasDesmosMsg {
-		return utils.SendTransactionResultNotification(tx, desmosUser)
+		return m.sendTransactionResultNotification(tx, desmosUser)
 	}
 	return nil
 }

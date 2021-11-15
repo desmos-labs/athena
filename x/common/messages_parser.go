@@ -3,10 +3,10 @@ package common
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
-	"github.com/desmos-labs/juno/modules/messages"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
+	"github.com/forbole/juno/v2/modules/messages"
 )
 
 var MessagesParser = messages.JoinMessageParsers(
@@ -20,7 +20,7 @@ var desmosMessagesParser = messages.JoinMessageParsers(
 	profilesMessagesParser,
 )
 
-func ibcMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
+func ibcMessagesParser(_ codec.Codec, cosmosMsg sdk.Msg) ([]string, error) {
 	switch msg := cosmosMsg.(type) {
 	case *channeltypes.MsgRecvPacket:
 		return []string{msg.Signer}, nil
@@ -33,7 +33,7 @@ func ibcMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
 	return nil, messages.MessageNotSupported(cosmosMsg)
 }
 
-func postsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
+func postsMessagesParser(_ codec.Codec, cosmosMsg sdk.Msg) ([]string, error) {
 	switch msg := cosmosMsg.(type) {
 	case *poststypes.MsgCreatePost:
 		return []string{msg.Creator}, nil
@@ -60,7 +60,7 @@ func postsMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error)
 	return nil, messages.MessageNotSupported(cosmosMsg)
 }
 
-func profilesMessagesParser(_ codec.Marshaler, cosmosMsg sdk.Msg) ([]string, error) {
+func profilesMessagesParser(_ codec.Codec, cosmosMsg sdk.Msg) ([]string, error) {
 	switch msg := cosmosMsg.(type) {
 	case *profilestypes.MsgSaveProfile:
 		return []string{msg.Creator}, nil

@@ -3,12 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/desmos-labs/djuno/types"
-
-	desmosapp "github.com/desmos-labs/desmos/app"
-	junocmd "github.com/desmos-labs/juno/cmd"
-	initcmd "github.com/desmos-labs/juno/cmd/init"
-	parsecmd "github.com/desmos-labs/juno/cmd/parse"
+	desmosapp "github.com/desmos-labs/desmos/v2/app"
+	junocmd "github.com/forbole/juno/v2/cmd"
+	parsecmd "github.com/forbole/juno/v2/cmd/parse"
 
 	desmosdb "github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x"
@@ -16,18 +13,12 @@ import (
 
 func main() {
 	// Setup the config
-	initCfg := initcmd.NewConfig().
-		WithConfigFlagSetup(types.SetupFlags).
-		WithConfigCreator(types.CreateConfigFromFlags)
-
 	parseCfg := parsecmd.NewConfig().
 		WithRegistrar(x.NewModulesRegistrar()).
 		WithEncodingConfigBuilder(desmosapp.MakeTestEncodingConfig).
-		WithDBBuilder(desmosdb.Builder).
-		WithConfigParser(types.ParseCfg)
+		WithDBBuilder(desmosdb.Builder)
 
 	cfg := junocmd.NewConfig("djuno").
-		WithInitConfig(initCfg).
 		WithParseConfig(parseCfg)
 
 	// Run the commands and panic on any error

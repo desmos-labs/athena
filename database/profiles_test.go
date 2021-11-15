@@ -12,7 +12,7 @@ import (
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SaveUserIfNotExisting() {
@@ -322,7 +322,7 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
 			profilestypes.NewData("twitter", "twitteruser"),
 			profilestypes.ApplicationLinkStateInitialized,
 			profilestypes.NewOracleRequest(
-				-1,
+				0,
 				1,
 				profilestypes.NewOracleRequestCallData(
 					"twitter",
