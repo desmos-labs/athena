@@ -43,7 +43,7 @@ func (suite *DbTestSuite) SetupTest() {
 	databaseConfig := junodbcfg.NewDatabaseConfig(
 		"djuno",
 		"localhost",
-		5433,
+		6432,
 		"djuno",
 		"password",
 		"",

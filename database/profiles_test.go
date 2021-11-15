@@ -322,7 +322,7 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
 			profilestypes.NewData("twitter", "twitteruser"),
 			profilestypes.ApplicationLinkStateInitialized,
 			profilestypes.NewOracleRequest(
-				-1,
+				0,
 				1,
 				profilestypes.NewOracleRequestCallData(
 					"twitter",
