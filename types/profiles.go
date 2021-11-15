@@ -30,18 +30,6 @@ func NewDTagTransferRequest(request profilestypes.DTagTransferRequest, height in
 	}
 }
 
-type DTagTransferRequestAcceptance struct {
-	DTagTransferRequest
-	NewDTag string
-}
-
-func NewDTagTransferRequestAcceptance(request DTagTransferRequest, newDTag string) DTagTransferRequestAcceptance {
-	return DTagTransferRequestAcceptance{
-		DTagTransferRequest: request,
-		NewDTag:             newDTag,
-	}
-}
-
 // -------------------------------------------------------------------------------------------------------------------
 
 type Relationship struct {
