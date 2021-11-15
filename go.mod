@@ -11,7 +11,7 @@ require (
 	github.com/forbole/juno/v2 v2.0.0-20211020184842-e358a33007ff
 	github.com/go-co-op/gocron v1.9.0
 	github.com/gogo/protobuf v1.3.3
-	github.com/jmoiron/sqlx v1.2.0
+	github.com/jmoiron/sqlx v1.3.4
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.23.0
 	github.com/stretchr/testify v1.7.0
