@@ -30,18 +30,6 @@ func NewDTagTransferRequest(request profilestypes.DTagTransferRequest, height in
 	}
 }
 
-type DTagTransferRequestAcceptance struct {
-	DTagTransferRequest
-	NewDTag string
-}
-
-func NewDTagTransferRequestAcceptance(request DTagTransferRequest, newDTag string) DTagTransferRequestAcceptance {
-	return DTagTransferRequestAcceptance{
-		DTagTransferRequest: request,
-		NewDTag:             newDTag,
-	}
-}
-
 // -------------------------------------------------------------------------------------------------------------------
 
 type Relationship struct {
@@ -95,5 +83,19 @@ func NewApplicationLink(link profilestypes.ApplicationLink, height int64) Applic
 	return ApplicationLink{
 		ApplicationLink: link,
 		Height:          height,
+	}
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+
+type ProfilesParams struct {
+	profilestypes.Params
+	Height int64
+}
+
+func NewProfilesParams(params profilestypes.Params, height int64) ProfilesParams {
+	return ProfilesParams{
+		Params: params,
+		Height: height,
 	}
 }

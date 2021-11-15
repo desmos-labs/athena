@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	"github.com/rs/zerolog/log"
@@ -12,6 +13,31 @@ import (
 
 	dbtypes "github.com/desmos-labs/djuno/database/types"
 )
+
+// SaveProfilesParams allows to store the given profiles params
+func (db Db) SaveProfilesParams(params types.ProfilesParams) error {
+	paramsBz, err := json.Marshal(&params.Params)
+	if err != nil {
+		return fmt.Errorf("error while marshaling profiles params: %s", err)
+	}
+
+	stmt := `
+INSERT INTO profiles_params (params, height) 
+VALUES ($1, $2)
+ON CONFLICT (one_row_id) DO UPDATE 
+    SET params = excluded.params,
+        height = excluded.height
+WHERE profiles_params.height <= excluded.height`
+
+	_, err = db.Sql.Exec(stmt, string(paramsBz), params.Height)
+	if err != nil {
+		return fmt.Errorf("error while storing profiles params: %s", err)
+	}
+
+	return nil
+}
+
+// ---------------------------------------------------------------------------------------------------
 
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.

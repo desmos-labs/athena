@@ -5,9 +5,9 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
     tags:
-      - v*
+      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   Build-and-Publish:

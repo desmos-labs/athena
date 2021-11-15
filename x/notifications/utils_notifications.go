@@ -1,4 +1,4 @@
-package utils
+package notifications
 
 import (
 	"context"
@@ -18,10 +18,10 @@ const (
 	ClickActionValue = "FLUTTER_NOTIFICATION_CLICK"
 )
 
-// SendNotification allows to send to the devices subscribing to the specific topic a message
+// sendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
 // If some error rises during the process, it is returned.
-func SendNotification(topic string, notification *messaging.Notification, data map[string]string) error {
+func (m *Module) sendNotification(topic string, notification *messaging.Notification, data map[string]string) error {
 	// Set the default Flutter click action
 	data[ClickActionKey] = ClickActionValue
 

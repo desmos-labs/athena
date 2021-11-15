@@ -1,18 +1,11 @@
 package posts
 
 import (
-	"encoding/json"
-
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-
-	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/codec"
 
 	"github.com/desmos-labs/djuno/database"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/desmos-labs/juno/modules"
-	juno "github.com/desmos-labs/juno/types"
-	tmtypes "github.com/tendermint/tendermint/types"
+	"github.com/forbole/juno/v2/modules"
 )
 
 var _ modules.Module = &Module{}
@@ -21,31 +14,21 @@ var _ modules.MessageModule = &Module{}
 
 // Module represents the x/posts module handler
 type Module struct {
-	encodingConfig *params.EncodingConfig
+	cdc            codec.Codec
 	db             *database.Db
-	profilesClient profilestypes.QueryClient
+	profilesModule ProfilesModule
 }
 
 // NewModule allows to build a new Module instance
-func NewModule(profilesClient profilestypes.QueryClient, encodingConfig *params.EncodingConfig, db *database.Db) *Module {
+func NewModule(cdc codec.Codec, db *database.Db, profilesModule ProfilesModule) *Module {
 	return &Module{
-		encodingConfig: encodingConfig,
+		cdc:            cdc,
 		db:             db,
-		profilesClient: profilesClient,
+		profilesModule: profilesModule,
 	}
 }
 
 // Name implements Module
 func (m *Module) Name() string {
 	return "posts"
-}
-
-// HandleGenesis implements modules.GenesisModule
-func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json.RawMessage) error {
-	return HandleGenesis(doc, appState, m.encodingConfig.Marshaler, m.db)
-}
-
-// HandleMsg implements modules.MessageModule
-func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	return MsgHandler(tx, index, msg, m.profilesClient, m.encodingConfig.Marshaler, m.db)
 }

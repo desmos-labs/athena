@@ -3,15 +3,13 @@ package notifications
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
-	juno "github.com/desmos-labs/juno/types"
+	juno "github.com/forbole/juno/v2/types"
 
-	"github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/x/notifications/utils"
 	postsutils "github.com/desmos-labs/djuno/x/posts/utils"
 )
 
-// MsgHandler allows to handle different message types from the posts module
-func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.Db) error {
+// HandleMsg implements modules.MessageModule
+func (m Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 	if len(tx.Logs) == 0 {
 		return nil
 	}
@@ -19,34 +17,34 @@ func MsgHandler(tx *juno.Tx, index int, msg sdk.Msg, database *database.Db) erro
 	switch desmosMsg := msg.(type) {
 	// Posts
 	case *poststypes.MsgCreatePost:
-		return sendPostNotification(tx, index, desmosMsg, database)
+		return m.sendPostNotification(tx, index, desmosMsg)
 
 	case *poststypes.MsgAddPostReaction:
-		return sendReactionNotification(tx, index, poststypes.EventTypePostReactionAdded, database)
+		return m.sendReactionNotification(tx, index, poststypes.EventTypePostReactionAdded)
 
 	case *poststypes.MsgRemovePostReaction:
-		return sendReactionNotification(tx, index, poststypes.EventTypePostReactionRemoved, database)
+		return m.sendReactionNotification(tx, index, poststypes.EventTypePostReactionRemoved)
 	}
 
 	return nil
 }
 
 // sendPostNotification sends a notification to everyone that might be involved in a post (eg. tags, etc)
-func sendPostNotification(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost, db *database.Db) error {
+func (m *Module) sendPostNotification(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
 	post, err := postsutils.GetPostFromMsgCreatePost(tx, index, msg)
 	if err != nil {
 		return err
 	}
 
-	return utils.SendPostNotifications(post, db)
+	return m.sendPostNotifications(post)
 }
 
 // sendReactionNotification sends a notification to the creator of the post to which the reaction has been added
-func sendReactionNotification(tx *juno.Tx, index int, event string, db *database.Db) error {
+func (m *Module) sendReactionNotification(tx *juno.Tx, index int, event string) error {
 	postID, reaction, err := postsutils.GetReactionFromTxEvent(tx, index, event)
 	if err != nil {
 		return err
 	}
 
-	return utils.SendReactionNotifications(postID, reaction, db)
+	return m.sendReactionNotifications(postID, reaction)
 }

@@ -35,12 +35,12 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 					},
 				),
 			),
-			poststypes.NewPollData(
+			poststypes.NewPoll(
 				"Do you like dogs?",
 				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				[]poststypes.PollAnswer{
-					poststypes.NewPollAnswer("1", "Yes"),
-					poststypes.NewPollAnswer("2", "No"),
+				[]poststypes.ProvidedAnswer{
+					poststypes.NewProvidedAnswer("1", "Yes"),
+					poststypes.NewProvidedAnswer("2", "No"),
 				},
 				true,
 				false,
@@ -63,7 +63,7 @@ func (suite *DbTestSuite) TestDesmosDb_SavePost() {
 	suite.Require().True(post.Equal(stored))
 }
 
-func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData) {
+func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.Poll) {
 	post := suite.testData.post
 	err := suite.database.SaveUserIfNotExisting(post.Creator, 1)
 	suite.Require().NoError(err)
@@ -71,7 +71,7 @@ func (suite *DbTestSuite) savePollData() (poststypes.Post, *poststypes.PollData)
 	err = suite.database.SavePost(types.NewPost(post, 1))
 	suite.Require().NoError(err)
 
-	return post, post.PollData
+	return post, post.Poll
 }
 
 func (suite *DbTestSuite) TestDesmosDb_SavePollAnswer() {
