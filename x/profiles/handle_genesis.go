@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	profilestypes "github.com/desmos-labs/desmos/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/desmos-labs/djuno/v2/types"

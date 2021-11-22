@@ -7,7 +7,7 @@ import (
 	"github.com/desmos-labs/djuno/v2/x/posts/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 	juno "github.com/forbole/juno/v2/types"
 )
 
@@ -109,8 +109,8 @@ func (m *Module) handleMsgEditPost(tx *juno.Tx, index int, msg *poststypes.MsgEd
 		post.Attachments = msg.Attachments
 	}
 
-	if msg.PollData != nil {
-		post.PollData = msg.PollData
+	if msg.Poll != nil {
+		post.Poll = msg.Poll
 	}
 
 	return m.db.SavePost(post)

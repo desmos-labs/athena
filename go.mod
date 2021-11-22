@@ -5,9 +5,10 @@ go 1.13
 require (
 	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/cosmos/cosmos-sdk v0.42.9
-	github.com/desmos-labs/desmos v1.0.1
-	github.com/forbole/juno/v2 v2.0.0-20211018083707-de5b5378416e
+	github.com/cosmos/cosmos-sdk v0.44.3
+	github.com/cosmos/ibc-go v1.2.3
+	github.com/desmos-labs/desmos/v2 v2.3.0-mainnet
+	github.com/forbole/juno/v2 v2.0.0-20211020184842-e358a33007ff
 	github.com/go-co-op/gocron v1.9.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.3.4
@@ -22,7 +23,7 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.42.5-0.20210826081936-864fc99bab62
+replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20211102084520-683147efd235
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.42.0
 

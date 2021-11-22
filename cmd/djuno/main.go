@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	desmosapp "github.com/desmos-labs/desmos/app"
+	desmosapp "github.com/desmos-labs/desmos/v2/app"
 	junocmd "github.com/forbole/juno/v2/cmd"
 	parsecmd "github.com/forbole/juno/v2/cmd/parse"
 

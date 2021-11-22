@@ -13,9 +13,9 @@ import (
 	junodbcfg "github.com/forbole/juno/v2/database/config"
 	"github.com/forbole/juno/v2/logging"
 
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 
-	desmosapp "github.com/desmos-labs/desmos/app"
+	desmosapp "github.com/desmos-labs/desmos/v2/app"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/desmos-labs/djuno/v2/database"

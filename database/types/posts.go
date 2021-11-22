@@ -6,7 +6,7 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/types"
 
-	poststypes "github.com/desmos-labs/desmos/x/staging/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 )
 
 // PostRow represents a single PostgreSQL row containing the data of a Post
@@ -26,7 +26,7 @@ type PostRow struct {
 // ConvertPostRow takes the given postRow and userRow and merges the data contained inside them to create a Post.
 func ConvertPostRow(
 	row PostRow, attributes []poststypes.Attribute,
-	attachments []poststypes.Attachment, poll *poststypes.PollData,
+	attachments []poststypes.Attachment, poll *poststypes.Poll,
 ) (*types.Post, error) {
 	var parentID string
 	if row.ParentID.Valid {
@@ -127,8 +127,8 @@ func (r PollRow) Equal(s PollRow) bool {
 }
 
 // ConvertPollRow converts the given row and answers into a proper PollData object
-func ConvertPollRow(row PollRow, answers []poststypes.PollAnswer) *poststypes.PollData {
-	return poststypes.NewPollData(
+func ConvertPollRow(row PollRow, answers []poststypes.ProvidedAnswer) *poststypes.Poll {
+	return poststypes.NewPoll(
 		row.Question,
 		row.EndDate,
 		answers,
@@ -147,10 +147,10 @@ type PollAnswerRow struct {
 }
 
 // ConvertPollAnswerRows converts the given rows into PollAnswer objects
-func ConvertPollAnswerRows(rows []PollAnswerRow) []poststypes.PollAnswer {
-	answers := make([]poststypes.PollAnswer, len(rows))
+func ConvertPollAnswerRows(rows []PollAnswerRow) []poststypes.ProvidedAnswer {
+	answers := make([]poststypes.ProvidedAnswer, len(rows))
 	for index, rows := range rows {
-		answers[index] = poststypes.NewPollAnswer(rows.AnswerID, rows.Text)
+		answers[index] = poststypes.NewProvidedAnswer(rows.AnswerID, rows.Text)
 	}
 	return answers
 }

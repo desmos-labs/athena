@@ -14,13 +14,13 @@ var _ modules.MessageModule = &Module{}
 
 // Module represents the x/posts module handler
 type Module struct {
-	cdc            codec.Marshaler
+	cdc            codec.Codec
 	db             *database.Db
 	profilesModule ProfilesModule
 }
 
 // NewModule allows to build a new Module instance
-func NewModule(cdc codec.Marshaler, db *database.Db, profilesModule ProfilesModule) *Module {
+func NewModule(cdc codec.Codec, db *database.Db, profilesModule ProfilesModule) *Module {
 	return &Module{
 		cdc:            cdc,
 		db:             db,
