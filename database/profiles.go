@@ -111,6 +111,16 @@ WHERE address = $1 AND height <= $2`
 	return err
 }
 
+// GetProfilesAddresses returns all the addresses of the various profiles accounts
+func (db Db) GetProfilesAddresses() ([]string, error) {
+	var rows []string
+	err := db.Sqlx.Select(&rows, `SELECT address FROM profile`)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
 // ---------------------------------------------------------------------------------------------------
 
 // SaveDTagTransferRequest saves a new transfer request from sender to receiver
@@ -207,7 +217,6 @@ VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT ON CONSTRAINT unique_chain_link DO UPDATE 
     SET user_address = excluded.user_address, 
         external_address = excluded.external_address,
-        chain_config_id = excluded.chain_config_id,
         creation_time = excluded.creation_time,
         height = excluded.height
 WHERE chain_link.height <= excluded.height
@@ -277,6 +286,12 @@ WHERE user_address = $1
   AND external_address = $2
   AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)`
 	_, err := db.Sql.Exec(stmt, user, externalAddress, chainName)
+	return err
+}
+
+// DeleteProfileChainLinks deletes all the chain links for the user having the given address
+func (db Db) DeleteProfileChainLinks(user string) error {
+	_, err := db.Sql.Exec(`DELETE from chain_link WHERE user_address = $1`, user)
 	return err
 }
 

@@ -54,7 +54,7 @@ CREATE TABLE chain_link
     chain_config_id  BIGINT                      NOT NULL REFERENCES chain_link_chain_config (id),
     creation_time    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     height           BIGINT                      NOT NULL,
-    CONSTRAINT unique_chain_link UNIQUE (user_address, external_address)
+    CONSTRAINT unique_chain_link UNIQUE (chain_config_id, user_address, external_address)
 );
 
 CREATE TABLE chain_link_proof
