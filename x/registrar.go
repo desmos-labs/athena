@@ -10,8 +10,6 @@ import (
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	"github.com/forbole/juno/v2/modules"
 
-	"github.com/desmos-labs/djuno/x/common"
-
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/x/notifications"
 	"github.com/desmos-labs/djuno/x/posts"
@@ -39,7 +37,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 	profilesClient := profilestypes.NewQueryClient(grpcConnection)
 
-	profilesModule := profiles.NewModule(common.MessagesParser, profilesClient, ctx.EncodingConfig.Marshaler, desmosDb)
+	profilesModule := profiles.NewModule(profilesClient, ctx.EncodingConfig.Marshaler, desmosDb)
 
 	return []modules.Module{
 		profilesModule,
