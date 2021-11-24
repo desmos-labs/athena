@@ -13,7 +13,6 @@ import (
 
 	"github.com/desmos-labs/djuno/database"
 	"github.com/desmos-labs/djuno/utils"
-	"github.com/desmos-labs/djuno/x/common"
 	"github.com/desmos-labs/djuno/x/profiles"
 )
 
@@ -61,7 +60,7 @@ func chainLinksCmd(parseConfig *parse.Config) *cobra.Command {
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 			profilesClient := profilestypes.NewQueryClient(grpcConnection)
 
-			profilesModule := profiles.NewModule(common.MessagesParser, profilesClient, parseCtx.EncodingConfig.Marshaler, db)
+			profilesModule := profiles.NewModule(profilesClient, parseCtx.EncodingConfig.Marshaler, db)
 
 			for _, address := range addresses {
 				log.Debug().Str("address", address).Msg("deleting chain links")
