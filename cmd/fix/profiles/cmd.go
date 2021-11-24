@@ -3,16 +3,18 @@ package profiles
 import (
 	"encoding/hex"
 	"fmt"
+
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	"github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/utils"
-	"github.com/desmos-labs/djuno/x/common"
-	"github.com/desmos-labs/djuno/x/profiles"
 	"github.com/forbole/juno/v2/cmd/parse"
 	"github.com/forbole/juno/v2/node/remote"
 	"github.com/forbole/juno/v2/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+
+	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/utils"
+	"github.com/desmos-labs/djuno/x/common"
+	"github.com/desmos-labs/djuno/x/profiles"
 )
 
 // NewProfilesCmd returns the Cobra command that allows to fix all the things related to the x/profiles module
