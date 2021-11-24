@@ -11,10 +11,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/utils"
-	"github.com/desmos-labs/djuno/x/common"
-	"github.com/desmos-labs/djuno/x/profiles"
+	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/utils"
+	"github.com/desmos-labs/djuno/v2/x/profiles"
 )
 
 // NewProfilesCmd returns the Cobra command that allows to fix all the things related to the x/profiles module
@@ -61,7 +60,7 @@ func chainLinksCmd(parseConfig *parse.Config) *cobra.Command {
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 			profilesClient := profilestypes.NewQueryClient(grpcConnection)
 
-			profilesModule := profiles.NewModule(common.MessagesParser, profilesClient, parseCtx.EncodingConfig.Marshaler, db)
+			profilesModule := profiles.NewModule(profilesClient, parseCtx.EncodingConfig.Marshaler, db)
 
 			for _, address := range addresses {
 				log.Debug().Str("address", address).Msg("deleting chain links")

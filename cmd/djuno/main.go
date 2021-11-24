@@ -6,7 +6,7 @@ import (
 	initcmd "github.com/forbole/juno/v2/cmd/init"
 	parsecmd "github.com/forbole/juno/v2/cmd/parse"
 
-	fixcmd "github.com/desmos-labs/djuno/cmd/fix"
+	fixcmd "github.com/desmos-labs/djuno/v2/cmd/fix"
 
 	desmosdb "github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x"

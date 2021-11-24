@@ -4,7 +4,7 @@ import (
 	"github.com/forbole/juno/v2/cmd/parse"
 	"github.com/spf13/cobra"
 
-	fixprofiles "github.com/desmos-labs/djuno/cmd/fix/profiles"
+	fixprofiles "github.com/desmos-labs/djuno/v2/cmd/fix/profiles"
 )
 
 // NewFixCmd returns the Cobra command allowing to fix some BDJuno bugs without having to re-sync the whole database
