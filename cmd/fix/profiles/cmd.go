@@ -3,6 +3,7 @@ package profiles
 import (
 	"encoding/hex"
 	"fmt"
+
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	"github.com/forbole/juno/v2/cmd/parse"
 	"github.com/forbole/juno/v2/node/remote"
