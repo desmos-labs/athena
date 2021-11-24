@@ -2,8 +2,8 @@
 build/
 
 # configuration
-*.toml
 *.json
+config.yaml
 
 # coverage
 coverage.out
