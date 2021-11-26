@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/hex"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 )
 
@@ -67,12 +66,6 @@ type ChainLink struct {
 }
 
 func NewChainLink(link profilestypes.ChainLink, height int64) ChainLink {
-	// Convert the plain text to hex if it's not already (might happen on old links)
-	_, err := hex.DecodeString(link.Proof.PlainText)
-	if err != nil {
-		link.Proof.PlainText = hex.EncodeToString([]byte(link.Proof.PlainText))
-	}
-
 	return ChainLink{
 		ChainLink: link,
 		Height:    height,

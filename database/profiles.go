@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 
@@ -247,6 +248,13 @@ func (db Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, he
 		return fmt.Errorf("error serializing chain link proof public key: %s", err)
 	}
 
+	// Convert the plain text to hex if it's not already (might happen on old links)
+	var plainText = proof.PlainText
+	_, err = hex.DecodeString(plainText)
+	if err != nil {
+		plainText = hex.EncodeToString([]byte(plainText))
+	}
+
 	stmt := `
 INSERT INTO chain_link_proof(chain_link_id, public_key, plain_text, signature, height) 
 VALUES ($1, $2, $3, $4, $5)
@@ -257,7 +265,7 @@ ON CONFLICT ON CONSTRAINT unique_proof_for_link DO UPDATE
         signature = excluded.signature, 
         height = excluded.height
 WHERE chain_link_proof.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, chainLinkID, string(publicKeyBz), proof.PlainText, proof.Signature, height)
+	_, err = db.Sql.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, proof.Signature, height)
 	return err
 }
 
