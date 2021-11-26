@@ -3,6 +3,9 @@ package profiles
 import (
 	"encoding/hex"
 	"fmt"
+	"sort"
+
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	"github.com/forbole/juno/v2/cmd/parse"
@@ -72,82 +75,57 @@ func chainLinksCmd(parseConfig *parse.Config) *cobra.Command {
 
 				log.Debug().Str("address", address).Msg("querying transactions")
 
-				// Chain links
+				// Collect all the transactions
+				var txs []*coretypes.ResultTx
 
-				err = restoreChainLinks(address, parseCtx, profilesModule)
+				// Get all the MsgLinkChain txs
+				query := fmt.Sprintf("link_chain_account.chain_link_account_owner='%s'", address)
+				linkChainTxs, err := utils.QueryTxs(parseCtx.Node, query)
 				if err != nil {
 					return err
 				}
+				txs = append(txs, linkChainTxs...)
 
-				err = restoreChainUnlinks(address, parseCtx, profilesModule)
+				// Get all the MsgUnlinkChain txs
+				query = fmt.Sprintf("unlink_chain_account.chain_link_account_owner='%s'", address)
+				unlinkChainTxs, err := utils.QueryTxs(parseCtx.Node, query)
 				if err != nil {
 					return err
+				}
+				txs = append(txs, unlinkChainTxs...)
+
+				// Sort the txs based on their ascending height
+				sort.Slice(txs, func(i, j int) bool {
+					return txs[i].Height < txs[j].Height
+				})
+
+				// Parse all the transactions' messages
+				for _, tx := range txs {
+					log.Debug().Int64("height", tx.Height).Msg("parsing transaction")
+
+					transaction, err := parseCtx.Node.Tx(hex.EncodeToString(tx.Tx.Hash()))
+					if err != nil {
+						return err
+					}
+
+					// Handle only the MsgLinkChain and MsgUnlinkChain instances
+					for index, msg := range transaction.GetMsgs() {
+						_, isMsgLinkChain := msg.(*profilestypes.MsgLinkChainAccount)
+						_, isMsgUnlinkChain := msg.(*profilestypes.MsgUnlinkChainAccount)
+
+						if !isMsgLinkChain && !isMsgUnlinkChain {
+							continue
+						}
+
+						err = profilesModule.HandleMsg(index, msg, transaction)
+						if err != nil {
+							return fmt.Errorf("error while handling MsgLinkChainAccount: %s", err)
+						}
+					}
 				}
 			}
 
 			return nil
 		},
 	}
-}
-
-func restoreChainLinks(address string, parseCtx *parse.Context, profilesModule *profiles.Module) error {
-	query := fmt.Sprintf("link_chain_account.chain_link_account_owner='%s'", address)
-	txs, err := utils.QueryTxs(parseCtx.Node, query)
-	if err != nil {
-		return err
-	}
-
-	for _, tx := range txs {
-		transaction, err := parseCtx.Node.Tx(hex.EncodeToString(tx.Tx.Hash()))
-		if err != nil {
-			return err
-		}
-
-		// Handle the MsgChainLink messages
-		for index, msg := range transaction.GetMsgs() {
-			if _, ok := msg.(*profilestypes.MsgLinkChainAccount); !ok {
-				continue
-			}
-
-			log.Debug().Str("address", address).Msg("handling MsgLinkChainAccount message")
-
-			err = profilesModule.HandleMsg(index, msg, transaction)
-			if err != nil {
-				return fmt.Errorf("error while handling MsgLinkChainAccount: %s", err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func restoreChainUnlinks(address string, parseCtx *parse.Context, profilesModule *profiles.Module) error {
-	query := fmt.Sprintf("unlink_chain_account.chain_link_account_owner='%s'", address)
-	txs, err := utils.QueryTxs(parseCtx.Node, query)
-	if err != nil {
-		return err
-	}
-
-	for _, tx := range txs {
-		transaction, err := parseCtx.Node.Tx(hex.EncodeToString(tx.Tx.Hash()))
-		if err != nil {
-			return err
-		}
-
-		// Handle the MsgChainLink messages
-		for index, msg := range transaction.GetMsgs() {
-			if _, ok := msg.(*profilestypes.MsgUnlinkChainAccount); !ok {
-				continue
-			}
-
-			log.Debug().Str("address", address).Msg("handling MsgLinkChainAccount message")
-
-			err = profilesModule.HandleMsg(index, msg, transaction)
-			if err != nil {
-				return fmt.Errorf("error while handling MsgLinkChainAccount: %s", err)
-			}
-		}
-	}
-
-	return nil
 }
