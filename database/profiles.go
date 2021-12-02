@@ -100,14 +100,7 @@ WHERE profile.height <= excluded.height`
 func (db Db) DeleteProfile(address string, height int64) error {
 	log.Info().Str("address", address).Msg("deleting profile")
 
-	stmt := `
-UPDATE profile 
-SET nickname = '', 
-    dtag = '', 
-    bio = '', 
-    profile_pic = '', 
-    cover_pic = '' 
-WHERE address = $1 AND height <= $2`
+	stmt := `DELETE FROM profile WHERE address = $1 AND height <= $2`
 	_, err := db.Sql.Exec(stmt, address, height)
 	return err
 }
