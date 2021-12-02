@@ -12,16 +12,16 @@ CREATE TABLE profile
 
 CREATE TABLE dtag_transfer_requests
 (
-    sender_address   TEXT   NOT NULL REFERENCES profile (address),
-    receiver_address TEXT   NOT NULL REFERENCES profile (address),
+    sender_address   TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
+    receiver_address TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
     height           BIGINT NOT NULL,
     CONSTRAINT unique_request UNIQUE (sender_address, receiver_address)
 );
 
 CREATE TABLE profile_relationship
 (
-    sender_address   TEXT   NOT NULL REFERENCES profile (address),
-    receiver_address TEXT   NOT NULL REFERENCES profile (address),
+    sender_address   TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
+    receiver_address TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
     subspace         TEXT   NOT NULL,
     height           BIGINT NOT NULL,
     CONSTRAINT unique_relationship UNIQUE (sender_address, receiver_address, subspace)
@@ -29,7 +29,7 @@ CREATE TABLE profile_relationship
 
 CREATE TABLE user_block
 (
-    blocker_address      TEXT   NOT NULL REFERENCES profile (address),
+    blocker_address      TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
     blocked_user_address TEXT   NOT NULL REFERENCES profile (address),
     reason               TEXT,
     subspace             TEXT   NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE chain_link_chain_config
 CREATE TABLE chain_link
 (
     id               SERIAL                      NOT NULL PRIMARY KEY,
-    user_address     TEXT                        NOT NULL REFERENCES profile (address),
+    user_address     TEXT                        NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
     external_address TEXT                        NOT NULL,
     chain_config_id  BIGINT                      NOT NULL REFERENCES chain_link_chain_config (id),
     creation_time    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE chain_link_proof
 CREATE TABLE application_link
 (
     id            SERIAL                      NOT NULL PRIMARY KEY,
-    user_address  TEXT                        NOT NULL REFERENCES profile (address),
+    user_address  TEXT                        NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
     application   TEXT                        NOT NULL,
     username      TEXT                        NOT NULL,
     state         TEXT                        NOT NULL,

@@ -7,7 +7,7 @@ CREATE TABLE post
     last_edited     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     comments_state  TEXT                        NOT NULL,
     subspace        TEXT                        NOT NULL,
-    creator_address TEXT                        NOT NULL REFERENCES profile (address),
+    creator_address TEXT                        NOT NULL,
     hidden          BOOLEAN                     NOT NULL DEFAULT false,
     height          BIGINT                      NOT NULL
 );
