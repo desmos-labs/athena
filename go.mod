@@ -9,7 +9,7 @@ require (
 	github.com/cosmos/ibc-go v1.2.4
 	github.com/desmos-labs/desmos/v2 v2.3.1
 	github.com/forbole/juno/v2 v2.0.0-20211020184842-e358a33007ff
-	github.com/go-co-op/gocron v1.10.0
+	github.com/go-co-op/gocron v1.11.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/jmoiron/sqlx v1.3.4
