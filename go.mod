@@ -3,7 +3,6 @@ module github.com/desmos-labs/djuno
 go 1.13
 
 require (
-	cloud.google.com/go/firestore v1.1.1 // indirect
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.44.5
 	github.com/cosmos/ibc-go v1.2.4
@@ -15,7 +14,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.26.0
-	github.com/spf13/cobra v1.2.1
+	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.14
 	github.com/ziutek/mymysql v1.5.4 // indirect
