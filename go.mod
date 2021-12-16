@@ -5,7 +5,7 @@ go 1.13
 require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.44.5
-	github.com/cosmos/ibc-go v1.2.4
+	github.com/cosmos/ibc-go v1.2.5
 	github.com/desmos-labs/desmos/v2 v2.3.1
 	github.com/forbole/juno/v2 v2.0.0-20211020184842-e358a33007ff
 	github.com/go-co-op/gocron v1.11.0
