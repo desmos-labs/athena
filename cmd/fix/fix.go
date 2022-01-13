@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 
 	fixprofiles "github.com/desmos-labs/djuno/v2/cmd/fix/profiles"
+	fixblocks "github.com/forbole/juno/v2/cmd/fix/blocks"
 )
 
 // NewFixCmd returns the Cobra command allowing to fix some BDJuno bugs without having to re-sync the whole database
@@ -17,6 +18,7 @@ func NewFixCmd(parseCfg *parse.Config) *cobra.Command {
 
 	cmd.AddCommand(
 		fixprofiles.NewProfilesCmd(parseCfg),
+		fixblocks.NewBlocksCmd(parseCfg),
 	)
 
 	return cmd
