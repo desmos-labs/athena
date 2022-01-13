@@ -3,9 +3,9 @@ package database_test
 import (
 	"time"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 )

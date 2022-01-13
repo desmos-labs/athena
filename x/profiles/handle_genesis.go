@@ -7,7 +7,7 @@ import (
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 )
 
 // HandleGenesis implements modules.GenesisModule

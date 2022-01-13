@@ -6,7 +6,7 @@ import (
 
 	"github.com/forbole/juno/v2/node/remote"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	oracletypes "github.com/desmos-labs/desmos/v2/x/oracle/types"

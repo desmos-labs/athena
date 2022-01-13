@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 
-	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/v2/database"
 
 	"github.com/forbole/juno/v2/modules"
 )

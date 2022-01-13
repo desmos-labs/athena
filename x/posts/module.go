@@ -3,7 +3,7 @@ package posts
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/v2/database"
 
 	"github.com/forbole/juno/v2/modules"
 )

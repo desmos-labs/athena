@@ -3,8 +3,8 @@ package posts
 import (
 	"time"
 
-	"github.com/desmos-labs/djuno/types"
-	"github.com/desmos-labs/djuno/x/posts/utils"
+	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/djuno/v2/x/posts/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"

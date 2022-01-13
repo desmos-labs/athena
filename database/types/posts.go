@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 )

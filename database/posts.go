@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 
-	dbtypes "github.com/desmos-labs/djuno/database/types"
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 )
 
 // SavePost allows to store the given post inside the database properly.

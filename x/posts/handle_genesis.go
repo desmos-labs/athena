@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sort"
 
-	"github.com/desmos-labs/djuno/types"
+	"github.com/desmos-labs/djuno/v2/types"
 
 	tmtypes "github.com/tendermint/tendermint/types"
 

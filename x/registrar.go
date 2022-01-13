@@ -10,10 +10,10 @@ import (
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
 	"github.com/forbole/juno/v2/modules"
 
-	"github.com/desmos-labs/djuno/database"
-	"github.com/desmos-labs/djuno/x/notifications"
-	"github.com/desmos-labs/djuno/x/posts"
-	"github.com/desmos-labs/djuno/x/profiles"
+	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/x/notifications"
+	"github.com/desmos-labs/djuno/v2/x/posts"
+	"github.com/desmos-labs/djuno/v2/x/profiles"
 )
 
 // ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules

@@ -18,7 +18,7 @@ import (
 	desmosapp "github.com/desmos-labs/desmos/v2/app"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/desmos-labs/djuno/database"
+	"github.com/desmos-labs/djuno/v2/database"
 
 	_ "github.com/proullon/ramsql/driver"
 )

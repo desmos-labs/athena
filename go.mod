@@ -1,4 +1,4 @@
-module github.com/desmos-labs/djuno
+module github.com/desmos-labs/djuno/v2
 
 go 1.13
 

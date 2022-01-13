@@ -4,7 +4,7 @@ import (
 	"github.com/forbole/juno/v2/cmd/parse"
 	"github.com/spf13/cobra"
 
-	fixprofiles "github.com/desmos-labs/djuno/cmd/fix/profiles"
+	fixprofiles "github.com/desmos-labs/djuno/v2/cmd/fix/profiles"
 	fixblocks "github.com/forbole/juno/v2/cmd/fix/blocks"
 )
 
