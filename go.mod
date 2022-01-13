@@ -3,6 +3,7 @@ module github.com/desmos-labs/djuno
 go 1.13
 
 require (
+	cloud.google.com/go/iam v0.1.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/cosmos/cosmos-sdk v0.44.5
 	github.com/cosmos/ibc-go v1.2.5
@@ -17,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.14
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	google.golang.org/api v0.64.0
+	google.golang.org/api v0.65.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
