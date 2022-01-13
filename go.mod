@@ -7,7 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.44.5
 	github.com/cosmos/ibc-go v1.2.5
 	github.com/desmos-labs/desmos/v2 v2.3.1
-	github.com/forbole/juno/v2 v2.0.0-20211020184842-e358a33007ff
+	github.com/forbole/juno/v2 v2.0.0-20220113082840-5b6bf27ac741
 	github.com/go-co-op/gocron v1.11.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.3.4
