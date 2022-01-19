@@ -5,7 +5,7 @@ go 1.13
 require (
 	cloud.google.com/go/iam v0.1.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/cosmos/cosmos-sdk v0.44.5
+	github.com/cosmos/cosmos-sdk v0.45.0
 	github.com/cosmos/ibc-go v1.2.5
 	github.com/desmos-labs/desmos/v2 v2.3.1
 	github.com/forbole/juno/v2 v2.0.0-20220113082840-5b6bf27ac741
