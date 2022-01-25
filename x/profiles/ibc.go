@@ -33,7 +33,7 @@ func (m *Module) handlePacket(height int64, packet channeltypes.Packet) error {
 		}
 	}
 
-	return fmt.Errorf("cannot handle packet directed to port %s and channel %s", packet.DestinationPort, packet.DestinationChannel)
+	return nil
 }
 
 // handleLinkChainAccountPacketData tries handling the given packet as it contains a LinkChainAccountPacketData
