@@ -18,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.14
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	google.golang.org/api v0.65.0
+	google.golang.org/api v0.67.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
