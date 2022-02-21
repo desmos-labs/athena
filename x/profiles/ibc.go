@@ -54,13 +54,12 @@ func (m *Module) handleLinkChainAccountPacketData(height int64, packet channelty
 
 	// Get the link from the chain
 	res, err := m.profilesClient.UserChainLink(
-		context.Background(),
+		remote.GetHeightRequestContext(context.Background(), height),
 		&profilestypes.QueryUserChainLinkRequest{
 			User:      packetData.DestinationAddress,
 			ChainName: packetData.SourceChainConfig.Name,
 			Target:    sourceAddr.GetValue(),
 		},
-		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return true, err
@@ -80,9 +79,8 @@ func (m *Module) handleOracleRequestPacketData(height int64, packet channeltypes
 	}
 
 	res, err := m.profilesClient.ApplicationLinkByClientID(
-		context.Background(),
+		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
-		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return true, fmt.Errorf("error while getting application link by client id: %s", err)
@@ -101,9 +99,8 @@ func (m *Module) handleOracleResponsePacketData(height int64, packet channeltype
 	}
 
 	res, err := m.profilesClient.ApplicationLinkByClientID(
-		context.Background(),
+		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
-		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return true, fmt.Errorf("error while getting application link by client id: %s", err)

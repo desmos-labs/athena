@@ -15,9 +15,8 @@ import (
 func (m *Module) UpdateProfiles(height int64, addresses []string) error {
 	for _, address := range addresses {
 		res, err := m.profilesClient.Profile(
-			context.Background(),
+			remote.GetHeightRequestContext(context.Background(), height),
 			profilestypes.NewQueryProfileRequest(address),
-			remote.GetHeightRequestHeader(height),
 		)
 		if err != nil {
 			return fmt.Errorf("error while getting profile from gRPC: %s", err)
@@ -48,9 +47,8 @@ func (m *Module) updateParams() error {
 	}
 
 	res, err := m.profilesClient.Params(
-		context.Background(),
+		remote.GetHeightRequestContext(context.Background(), height),
 		&profilestypes.QueryParamsRequest{},
-		remote.GetHeightRequestHeader(height),
 	)
 	if err != nil {
 		return fmt.Errorf("error while getting params: %s", err)
