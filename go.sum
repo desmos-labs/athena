@@ -303,6 +303,8 @@ github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSw
 github.com/fjl/memsize v0.0.0-20180418122429-ca190fb6ffbc/go.mod h1:VvhXpOYNQvB+uIk2RvXzuaQtkQJzzIx6lSBe1xv7hi0=
 github.com/forbole/juno/v2 v2.0.0-20220222141447-ce3942cb9b55 h1:vVERCn7oAsJCDl2MgJU4xrtUmvUwVRr2CqqS+lt7WMg=
 github.com/forbole/juno/v2 v2.0.0-20220222141447-ce3942cb9b55/go.mod h1:EKrBsvBr/3eKOGBqIF/kD7TEZoPKUMByAqlve2KYncU=
+github.com/forbole/juno/v2 v2.0.0-20220222142124-9676a3e0f96f h1:JSxOyeNMj2P3n0iivuapkJRboIwpD6uliriwoa0QxKs=
+github.com/forbole/juno/v2 v2.0.0-20220222142124-9676a3e0f96f/go.mod h1:EKrBsvBr/3eKOGBqIF/kD7TEZoPKUMByAqlve2KYncU=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
 github.com/franela/goblin v0.0.0-20200105215937-c9ffbefa60db/go.mod h1:7dvUGVsVBjqR7JHJk0brhHOZYGmfBYOrK0ZhYMEtBr4=

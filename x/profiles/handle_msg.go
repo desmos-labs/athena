@@ -250,9 +250,8 @@ func (m *Module) handleMsgLinkApplication(tx *juno.Tx, msg *profilestypes.MsgLin
 	}
 
 	res, err := m.profilesClient.UserApplicationLink(
-		context.Background(),
+		remote.GetHeightRequestContext(context.Background(), tx.Height),
 		profilestypes.NewQueryUserApplicationLinkRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username),
-		remote.GetHeightRequestHeader(tx.Height),
 	)
 	if err != nil {
 		return fmt.Errorf("error while getting application link: %s", err)
