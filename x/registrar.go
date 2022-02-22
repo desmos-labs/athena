@@ -36,7 +36,6 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 	profilesClient := profilestypes.NewQueryClient(grpcConnection)
-
 	profilesModule := profiles.NewModule(profilesClient, ctx.EncodingConfig.Marshaler, desmosDb)
 
 	return []modules.Module{

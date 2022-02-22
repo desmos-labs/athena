@@ -109,12 +109,12 @@ func (suite *DbTestSuite) setupTestData() {
 					},
 				),
 			),
-			poststypes.NewPoll(
+			poststypes.NewPollData(
 				"Do you like dogs?",
 				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				[]poststypes.ProvidedAnswer{
-					poststypes.NewProvidedAnswer("1", "Yes"),
-					poststypes.NewProvidedAnswer("2", "No"),
+				[]poststypes.PollAnswer{
+					poststypes.NewPollAnswer("1", "Yes"),
+					poststypes.NewPollAnswer("2", "No"),
 				},
 				true,
 				false,
