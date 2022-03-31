@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/forbole/juno/v2/node/remote"
+	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/gogo/protobuf/proto"
 
@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	juno "github.com/forbole/juno/v2/types"
+	juno "github.com/forbole/juno/v3/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -61,7 +61,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgChainLink(tx, index, desmosMsg)
 
 	case *profilestypes.MsgUnlinkChainAccount:
-		return m.handleMsgUnlinkChainAccount(desmosMsg)
+		return m.handleMsgUnlinkChainAccount(tx.Height, desmosMsg)
 
 	case *profilestypes.MsgLinkApplication:
 		return m.handleMsgLinkApplication(tx, desmosMsg)
@@ -76,7 +76,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handlePacket(tx.Height, desmosMsg.Packet)
 
 	case *profilestypes.MsgUnlinkApplication:
-		return m.handleMsgUnlinkApplication(desmosMsg)
+		return m.handleMsgUnlinkApplication(tx.Height, desmosMsg)
 	}
 
 	log.Debug().Str("module", "profiles").Str("message", proto.MessageName(msg)).
@@ -234,8 +234,8 @@ func (m *Module) handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.M
 }
 
 // handleMsgUnlinkChainAccount allows to handle a MsgUnlinkChainAccount properly
-func (m *Module) handleMsgUnlinkChainAccount(msg *profilestypes.MsgUnlinkChainAccount) error {
-	return m.db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName)
+func (m *Module) handleMsgUnlinkChainAccount(height int64, msg *profilestypes.MsgUnlinkChainAccount) error {
+	return m.db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName, height)
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -250,9 +250,8 @@ func (m *Module) handleMsgLinkApplication(tx *juno.Tx, msg *profilestypes.MsgLin
 	}
 
 	res, err := m.profilesClient.UserApplicationLink(
-		context.Background(),
+		remote.GetHeightRequestContext(context.Background(), tx.Height),
 		profilestypes.NewQueryUserApplicationLinkRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username),
-		remote.GetHeightRequestHeader(tx.Height),
 	)
 	if err != nil {
 		return fmt.Errorf("error while getting application link: %s", err)
@@ -262,6 +261,6 @@ func (m *Module) handleMsgLinkApplication(tx *juno.Tx, msg *profilestypes.MsgLin
 }
 
 // handleMsgUnlinkApplication allows to handle a MsgUnlinkApplication properly
-func (m *Module) handleMsgUnlinkApplication(msg *profilestypes.MsgUnlinkApplication) error {
-	return m.db.DeleteApplicationLink(msg.Signer, msg.Application, msg.Username)
+func (m *Module) handleMsgUnlinkApplication(height int64, msg *profilestypes.MsgUnlinkApplication) error {
+	return m.db.DeleteApplicationLink(msg.Signer, msg.Application, msg.Username, height)
 }

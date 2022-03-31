@@ -278,15 +278,16 @@ RETURNING id`
 
 // DeleteChainLink removes from the database the chain link made for the given user and having the provided
 // external address and linked to the chain with the given name
-func (db Db) DeleteChainLink(user string, externalAddress string, chainName string) error {
+func (db Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
 	log.Info().Str("user", user).Str("address", externalAddress).Msg("deleting chain link")
 
 	stmt := `
 DELETE FROM chain_link 
 WHERE user_address = $1 
   AND external_address = $2
-  AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)`
-	_, err := db.Sql.Exec(stmt, user, externalAddress, chainName)
+  AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)
+  AND height <= $4`
+	_, err := db.Sql.Exec(stmt, user, externalAddress, chainName, height)
 	return err
 }
 
@@ -365,10 +366,15 @@ WHERE application_link_oracle_request.height <= excluded.height`
 
 // DeleteApplicationLink allows to delete the application link associated to the given user,
 // having the given application and username values
-func (db Db) DeleteApplicationLink(user, application, username string) error {
+func (db Db) DeleteApplicationLink(user, application, username string, height int64) error {
 	log.Info().Str("user", user).Str("app", application).Str("username", username).Msg("deleting app link")
 
-	stmt := `DELETE FROM application_link WHERE user_address = $1 AND application = $2 AND username = $3`
-	_, err := db.Sql.Exec(stmt, user, application, username)
+	stmt := `
+DELETE FROM application_link 
+WHERE user_address = $1 
+  AND application = $2 
+  AND username = $3 
+  AND height <= $4`
+	_, err := db.Sql.Exec(stmt, user, application, username, height)
 	return err
 }
