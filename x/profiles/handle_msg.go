@@ -14,7 +14,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 	juno "github.com/forbole/juno/v3/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
@@ -44,18 +44,6 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 	case *profilestypes.MsgRefuseDTagTransferRequest:
 		return m.handleDTagTransferRequestDeletion(tx.Height, desmosMsg.Sender, desmosMsg.Receiver)
-
-	case *profilestypes.MsgCreateRelationship:
-		return m.handleMsgCreateRelationship(tx, desmosMsg)
-
-	case *profilestypes.MsgDeleteRelationship:
-		return m.handleMsgDeleteRelationship(tx, desmosMsg)
-
-	case *profilestypes.MsgBlockUser:
-		return m.handleMsgBlockUser(tx, desmosMsg)
-
-	case *profilestypes.MsgUnblockUser:
-		return m.handleMsgUnblockUser(tx, desmosMsg)
 
 	case *profilestypes.MsgLinkChainAccount:
 		return m.handleMsgChainLink(tx, index, desmosMsg)
@@ -114,7 +102,7 @@ func (m *Module) handleMsgRequestDTagTransfer(tx *juno.Tx, index int, msg *profi
 		return err
 	}
 
-	dTagToTrade, err := tx.FindAttributeByKey(event, profilestypes.AttributeDTagToTrade)
+	dTagToTrade, err := tx.FindAttributeByKey(event, profilestypes.AttributeKeyDTagToTrade)
 	if err != nil {
 		return err
 	}
@@ -142,61 +130,6 @@ func (m *Module) handleDTagTransferRequestDeletion(height int64, sender, receive
 
 // -----------------------------------------------------------------------------------------------------
 
-// handleMsgCreateRelationship allows to handle a MsgCreateRelationship properly
-func (m *Module) handleMsgCreateRelationship(tx *juno.Tx, msg *profilestypes.MsgCreateRelationship) error {
-	// Update the involved accounts profiles
-	addresses := []string{msg.Receiver, msg.Sender}
-	err := m.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
-	return m.db.SaveRelationship(types.NewRelationship(
-		profilestypes.NewRelationship(msg.Sender, msg.Receiver, msg.Subspace),
-		tx.Height,
-	))
-}
-
-// handleMsgDeleteRelationship allows to handle a MsgDeleteRelationship properly
-func (m *Module) handleMsgDeleteRelationship(tx *juno.Tx, msg *profilestypes.MsgDeleteRelationship) error {
-	return m.db.DeleteRelationship(types.NewRelationship(
-		profilestypes.NewRelationship(msg.User, msg.Counterparty, msg.Subspace),
-		tx.Height,
-	))
-}
-
-// -----------------------------------------------------------------------------------------------------
-
-// handleMsgBlockUser allows to handle a MsgBlockUser properly
-func (m *Module) handleMsgBlockUser(tx *juno.Tx, msg *profilestypes.MsgBlockUser) error {
-	// Update the involved accounts profiles
-	addresses := []string{msg.Blocked, msg.Blocker}
-	err := m.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
-	return m.db.SaveBlockage(types.NewBlockage(
-		profilestypes.NewUserBlock(
-			msg.Blocker,
-			msg.Blocked,
-			msg.Reason,
-			msg.Subspace,
-		),
-		tx.Height,
-	))
-}
-
-// handleMsgUnblockUser allows to handle a MsgUnblockUser properly
-func (m *Module) handleMsgUnblockUser(tx *juno.Tx, msg *profilestypes.MsgUnblockUser) error {
-	return m.db.RemoveBlockage(types.NewBlockage(
-		profilestypes.NewUserBlock(msg.Blocker, msg.Blocked, "", msg.Subspace),
-		tx.Height,
-	))
-}
-
-// -----------------------------------------------------------------------------------------------------
-
 // handleMsgChainLink allows to handle a MsgLinkChainAccount properly
 func (m *Module) handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount) error {
 	// Update the involved account profile
@@ -211,7 +144,7 @@ func (m *Module) handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.M
 	if err != nil {
 		return err
 	}
-	creationTimeStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeChainLinkCreationTime)
+	creationTimeStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeKeyChainLinkCreationTime)
 	if err != nil {
 		return err
 	}
@@ -249,15 +182,23 @@ func (m *Module) handleMsgLinkApplication(tx *juno.Tx, msg *profilestypes.MsgLin
 		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
-	res, err := m.profilesClient.UserApplicationLink(
+	res, err := m.profilesClient.ApplicationLinks(
 		remote.GetHeightRequestContext(context.Background(), tx.Height),
-		profilestypes.NewQueryUserApplicationLinkRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username),
+		profilestypes.NewQueryApplicationLinksRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username, nil),
 	)
 	if err != nil {
 		return fmt.Errorf("error while getting application link: %s", err)
 	}
 
-	return m.db.SaveApplicationLink(types.NewApplicationLink(res.Link, tx.Height))
+	if len(res.Links) == 0 {
+		return fmt.Errorf("no application link found on chain")
+	}
+
+	if len(res.Links) > 1 {
+		return fmt.Errorf("duplicated application link found on chain")
+	}
+
+	return m.db.SaveApplicationLink(types.NewApplicationLink(res.Links[0], tx.Height))
 }
 
 // handleMsgUnlinkApplication allows to handle a MsgUnlinkApplication properly

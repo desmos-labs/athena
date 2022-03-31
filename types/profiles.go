@@ -1,7 +1,7 @@
 package types
 
 import (
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 )
 
 type Profile struct {
@@ -27,34 +27,6 @@ func NewDTagTransferRequest(request profilestypes.DTagTransferRequest, height in
 	return DTagTransferRequest{
 		DTagTransferRequest: request,
 		Height:              height,
-	}
-}
-
-// -------------------------------------------------------------------------------------------------------------------
-
-type Relationship struct {
-	profilestypes.Relationship
-	Height int64
-}
-
-func NewRelationship(relationship profilestypes.Relationship, height int64) Relationship {
-	return Relationship{
-		Relationship: relationship,
-		Height:       height,
-	}
-}
-
-// -------------------------------------------------------------------------------------------------------------------
-
-type Blockage struct {
-	profilestypes.UserBlock
-	Height int64
-}
-
-func NewBlockage(blockage profilestypes.UserBlock, height int64) Blockage {
-	return Blockage{
-		UserBlock: blockage,
-		Height:    height,
 	}
 }
 

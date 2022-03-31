@@ -3,6 +3,8 @@ package x
 import (
 	"fmt"
 
+	"github.com/desmos-labs/djuno/v2/x/relationships"
+
 	"github.com/forbole/juno/v3/node/builder"
 
 	"github.com/forbole/juno/v3/node/remote"
@@ -12,8 +14,6 @@ import (
 	"github.com/forbole/juno/v3/modules"
 
 	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/notifications"
-	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
 )
 
@@ -28,6 +28,7 @@ func NewModulesRegistrar() *ModulesRegistrar {
 
 // BuildModules implements modules.Registrar
 func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
+	cdc := ctx.EncodingConfig.Marshaler
 	desmosDb := database.Cast(ctx.Database)
 
 	remoteCfg, ok := ctx.JunoConfig.Node.Details.(*remote.Details)
@@ -41,11 +42,11 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	}
 
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-	profilesModule := profiles.NewModule(node, grpcConnection, ctx.EncodingConfig.Marshaler, desmosDb)
+	profilesModule := profiles.NewModule(node, grpcConnection, cdc, desmosDb)
+	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, desmosDb)
 
 	return []modules.Module{
 		profilesModule,
-		notifications.NewModule(ctx.JunoConfig, desmosDb),
-		posts.NewModule(ctx.EncodingConfig.Marshaler, desmosDb, profilesModule),
+		relationshipsModule,
 	}
 }

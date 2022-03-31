@@ -9,8 +9,8 @@ import (
 	"github.com/desmos-labs/djuno/v2/types"
 
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	oracletypes "github.com/desmos-labs/desmos/v2/x/oracle/types"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	oracletypes "github.com/desmos-labs/desmos/v3/x/oracle/types"
+	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 )
 
 // packetHandler defines a function that handles a packet.
@@ -53,9 +53,9 @@ func (m *Module) handleLinkChainAccountPacketData(height int64, packet channelty
 	}
 
 	// Get the link from the chain
-	res, err := m.profilesClient.UserChainLink(
+	res, err := m.profilesClient.ChainLinks(
 		remote.GetHeightRequestContext(context.Background(), height),
-		&profilestypes.QueryUserChainLinkRequest{
+		&profilestypes.QueryChainLinksRequest{
 			User:      packetData.DestinationAddress,
 			ChainName: packetData.SourceChainConfig.Name,
 			Target:    sourceAddr.GetValue(),
@@ -65,8 +65,16 @@ func (m *Module) handleLinkChainAccountPacketData(height int64, packet channelty
 		return true, err
 	}
 
+	if len(res.Links) == 0 {
+		return true, fmt.Errorf("chain link not found on chain")
+	}
+
+	if len(res.Links) > 1 {
+		return true, fmt.Errorf("duplicated chain link found on chain")
+	}
+
 	// Save the chain link
-	return true, m.db.SaveChainLink(types.NewChainLink(res.Link, height))
+	return true, m.db.SaveChainLink(types.NewChainLink(res.Links[0], height))
 }
 
 // handleOracleRequestPacketData tries handling the given packet as it contains a OracleRequestPacketData

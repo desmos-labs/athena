@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
@@ -39,22 +39,6 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 	// Save DTag transfer requests
 	for _, request := range genState.DTagTransferRequests {
 		err = m.db.SaveDTagTransferRequest(types.NewDTagTransferRequest(request, doc.InitialHeight))
-		if err != nil {
-			return err
-		}
-	}
-
-	// Save relationships
-	for _, relationship := range genState.Relationships {
-		err = m.db.SaveRelationship(types.NewRelationship(relationship, doc.InitialHeight))
-		if err != nil {
-			return err
-		}
-	}
-
-	// Save blockages
-	for _, blockage := range genState.Blocks {
-		err = m.db.SaveBlockage(types.NewBlockage(blockage, doc.InitialHeight))
 		if err != nil {
 			return err
 		}
