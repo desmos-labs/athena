@@ -2,19 +2,19 @@ package main
 
 import (
 	desmosapp "github.com/desmos-labs/desmos/v2/app"
-	junocmd "github.com/forbole/juno/v2/cmd"
-	initcmd "github.com/forbole/juno/v2/cmd/init"
-	parsecmd "github.com/forbole/juno/v2/cmd/parse"
+	junocmd "github.com/forbole/juno/v3/cmd"
+	initcmd "github.com/forbole/juno/v3/cmd/init"
+	parsecmd "github.com/forbole/juno/v3/cmd/parse"
+	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 
-	fixcmd "github.com/desmos-labs/djuno/v2/cmd/fix"
-
+	fixcmd "github.com/desmos-labs/djuno/v2/cmd/parse"
 	desmosdb "github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x"
 )
 
 func main() {
 	// Setup the config
-	parseCfg := parsecmd.NewConfig().
+	parseCfg := parsecmdtypes.NewConfig().
 		WithRegistrar(x.NewModulesRegistrar()).
 		WithEncodingConfigBuilder(desmosapp.MakeTestEncodingConfig).
 		WithDBBuilder(desmosdb.Builder)
@@ -27,8 +27,8 @@ func main() {
 
 	rootCmd.AddCommand(
 		junocmd.VersionCmd(),
-		initcmd.InitCmd(cfg.GetInitConfig()),
-		parsecmd.ParseCmd(cfg.GetParseConfig()),
+		initcmd.NewInitCmd(cfg.GetInitConfig()),
+		parsecmd.NewParseCmd(cfg.GetParseConfig()),
 		fixcmd.NewFixCmd(cfg.GetParseConfig()),
 	)
 

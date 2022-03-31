@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/forbole/juno/v2/node/remote"
+	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/desmos-labs/djuno/v2/types"
 

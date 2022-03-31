@@ -6,7 +6,7 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	"github.com/forbole/juno/v2/node/remote"
+	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -41,7 +41,7 @@ func (m *Module) UpdateProfiles(height int64, addresses []string) error {
 
 // updateParams allows to update the profiles params by fetching them from the chain
 func (m *Module) updateParams() error {
-	height, err := m.db.LastBlockHeight()
+	height, err := m.node.LatestHeight()
 	if err != nil {
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}

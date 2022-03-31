@@ -1,24 +1,27 @@
-package fix
+package parse
 
 import (
-	"github.com/forbole/juno/v2/cmd/parse"
+	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/spf13/cobra"
 
-	fixprofiles "github.com/desmos-labs/djuno/v2/cmd/fix/profiles"
-	fixblocks "github.com/forbole/juno/v2/cmd/fix/blocks"
+	parseblocks "github.com/forbole/juno/v3/cmd/parse/blocks"
+	parsegenesis "github.com/forbole/juno/v3/cmd/parse/genesis"
+
+	parseprofiles "github.com/desmos-labs/djuno/v2/cmd/parse/profiles"
 )
 
 // NewFixCmd returns the Cobra command allowing to fix some BDJuno bugs without having to re-sync the whole database
-func NewFixCmd(parseCfg *parse.Config) *cobra.Command {
+func NewFixCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "fix",
+		Use:               "parse",
 		Short:             "Apply some fixes without the need to re-syncing the whole database from scratch",
-		PersistentPreRunE: runPersistentPreRuns(parse.ReadConfig(parseCfg)),
+		PersistentPreRunE: runPersistentPreRuns(parsecmdtypes.ReadConfigPreRunE(parseCfg)),
 	}
 
 	cmd.AddCommand(
-		fixprofiles.NewProfilesCmd(parseCfg),
-		fixblocks.NewBlocksCmd(parseCfg),
+		parseprofiles.NewProfilesCmd(parseCfg),
+		parsegenesis.NewGenesisCmd(parseCfg),
+		parseblocks.NewBlocksCmd(parseCfg),
 	)
 
 	return cmd

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	junodb "github.com/forbole/juno/v2/database"
-	junodbcfg "github.com/forbole/juno/v2/database/config"
-	"github.com/forbole/juno/v2/logging"
+	junodb "github.com/forbole/juno/v3/database"
+	junodbcfg "github.com/forbole/juno/v3/database/config"
+	"github.com/forbole/juno/v3/logging"
 
 	poststypes "github.com/desmos-labs/desmos/v2/x/staging/posts/types"
 

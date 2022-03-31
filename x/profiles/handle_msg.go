@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/forbole/juno/v2/node/remote"
+	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/gogo/protobuf/proto"
 
@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	juno "github.com/forbole/juno/v2/types"
+	juno "github.com/forbole/juno/v3/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

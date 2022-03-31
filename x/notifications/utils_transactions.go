@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	juno "github.com/forbole/juno/v2/types"
+	juno "github.com/forbole/juno/v3/types"
 	"github.com/rs/zerolog/log"
 	tmtypes "github.com/tendermint/tendermint/abci/types"
 )

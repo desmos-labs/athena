@@ -3,12 +3,13 @@ package x
 import (
 	"fmt"
 
-	"github.com/forbole/juno/v2/node/remote"
+	"github.com/forbole/juno/v3/node/builder"
 
-	"github.com/forbole/juno/v2/modules/registrar"
+	"github.com/forbole/juno/v3/node/remote"
 
-	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	"github.com/forbole/juno/v2/modules"
+	"github.com/forbole/juno/v3/modules/registrar"
+
+	"github.com/forbole/juno/v3/modules"
 
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x/notifications"
@@ -34,9 +35,13 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		panic(fmt.Errorf("cannot run DJuno on local node"))
 	}
 
+	node, err := builder.BuildNode(ctx.JunoConfig.Node, ctx.EncodingConfig)
+	if err != nil {
+		panic(fmt.Errorf("cannot build node: %s", err))
+	}
+
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-	profilesClient := profilestypes.NewQueryClient(grpcConnection)
-	profilesModule := profiles.NewModule(profilesClient, ctx.EncodingConfig.Marshaler, desmosDb)
+	profilesModule := profiles.NewModule(node, grpcConnection, ctx.EncodingConfig.Marshaler, desmosDb)
 
 	return []modules.Module{
 		profilesModule,

@@ -5,43 +5,30 @@ import (
 	"fmt"
 	"sort"
 
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	"github.com/forbole/juno/v3/node/builder"
 
 	profilestypes "github.com/desmos-labs/desmos/v2/x/profiles/types"
-	"github.com/forbole/juno/v2/cmd/parse"
-	"github.com/forbole/juno/v2/node/remote"
-	"github.com/forbole/juno/v2/types/config"
+	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
+	"github.com/forbole/juno/v3/node/remote"
+	"github.com/forbole/juno/v3/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/utils"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
 )
 
-// NewProfilesCmd returns the Cobra command that allows to fix all the things related to the x/profiles module
-func NewProfilesCmd(parseCfg *parse.Config) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "profiles",
-		Short: "Fix things related to the x/profiles module",
-	}
-
-	cmd.AddCommand(
-		chainLinksCmd(parseCfg),
-	)
-
-	return cmd
-}
-
 // chainLinksCmd returns a Cobra command that allows to fix the chain links for all the profiles
-func chainLinksCmd(parseConfig *parse.Config) *cobra.Command {
+func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "chain-links",
 		Short: "Fix the chain links stored by re-parsing them",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Debug().Msg("fixing chain links")
 
-			parseCtx, err := parse.GetParsingContext(parseConfig)
+			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
 			if err != nil {
 				return err
 			}
@@ -60,10 +47,13 @@ func chainLinksCmd(parseConfig *parse.Config) *cobra.Command {
 				return err
 			}
 
-			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-			profilesClient := profilestypes.NewQueryClient(grpcConnection)
+			node, err := builder.BuildNode(config.Cfg.Node, parseCtx.EncodingConfig)
+			if err != nil {
+				return err
+			}
 
-			profilesModule := profiles.NewModule(profilesClient, parseCtx.EncodingConfig.Marshaler, db)
+			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
+			profilesModule := profiles.NewModule(node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 
 			for _, address := range addresses {
 				log.Debug().Str("address", address).Msg("deleting chain links")
