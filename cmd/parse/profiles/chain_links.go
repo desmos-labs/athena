@@ -26,7 +26,7 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 		Use:   "chain-links",
 		Short: "Fix the chain links stored by re-parsing them",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Debug().Msg("fixing chain links")
+			log.Debug().Msg("parsing chain links")
 
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
 			if err != nil {
@@ -56,13 +56,6 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			profilesModule := profiles.NewModule(node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 
 			for _, address := range addresses {
-				log.Debug().Str("address", address).Msg("deleting chain links")
-
-				err = db.DeleteProfileChainLinks(address)
-				if err != nil {
-					return err
-				}
-
 				log.Debug().Str("address", address).Msg("querying transactions")
 
 				// Collect all the transactions
