@@ -10,8 +10,8 @@ import (
 	parseprofiles "github.com/desmos-labs/djuno/v2/cmd/parse/profiles"
 )
 
-// NewFixCmd returns the Cobra command allowing to fix some BDJuno bugs without having to re-sync the whole database
-func NewFixCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
+// NewParseCmd returns the Cobra command allowing to parse some data without having to re-sync the whole database
+func NewParseCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "parse",
 		Short:             "Apply some fixes without the need to re-syncing the whole database from scratch",
@@ -19,9 +19,9 @@ func NewFixCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		parseprofiles.NewProfilesCmd(parseCfg),
 		parsegenesis.NewGenesisCmd(parseCfg),
 		parseblocks.NewBlocksCmd(parseCfg),
+		parseprofiles.NewProfilesCmd(parseCfg),
 	)
 
 	return cmd
