@@ -4,10 +4,11 @@ import (
 	desmosapp "github.com/desmos-labs/desmos/v3/app"
 	junocmd "github.com/forbole/juno/v3/cmd"
 	initcmd "github.com/forbole/juno/v3/cmd/init"
-	parsecmd "github.com/forbole/juno/v3/cmd/parse"
+	migratecmd "github.com/forbole/juno/v3/cmd/migrate"
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
+	startcmd "github.com/forbole/juno/v3/cmd/start"
 
-	fixcmd "github.com/desmos-labs/djuno/v2/cmd/parse"
+	parsecmd "github.com/desmos-labs/djuno/v2/cmd/parse"
 	desmosdb "github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x"
 )
@@ -28,8 +29,9 @@ func main() {
 	rootCmd.AddCommand(
 		junocmd.VersionCmd(),
 		initcmd.NewInitCmd(cfg.GetInitConfig()),
+		startcmd.NewStartCmd(cfg.GetParseConfig()),
 		parsecmd.NewParseCmd(cfg.GetParseConfig()),
-		fixcmd.NewFixCmd(cfg.GetParseConfig()),
+		migratecmd.NewMigrateCmd(cfg.GetName(), cfg.GetParseConfig()),
 	)
 
 	executor := junocmd.PrepareRootCmd(cfg.GetName(), rootCmd)
