@@ -8,7 +8,7 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/types"
 
-	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
 	oracletypes "github.com/desmos-labs/desmos/v3/x/oracle/types"
 	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 )

@@ -10,10 +10,26 @@ all: lint test-unit install
 # Build / Install
 ###############################################################################
 
-LD_FLAGS = -X github.com/forbole/juno/v3/cmd.Version=$(VERSION) \
-	-X github.com/forbole/juno/v3/cmd.Commit=$(COMMIT)
+# These lines here are essential to include the muslc library for static linking of libraries
+# (which is needed for the wasmvm one) available during the build. Without them, the build will fail.
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
 
-BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+# Process linker flags
+ldflags = -X 'github.com/forbole/juno/v3/cmd.Version=$(VERSION)' \
+ 	-X 'github.com/forbole/juno/v3/cmd.Commit=$(COMMIT)' \
+  	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+
+ifeq ($(LINK_STATICALLY),true)
+  ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+endif
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 build: go.sum
 ifeq ($(OS),Windows_NT)

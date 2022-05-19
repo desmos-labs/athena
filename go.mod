@@ -3,10 +3,10 @@ module github.com/desmos-labs/djuno/v2
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.1
-	github.com/cosmos/ibc-go v1.2.5
-	github.com/desmos-labs/desmos/v3 v3.0.0
-	github.com/forbole/juno/v3 v3.0.0
+	github.com/cosmos/cosmos-sdk v0.45.5
+	github.com/cosmos/ibc-go/v2 v2.2.0
+	github.com/desmos-labs/desmos/v3 v3.0.1
+	github.com/forbole/juno/v3 v3.0.1
 	github.com/go-co-op/gocron v1.11.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.3.4
@@ -14,8 +14,8 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
-	github.com/tendermint/tendermint v0.34.16
-	google.golang.org/grpc v1.44.0
+	github.com/tendermint/tendermint v0.34.19
+	google.golang.org/grpc v1.45.0
 )
 
 require (
@@ -37,7 +37,6 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
-	github.com/cosmos/ibc-go/v2 v2.2.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/danieljoos/wincred v1.0.2 // indirect
@@ -133,11 +132,14 @@ require (
 )
 
 replace (
-	// CosmWasm does not yet support the codec fixes we have implemented inside our Cosmos SDK fork
-	github.com/CosmWasm/wasmd => github.com/desmos-labs/wasmd v0.23.1-0.20220307101005-3cf16e2b50ff
+	// Our wasmd branch is: https://github.com/desmos-labs/wasmd v0.25.x-desmos
+	github.com/CosmWasm/wasmd => github.com/desmos-labs/wasmd v0.23.1-0.20220413083021-fa1cedbbcb54
 
-	// Our custom fork has some fixes that are not yet available inside an official release
-	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220307095341-b50c6bec6aa5
+	// Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.45.x-desmos
+	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220426103939-9153245ddee6
+
+	// Replace the Cosmos Ledger app with the Desmos fork
+	github.com/cosmos/ledger-cosmos-go => github.com/desmos-labs/ledger-desmos-go v0.11.2-0.20210814121638-5d87e392e8a9
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
