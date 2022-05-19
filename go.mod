@@ -9,7 +9,7 @@ require (
 	github.com/forbole/juno/v3 v3.0.1
 	github.com/go-co-op/gocron v1.13.0
 	github.com/gogo/protobuf v1.3.3
-	github.com/jmoiron/sqlx v1.3.4
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
