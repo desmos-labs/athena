@@ -6,10 +6,10 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.5
 	github.com/cosmos/ibc-go/v2 v2.2.0
 	github.com/desmos-labs/desmos/v3 v3.0.1
-	github.com/forbole/juno/v3 v3.0.1
-	github.com/go-co-op/gocron v1.11.0
+	github.com/forbole/juno/v3 v3.2.0
+	github.com/go-co-op/gocron v1.13.0
 	github.com/gogo/protobuf v1.3.3
-	github.com/jmoiron/sqlx v1.3.4
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
@@ -37,6 +37,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
+	github.com/cosmos/ibc-go/v3 v3.0.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/danieljoos/wincred v1.0.2 // indirect
