@@ -206,7 +206,13 @@ ON CONFLICT ON CONSTRAINT unique_proof_for_link DO UPDATE
         signature = excluded.signature, 
         height = excluded.height
 WHERE chain_link_proof.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, proof.Signature, height)
+
+	signatureBz, err := db.EncodingConfig.Marshaler.MarshalJSON(proof.Signature)
+	if err != nil {
+		return fmt.Errorf("error serializing chain link signature: %s", err)
+	}
+
+	_, err = db.Sql.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, string(signatureBz), height)
 	return err
 }
 

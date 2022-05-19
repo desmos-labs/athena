@@ -4,11 +4,11 @@ package types
 type RelationshipRow struct {
 	Sender   string `db:"sender_address"`
 	Receiver string `db:"receiver_address"`
-	Subspace string `db:"subspace"`
+	Subspace uint64 `db:"subspace"`
 	Height   int64  `db:"height"`
 }
 
-func NewRelationshipRow(sender, receiver, subspace string, height int64) RelationshipRow {
+func NewRelationshipRow(sender string, receiver string, subspace uint64, height int64) RelationshipRow {
 	return RelationshipRow{
 		Sender:   sender,
 		Receiver: receiver,
@@ -31,11 +31,11 @@ type BlockageRow struct {
 	Blocker  string `db:"blocker_address"`
 	Blocked  string `db:"blocked_user_address"`
 	Reason   string `db:"reason"`
-	Subspace string `db:"subspace"`
+	Subspace uint64 `db:"subspace"`
 	Height   int64  `db:"height"`
 }
 
-func NewBlockageRow(blocker, blocked, reason, subspace string, height int64) BlockageRow {
+func NewBlockageRow(blocker string, blocked string, reason string, subspace uint64, height int64) BlockageRow {
 	return BlockageRow{
 		Blocker:  blocker,
 		Blocked:  blocked,

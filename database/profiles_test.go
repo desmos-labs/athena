@@ -1,6 +1,8 @@
 package database_test
 
 import (
+	"encoding/hex"
+	relationshipstypes "github.com/desmos-labs/desmos/v3/x/relationships/types"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
@@ -131,10 +133,10 @@ func (suite *DbTestSuite) saveRelationship() types.Relationship {
 	suite.Require().NoError(err)
 
 	relationship := types.NewRelationship(
-		profilestypes.NewRelationship(
+		relationshipstypes.NewRelationship(
 			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 			"cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr",
-			"mooncake",
+			0,
 		),
 		10,
 	)
@@ -159,8 +161,8 @@ func (suite *DbTestSuite) TestDesmosDb_SaveRelationship() {
 	suite.Require().Len(rows, 1)
 	suite.Require().True(rows[0].Equal(dbtypes.NewRelationshipRow(
 		relationship.Creator,
-		relationship.Recipient,
-		relationship.Subspace,
+		relationship.Counterparty,
+		relationship.SubspaceID,
 		relationship.Height,
 	)))
 }
@@ -188,11 +190,12 @@ func (suite *DbTestSuite) saveBlockage() types.Blockage {
 	suite.Require().NoError(suite.database.SaveUserIfNotExisting("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr", 1))
 
 	blockage := types.NewBlockage(
-		profilestypes.NewUserBlock(
+		relationshipstypes.NewUserBlock(
 			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 			"cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr",
 			"this is my blocking reason",
-			"mooncake"),
+			0,
+		),
 		1,
 	)
 
@@ -218,7 +221,7 @@ func (suite *DbTestSuite) TestDesmosDB_SaveUserBlockage() {
 		blockage.Blocker,
 		blockage.Blocked,
 		blockage.Reason,
-		blockage.Subspace,
+		blockage.SubspaceID,
 		blockage.Height,
 	)))
 }
@@ -248,11 +251,14 @@ func (suite *DbTestSuite) TestDesmosDB_SaveChainLink() {
 	pubKey, err := legacy.PubKeyFromBytes(bz)
 	suite.Require().NoError(err)
 
+	signature, err := hex.DecodeString("74657874")
+	suite.Require().NoError(err)
+
 	chainLink := types.NewChainLink(
 		profilestypes.NewChainLink(
 			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
 			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
-			profilestypes.NewProof(pubKey, "74657874", "text"),
+			profilestypes.NewProof(pubKey, &profilestypes.SingleSignatureData{Mode: 1, Signature: signature}, "text"),
 			profilestypes.NewChainConfig("desmos"),
 			time.Now(),
 		),
@@ -272,11 +278,14 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
 	pubKey, err := legacy.PubKeyFromBytes(bz)
 	suite.Require().NoError(err)
 
+	signature, err := hex.DecodeString("74657874")
+	suite.Require().NoError(err)
+
 	chainLink := types.NewChainLink(
 		profilestypes.NewChainLink(
 			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
 			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
-			profilestypes.NewProof(pubKey, "74657874", "text"),
+			profilestypes.NewProof(pubKey, &profilestypes.SingleSignatureData{Mode: 1, Signature: signature}, "text"),
 			profilestypes.NewChainConfig("desmos"),
 			time.Now(),
 		),
@@ -292,6 +301,7 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
 		"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
 		"desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu",
 		"desmos",
+		10,
 	)
 	suite.Require().NoError(err)
 
@@ -344,6 +354,6 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
 	suite.Require().NoError(err)
 	suite.Require().Equal(1, count)
 
-	err = suite.database.DeleteApplicationLink(user, "twitter", "twitteruser")
+	err = suite.database.DeleteApplicationLink(user, "twitter", "twitteruser", 100)
 	suite.Require().NoError(err)
 }
