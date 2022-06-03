@@ -2,6 +2,7 @@ package x
 
 import (
 	"fmt"
+
 	"github.com/desmos-labs/djuno/v2/x/subspaces"
 
 	"github.com/desmos-labs/djuno/v2/x/fees"
