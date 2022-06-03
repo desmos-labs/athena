@@ -2,8 +2,9 @@ package database_test
 
 import (
 	"encoding/hex"
-	relationshipstypes "github.com/desmos-labs/desmos/v3/x/relationships/types"
 	"time"
+
+	relationshipstypes "github.com/desmos-labs/desmos/v3/x/relationships/types"
 
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 
