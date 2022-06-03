@@ -281,8 +281,8 @@ github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
 github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220426103939-9153245ddee6 h1:eGzOWkH0Y6LtrkHNlsnReoA+X3ieBs9IC76AsL1LlDY=
 github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220426103939-9153245ddee6/go.mod h1:WOqtDxN3eCCmnYLVla10xG7lEXkFjpTaqm2a2WasgCc=
-github.com/desmos-labs/desmos/v3 v3.1.0 h1:vJt1tppLQHMnD3Fjqpb28CGi6z5dQycTOtUcUOAt/Vw=
-github.com/desmos-labs/desmos/v3 v3.1.0/go.mod h1:2t64ztQh0t4d5dGhPE1bfrAgTj4irGqczR6TOPpcrQU=
+github.com/desmos-labs/desmos/v3 v3.2.0 h1:HSjO48b8MaEfKyJ2KHWY01XWkV6TMFuzBDlQLL0WNiY=
+github.com/desmos-labs/desmos/v3 v3.2.0/go.mod h1:2t64ztQh0t4d5dGhPE1bfrAgTj4irGqczR6TOPpcrQU=
 github.com/desmos-labs/ledger-desmos-go v0.11.2-0.20210814121638-5d87e392e8a9 h1:b77qmphsyX3+hjJraaqLyzjt9eKqbosy4LaYScPvTAs=
 github.com/desmos-labs/ledger-desmos-go v0.11.2-0.20210814121638-5d87e392e8a9/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/desmos-labs/wasmd v0.23.1-0.20220413083021-fa1cedbbcb54 h1:KTS5hRQ+x9B20H67StVGmheGcs73v4DIoYPWm1zPeEY=
