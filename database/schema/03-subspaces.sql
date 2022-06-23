@@ -10,17 +10,32 @@ CREATE TABLE subspace
     height        BIGINT                      NOT NULL
 );
 
+CREATE TABLE subspace_section
+(
+    /* Required for Hasura links */
+    row_id        SERIAL NOT NULL PRIMARY KEY,
+
+    subspace_id   BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
+    id            BIGINT NOT NULL,
+    parent_row_id BIGINT REFERENCES subspace_section (row_id) ON DELETE CASCADE,
+    name          TEXT   NOT NULL,
+    description   TEXT,
+    height        BIGINT NOT NULL,
+    CONSTRAINT unique_subspace_section UNIQUE (subspace_id, id)
+);
+
 CREATE TABLE subspace_user_group
 (
     /* Required for Hasura links */
-    row_id      SERIAL NOT NULL PRIMARY KEY,
+    row_id         SERIAL NOT NULL PRIMARY KEY,
 
-    subspace_id BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
-    id          BIGINT NOT NULL,
-    name        TEXT   NOT NULL,
-    description TEXT,
-    permissions INT    NOT NULL,
-    height      BIGINT NOT NULL,
+    subspace_id    BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
+    section_row_id BIGINT NOT NULL REFERENCES subspace_section (row_id) ON DELETE CASCADE,
+    id             BIGINT NOT NULL,
+    name           TEXT   NOT NULL,
+    description    TEXT,
+    permissions    INT    NOT NULL,
+    height         BIGINT NOT NULL,
     CONSTRAINT unique_subspace_user_group UNIQUE (subspace_id, id)
 );
 
@@ -38,11 +53,11 @@ CREATE TABLE subspace_user_group_member
 CREATE TABLE subspace_user_permission
 (
     /* Required for Hasura links */
-    row_id       SERIAL NOT NULL PRIMARY KEY,
+    row_id         SERIAL NOT NULL PRIMARY KEY,
 
-    subspace_id  BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
-    user_address TEXT   NOT NULL,
-    permissions  INT    NOT NULL,
-    height       BIGINT NOT NULL,
-    CONSTRAINT unique_subspace_permission UNIQUE (subspace_id, user_address)
+    section_row_id BIGINT NOT NULL REFERENCES subspace_section (row_id) ON DELETE CASCADE,
+    user_address   TEXT   NOT NULL,
+    permissions    INT    NOT NULL,
+    height         BIGINT NOT NULL,
+    CONSTRAINT unique_subspace_permission UNIQUE (section_row_id, user_address)
 );

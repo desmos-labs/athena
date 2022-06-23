@@ -16,14 +16,22 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 
 	// Save subspaces
 	for _, subspace := range genState.Subspaces {
-		err := m.db.SaveSubspace(types.NewSubspace(subspace.Subspace, doc.InitialHeight))
+		err := m.db.SaveSubspace(types.NewSubspace(subspace, doc.InitialHeight))
+		if err != nil {
+			return err
+		}
+	}
+
+	// Save sections
+	for _, section := range genState.Sections {
+		err := m.db.SaveSection(types.NewSection(section, doc.InitialHeight))
 		if err != nil {
 			return err
 		}
 	}
 
 	// Save user permissions
-	for _, permission := range genState.ACL {
+	for _, permission := range genState.UserPermissions {
 		err := m.db.SaveUserPermission(types.NewUserPermission(permission, doc.InitialHeight))
 		if err != nil {
 			return err
@@ -40,11 +48,9 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 
 	// Save user group members
 	for _, entry := range genState.UserGroupsMembers {
-		for _, user := range entry.Members {
-			err := m.db.AddUserToGroup(types.NewUserGroupMember(entry.SubspaceID, entry.GroupID, user, doc.InitialHeight))
-			if err != nil {
-				return err
-			}
+		err := m.db.AddUserToGroup(types.NewUserGroupMember(entry.SubspaceID, entry.GroupID, entry.User, doc.InitialHeight))
+		if err != nil {
+			return err
 		}
 	}
 
