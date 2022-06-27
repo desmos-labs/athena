@@ -3,13 +3,12 @@ CREATE TABLE reaction
     /* Required for Hasura links */
     row_id         SERIAL NOT NULL PRIMARY KEY,
 
-    subspace_id    BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
-    post_id        BIGINT NOT NULL /*REFERENCES post (id) ON DELETE CASCADE*/,
+    post_row_id    BIGINT NOT NULL REFERENCES post (row_id) ON DELETE CASCADE,
     id             BIGINT NOT NULL,
     value          JSONB  NOT NULL,
     author_address TEXT   NOT NULL,
     height         BIGINT NOT NULL,
-    CONSTRAINT unique_post_reaction UNIQUE (subspace_id, post_id, id)
+    CONSTRAINT unique_post_reaction UNIQUE (post_row_id, id)
 );
 
 CREATE TABLE registered_reaction

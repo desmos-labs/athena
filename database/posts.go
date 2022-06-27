@@ -1,0 +1,298 @@
+package database
+
+import (
+	"database/sql"
+	"encoding/json"
+	"errors"
+	"fmt"
+
+	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+
+	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
+	"github.com/desmos-labs/djuno/v2/types"
+)
+
+// getPostRowID returns the row_id of the post having the given data
+func (db *Db) getPostRowID(subspaceID uint64, postID uint64) (sql.NullInt64, error) {
+	stmt := `SELECT row_id FROM post WHERE subspace_id = $1 and id = $2`
+
+	var rowID int64
+	err := db.Sql.QueryRow(stmt, subspaceID, postID).Scan(&rowID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return sql.NullInt64{Int64: 0, Valid: false}, nil
+	}
+
+	return sql.NullInt64{Int64: rowID, Valid: true}, err
+}
+
+// SavePost stores the given post inside the database
+func (db *Db) SavePost(post types.Post) error {
+	// Get the section row id
+	sectionRowID, err := db.getSectionRowID(post.SubspaceID, post.SectionID)
+	if err != nil {
+		return err
+	}
+
+	// Get the conversation row id
+	conversationRowID, err := db.getPostRowID(post.SubspaceID, post.ConversationID)
+	if err != nil {
+		return err
+	}
+
+	// Insert the post
+	stmt := `
+INSERT INTO post (subspace_id, section_row_id, id, external_id, text, author_address, conversation_row_id, reply_settings, creation_date, last_edited_date, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+ON CONFLICT DO UPDATE 
+    SET external_id = excluded.external_id,
+        text = excluded.text,
+        author_address = excluded.author_address,
+        conversation_row_id = excluded.conversation_row_id,
+        reply_settings = excluded.reply_settings,
+        creation_date = excluded.creation_date,
+        last_edited_date = excluded.last_edited_date,
+        height = excluded.height
+WHERE post.height <= excluded.height`
+
+	var rowID uint64
+	err = db.Sql.QueryRow(stmt,
+		post.SubspaceID,
+		sectionRowID,
+		post.ID,
+		dbtypes.ToNullString(post.ExternalID),
+		dbtypes.ToNullString(post.Text),
+		post.Author,
+		conversationRowID,
+		post.ReplySettings.String(),
+		post.CreationDate,
+		dbtypes.ToNullTime(post.LastEditedDate),
+		post.Height,
+	).Scan(&rowID)
+	if err != nil {
+		return err
+	}
+
+	// Insert the entities
+	err = db.savePostEntities(rowID, post.Entities)
+	if err != nil {
+		return err
+	}
+
+	// Insert the reference
+	err = db.savePostReferences(rowID, post.ReferencedPosts)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *Db) savePostEntities(postRowID uint64, entities *poststypes.Entities) error {
+	if entities == nil {
+		return nil
+	}
+
+	err := db.savePostHashtags(postRowID, entities.Hashtags)
+	if err != nil {
+		return err
+	}
+
+	err = db.savePostMentions(postRowID, entities.Mentions)
+	if err != nil {
+		return err
+	}
+
+	err = db.savePostURLs(postRowID, entities.Urls)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.Tag) error {
+	stmt := `INSERT INTO post_hashtag (post_row_id, start_index, end_index, tag) VALUES `
+
+	var vars []interface{}
+	for i, hashtag := range hashtags {
+		ei := i * 4
+		stmt += fmt.Sprintf(`($%d, $%d, $%d, $%d),`, ei+1, ei+2, ei+3, ei+4)
+		vars = append(vars, postRowID, hashtag.Start, hashtag.End, hashtag.Tag)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Trim trailing ,
+	stmt += `ON CONFLICT DO NOTHING`
+
+	_, err := db.Sql.Exec(stmt, vars...)
+	return err
+}
+
+func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.Tag) error {
+	stmt := `INSERT INTO post_mention (post_row_id, start_index, end_index, mention_address) VALUES `
+
+	var vars []interface{}
+	for i, mention := range mentions {
+		ei := i * 4
+		stmt += fmt.Sprintf(`($%d, $%d, $%d, $%d),`, ei+1, ei+2, ei+3, ei+4)
+		vars = append(vars, postRowID, mention.Start, mention.End, mention.Tag)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Trim trailing ,
+	stmt += `ON CONFLICT DO NOTHING`
+
+	_, err := db.Sql.Exec(stmt, vars...)
+	return err
+}
+
+func (db *Db) savePostURLs(postRowID uint64, hashtags []poststypes.Url) error {
+	// Save the hashtags
+	stmt := `INSERT INTO post_url (post_row_id, start_index, end_index, url, display_value) VALUES `
+
+	var vars []interface{}
+	for i, url := range hashtags {
+		ei := i * 5
+		stmt += fmt.Sprintf(`($%d, $%d, $%d, $%d, $%d),`, ei+1, ei+2, ei+3, ei+4, ei+5)
+		vars = append(vars, postRowID, url.Start, url.End, url.Url, url.DisplayUrl)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Trim trailing ,
+	stmt += `ON CONFLICT DO NOTHING`
+
+	_, err := db.Sql.Exec(stmt, vars...)
+	return err
+}
+
+func (db *Db) savePostReferences(postRowID uint64, references []poststypes.PostReference) error {
+	if len(references) == 0 {
+		return nil
+	}
+
+	stmt := `INSERT INTO post_reference (post_row_id, type, reference_id, position_index) VALUES `
+
+	var vars []interface{}
+	for i, ref := range references {
+		ei := i * 4
+		stmt += fmt.Sprintf(`($%d, $%d, $%d, $%d),`, ei+1, ei+2, ei+3, ei+4)
+		vars = append(vars, postRowID, ref.Type.String(), ref.PostID, ref.Position)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Trim trailing ,
+	stmt += `ON CONFLICT DO NOTHING`
+
+	_, err := db.Sql.Exec(stmt, vars...)
+	return err
+}
+
+// DeletePost removes the post with the given details from the database
+func (db *Db) DeletePost(height int64, subspaceID uint64, postID uint64) error {
+	stmt := `DELETE FROM post WHERE subspace_id = $1 AND id = $2 AND height <= $3`
+	_, err := db.Sql.Exec(stmt, subspaceID, postID, height)
+	return err
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+func (db *Db) getAttachmentRowID(subspaceID uint64, postID uint64, attachmentID uint32) (int64, error) {
+	stmt := `
+SELECT row_id FROM post_attachment WHERE post_row_id = (
+	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2
+) and id = $3`
+
+	var rowID int64
+	err := db.Sql.QueryRow(stmt, subspaceID, postID).Scan(&rowID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return rowID, nil
+	}
+
+	return rowID, err
+}
+
+// SavePostAttachment stores the given attachment inside the database
+func (db *Db) SavePostAttachment(attachment types.PostAttachment) error {
+	postRowID, err := db.getPostRowID(attachment.SubspaceID, attachment.PostID)
+	if err != nil {
+		return err
+	}
+
+	stmt := `
+INSERT INTO post_attachment (post_row_id, id, content, height) 
+VALUES ($1, $2, $3, $4)
+ON CONFLICT DO UPDATE 
+    SET content = excluded.content,
+        height = excluded.height
+WHERE post_attachment.height <= excluded.height`
+
+	contentBz, err := db.EncodingConfig.Marshaler.MarshalJSON(attachment.Content)
+	if err != nil {
+		return fmt.Errorf("failed to json encode attachment content: %s", err)
+	}
+
+	_, err = db.Sql.Exec(stmt,
+		postRowID,
+		attachment.ID,
+		string(contentBz),
+		attachment.Height,
+	)
+	return err
+}
+
+// DeletePostAttachment removes the given post attachment from the database
+func (db *Db) DeletePostAttachment(height int64, subspaceID uint64, postID uint64, attachmentID uint32) error {
+	stmt := `
+DELETE FROM post_attachment WHERE post_row_id = (
+	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2
+) AND id = $3 AND height <= $4`
+	_, err := db.Sql.Exec(stmt, subspaceID, postID, attachmentID, height)
+	return err
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// SavePollAnswer stores the given answer inside the database
+func (db *Db) SavePollAnswer(answer types.PollAnswer) error {
+	attachmentRowID, err := db.getAttachmentRowID(answer.SubspaceID, answer.PostID, answer.PollID)
+	if err != nil {
+		return err
+	}
+
+	stmt := `
+INSERT INTO poll_answer (attachment_row_id, answers_indexes, user_address, height)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT DO UPDATE 
+    SET answers_indexes = excluded.answers_indexes,
+        user_address = excluded.user_address,
+        height = excluded.height
+WHERE poll_answer.height <= excluded.height`
+	_, err = db.Sql.Exec(stmt,
+		attachmentRowID,
+		answer.AnswersIndexes,
+		answer.User,
+		answer.Height,
+	)
+	return err
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// SavePostsParams stores the given params inside the database
+func (db *Db) SavePostsParams(params types.PostsParams) error {
+	paramsBz, err := json.Marshal(&params.Params)
+	if err != nil {
+		return fmt.Errorf("error while marshaling reports params: %s", err)
+	}
+
+	stmt := `
+INSERT INTO posts_params (params, height) 
+VALUES ($1, $2)
+ON CONFLICT (one_row_id) DO UPDATE 
+    SET params = excluded.params,
+        height = excluded.height
+WHERE posts_params.height <= excluded.height`
+
+	_, err = db.Sql.Exec(stmt, string(paramsBz), params.Height)
+	if err != nil {
+		return fmt.Errorf("error while storing reports params: %s", err)
+	}
+
+	return nil
+}

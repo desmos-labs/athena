@@ -8,9 +8,14 @@ import (
 
 // SaveReaction stores the given reaction inside the database
 func (db *Db) SaveReaction(reaction types.Reaction) error {
+	postRowID, err := db.getPostRowID(reaction.SubspaceID, reaction.PostID)
+	if err != nil {
+		return err
+	}
+
 	stmt := `
-INSERT INTO reaction (subspace_id, post_id, id, value, author_address, height) 
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO reaction (post_row_id, id, value, author_address, height) 
+VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT DO UPDATE 
     SET value = excluded.value,
         author_address = excluded.author_address,
@@ -23,8 +28,7 @@ WHERE reaction.height <= excluded.height`
 	}
 
 	_, err = db.Sql.Exec(stmt,
-		reaction.SubspaceID,
-		reaction.PostID,
+		postRowID,
 		reaction.ID,
 		string(valueBz),
 		reaction.Author,
@@ -35,7 +39,10 @@ WHERE reaction.height <= excluded.height`
 
 // DeleteReaction removes the given reaction from the database
 func (db *Db) DeleteReaction(height int64, subspaceID uint64, postID uint64, reactionID uint32) error {
-	stmt := `DELETE FROM reaction WHERE subspace_id = $1 AND post_id = $2 AND id = $3 AND height <= $4`
+	stmt := `
+DELETE FROM reaction WHERE post_row_id = (
+	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2
+) AND id = $3 AND height <= $4`
 	_, err := db.Sql.Exec(stmt, subspaceID, postID, reactionID, height)
 	return err
 }

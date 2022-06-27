@@ -38,3 +38,18 @@ func (m *Module) updateReason(height int64, subspaceID uint64, reasonID uint32) 
 	// Save the reason
 	return m.db.SaveReason(types.NewReason(res.Reason, height))
 }
+
+// updateParams updates the stored params for the given height
+func (m *Module) updateParams(height int64) error {
+	// Get the params
+	res, err := m.reportsClient.Params(
+		remote.GetHeightRequestContext(context.Background(), height),
+		&reportstypes.QueryParamsRequest{},
+	)
+	if err != nil {
+		return err
+	}
+
+	// Save the params
+	return m.db.SaveReportsParams(types.NewReportsParams(res.Params, height))
+}

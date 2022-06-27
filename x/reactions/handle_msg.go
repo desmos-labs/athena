@@ -2,7 +2,6 @@ package reactions
 
 import (
 	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
-	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 	"github.com/gogo/protobuf/proto"
 
 	"github.com/rs/zerolog/log"
@@ -76,7 +75,7 @@ func (m *Module) handleMsgAddRegisteredReaction(tx *juno.Tx, index int, msg *rea
 	if err != nil {
 		return err
 	}
-	reactionId, err := reportstypes.ParseReasonID(reactionIDStr)
+	reactionId, err := reactionstypes.ParseRegisteredReactionID(reactionIDStr)
 	if err != nil {
 		return err
 	}
