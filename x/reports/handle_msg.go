@@ -1,12 +1,8 @@
 package reports
 
 import (
-	"time"
-
 	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 	"github.com/gogo/protobuf/proto"
-
-	"github.com/desmos-labs/djuno/v2/types"
 
 	"github.com/rs/zerolog/log"
 
@@ -58,25 +54,7 @@ func (m *Module) handleMsgCreateReport(tx *juno.Tx, index int, msg *reportstypes
 		return err
 	}
 
-	creationDateStr, err := tx.FindAttributeByKey(event, reportstypes.AttributeKeyCreationTime)
-	if err != nil {
-		return err
-	}
-	creationDate, err := time.Parse(time.RFC3339, creationDateStr)
-	if err != nil {
-		return err
-	}
-
-	report := reportstypes.NewReport(
-		msg.SubspaceID,
-		reportID,
-		msg.ReasonsIDs,
-		msg.Message,
-		msg.Target.GetCachedValue().(reportstypes.ReportTarget),
-		msg.Reporter,
-		creationDate,
-	)
-	return m.db.SaveReport(types.NewReport(report, tx.Height))
+	return m.updateReport(tx.Height, msg.SubspaceID, reportID)
 }
 
 // handleMsgDeleteReport handles a MsgDeleteReport
@@ -99,8 +77,7 @@ func (m *Module) handleMsgAddReason(tx *juno.Tx, index int, msg *reportstypes.Ms
 		return err
 	}
 
-	reason := reportstypes.NewReason(msg.SubspaceID, reasonID, msg.Title, msg.Description)
-	return m.db.SaveReason(types.NewReason(reason, tx.Height))
+	return m.updateReason(tx.Height, msg.SubspaceID, reasonID)
 }
 
 // handleMsgSupportStandardReason handles a MsgSupportStandardReason
@@ -118,13 +95,7 @@ func (m *Module) handleMsgSupportStandardReason(tx *juno.Tx, index int, msg *rep
 		return err
 	}
 
-	stdReason, err := m.getStandardReason(tx.Height, msg.StandardReasonID)
-	if err != nil {
-		return err
-	}
-
-	reason := reportstypes.NewReason(msg.SubspaceID, reasonID, stdReason.Title, stdReason.Description)
-	return m.db.SaveReason(types.NewReason(reason, tx.Height))
+	return m.updateReason(tx.Height, msg.SubspaceID, reasonID)
 }
 
 // handleMsgRemoveReason handles a MsgRemoveReason
