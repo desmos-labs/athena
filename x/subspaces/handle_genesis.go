@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/types"
 
-	subspacestypes "github.com/desmos-labs/desmos/v3/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 

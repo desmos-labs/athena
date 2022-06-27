@@ -9,8 +9,8 @@ import (
 	"github.com/desmos-labs/djuno/v2/types"
 
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	oracletypes "github.com/desmos-labs/desmos/v3/x/oracle/types"
-	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
+	oracletypes "github.com/desmos-labs/desmos/v4/x/oracle/types"
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 )
 
 // packetHandler defines a function that handles a packet.

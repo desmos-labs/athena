@@ -3,7 +3,7 @@ package reports
 import (
 	"time"
 
-	reportstypes "github.com/desmos-labs/desmos/v3/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 	"github.com/gogo/protobuf/proto"
 
 	"github.com/desmos-labs/djuno/v2/types"

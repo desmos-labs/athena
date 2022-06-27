@@ -2,7 +2,7 @@ package fees
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	feestypes "github.com/desmos-labs/desmos/v3/x/fees/types"
+	feestypes "github.com/desmos-labs/desmos/v4/x/fees/types"
 	"github.com/forbole/juno/v3/modules"
 	"github.com/forbole/juno/v3/node"
 	"google.golang.org/grpc"

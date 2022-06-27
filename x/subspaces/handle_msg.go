@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	subspacestypes "github.com/desmos-labs/desmos/v3/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	juno "github.com/forbole/juno/v3/types"
 
 	"github.com/desmos-labs/djuno/v2/types"

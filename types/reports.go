@@ -1,6 +1,6 @@
 package types
 
-import reportstypes "github.com/desmos-labs/desmos/v3/x/reports/types"
+import reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 
 type Report struct {
 	reportstypes.Report

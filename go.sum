@@ -301,8 +301,8 @@ github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
 github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220620111621-ec38a43a60c9 h1:V8P8q102LhzfLzTHaL7w/lnKaaafUI/lLHO1vEi1qfA=
 github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220620111621-ec38a43a60c9/go.mod h1:WOqtDxN3eCCmnYLVla10xG7lEXkFjpTaqm2a2WasgCc=
-github.com/desmos-labs/desmos/v3 v3.1.1-0.20220622071951-4367bd404963 h1:CdOPINyVQyksWY1hU5FVR7B8130QxehDhYwpe27H8y0=
-github.com/desmos-labs/desmos/v3 v3.1.1-0.20220622071951-4367bd404963/go.mod h1:Wz1+QRyQ7/ckKzf7o/3FrCMHMBU2jO3XezgM0pdlGDo=
+github.com/desmos-labs/desmos/v4 v4.0.0 h1:ZI6Ipqqvr8xSNoeUFt+oS6hvCQxH8s9xuZIxQ6ubt5w=
+github.com/desmos-labs/desmos/v4 v4.0.0/go.mod h1:e20YuuEBI7HfZZZzgHWYTp9ztKlxd3EN6zv0clylyqA=
 github.com/desmos-labs/ledger-desmos-go v0.11.2-0.20210814121638-5d87e392e8a9 h1:b77qmphsyX3+hjJraaqLyzjt9eKqbosy4LaYScPvTAs=
 github.com/desmos-labs/ledger-desmos-go v0.11.2-0.20210814121638-5d87e392e8a9/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/desmos-labs/wasmd v0.23.1-0.20220525160858-4494e885f34a h1:/I5jVg5JGEDc2tqu+96lavSfXxGf1ZfjU6B5ZJyBv8E=
@@ -1118,8 +1118,8 @@ github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.7.4 h1:wZRexSlwd7ZXfKINDLsO4r7WBt3gTKONc6K/VesHvHM=
-github.com/stretchr/testify v1.7.4/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+github.com/stretchr/testify v1.7.5 h1:s5PTfem8p8EbKQOctVV53k6jCJt3UX4IEJzwh+C324Q=
+github.com/stretchr/testify v1.7.5/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=

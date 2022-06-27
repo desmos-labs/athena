@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	feestypes "github.com/desmos-labs/desmos/v3/x/fees/types"
+	feestypes "github.com/desmos-labs/desmos/v4/x/fees/types"
 	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/desmos-labs/djuno/v2/types"

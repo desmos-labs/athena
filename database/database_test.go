@@ -12,7 +12,7 @@ import (
 	junodbcfg "github.com/forbole/juno/v3/database/config"
 	"github.com/forbole/juno/v3/logging"
 
-	desmosapp "github.com/desmos-labs/desmos/v3/app"
+	desmosapp "github.com/desmos-labs/desmos/v4/app"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/desmos-labs/djuno/v2/database"

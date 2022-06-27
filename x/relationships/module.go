@@ -2,7 +2,7 @@ package relationships
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	relationshipstypes "github.com/desmos-labs/desmos/v3/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 	"google.golang.org/grpc"
 
 	"github.com/desmos-labs/djuno/v2/database"

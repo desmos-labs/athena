@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	reportstypes "github.com/desmos-labs/desmos/v3/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 	"github.com/forbole/juno/v3/node/remote"
 )
 
