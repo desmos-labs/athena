@@ -12,14 +12,14 @@ import (
 // SaveSubspace stores the given subspace inside the database
 func (db *Db) SaveSubspace(subspace types.Subspace) error {
 	stmt := `
-INSERT INTO subspace (id, name, description, treasury, owner, creator, creation_time, height) 
+INSERT INTO subspace (id, name, description, treasury_address, owner_address, creator_address, creation_time, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT DO UPDATE 
     SET name = excluded.name,
         description = excluded.description,
-        treasury = excluded.treasury,
-        owner = excluded.owner,
-        creator = excluded.creator,
+        treasury_address = excluded.treasury_address,
+        owner_address = excluded.owner_address,
+        creator_address = excluded.creator_address,
         creation_time = excluded.creation_time,
         height = excluded.height
 WHERE subspace.height <= excluded.height`
@@ -153,7 +153,7 @@ func (db *Db) AddUserToGroup(member types.UserGroupMember) error {
 	}
 
 	stmt := `
-INSERT INTO subspace_user_group_member (group_row_id, member, height) 
+INSERT INTO subspace_user_group_member (group_row_id, member_address, height) 
 VALUES ($1, $2, $3)
 ON CONFLICT ON CONSTRAINT unique_subspace_group_membership DO NOTHING`
 
@@ -168,7 +168,7 @@ func (db *Db) RemoveUserFromGroup(member types.UserGroupMember) error {
 		return err
 	}
 
-	stmt := `DELETE FROM subspace_user_group_member WHERE group_row_id = $1 AND member = $2 AND height <= $3`
+	stmt := `DELETE FROM subspace_user_group_member WHERE group_row_id = $1 AND member_address = $2 AND height <= $3`
 	_, err = db.Sql.Exec(stmt, rowID, member.Member, member.Height)
 	return err
 }

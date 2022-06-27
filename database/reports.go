@@ -19,12 +19,12 @@ func (db *Db) SaveReport(report types.Report) error {
 	}
 
 	stmt := `
-INSERT INTO report (subspace_id, id, reason_rows_ids, message, reporter, target, creation_date, height) 
+INSERT INTO report (subspace_id, id, reason_rows_ids, message, reporter_address, target, creation_date, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT ON CONSTRAINT unique_subspace_report DO UPDATE 
     SET reason_rows_ids = excluded.reason_rows_ids,
         message = excluded.message,
-        reporter = excluded.reporter,
+        reporter_address = excluded.reporter_address,
         target = excluded.target,
         creation_date = excluded.creation_date,
         height = excluded.height

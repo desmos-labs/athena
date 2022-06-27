@@ -2,6 +2,7 @@ package reports
 
 import (
 	"context"
+
 	"github.com/desmos-labs/djuno/v2/types"
 
 	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
