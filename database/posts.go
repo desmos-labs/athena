@@ -190,6 +190,13 @@ func (db *Db) DeletePost(height int64, subspaceID uint64, postID uint64) error {
 	return err
 }
 
+// DeleteAllPosts removes all the posts from the database
+func (db *Db) DeleteAllPosts(height int64) error {
+	stmt := `DELETE FROM post WHERE height <= $1`
+	_, err := db.Sql.Exec(stmt, height)
+	return err
+}
+
 // --------------------------------------------------------------------------------------------------------------------
 
 func (db *Db) getAttachmentRowID(subspaceID uint64, postID uint64, attachmentID uint32) (int64, error) {

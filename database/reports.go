@@ -54,6 +54,13 @@ func (db *Db) DeleteReport(height int64, subspaceID uint64, reportID uint64) err
 	return err
 }
 
+// DeleteAllReports removes all the reports from the database
+func (db *Db) DeleteAllReports(height int64, subspaceID uint64) error {
+	stmt := `DELETE FROM report WHERE subspace_id = $1 AND height <= $2`
+	_, err := db.Sql.Exec(stmt, subspaceID, height)
+	return err
+}
+
 // --------------------------------------------------------------------------------------------------------------------
 
 func (db *Db) getReasonRowID(subspaceID uint64, reasonID uint32) (uint32, error) {
@@ -100,6 +107,13 @@ func (db *Db) DeleteReason(height int64, subspaceID uint64, reasonID uint32) err
 	// Delete the reason
 	stmt = `DELETE FROM report_reason WHERE subspace_id = $1 AND id = $2 AND height <= $2`
 	_, err = db.Sql.Exec(stmt, subspaceID, reasonID, height)
+	return err
+}
+
+// DeleteAllReasons deletes all the reasons from the database
+func (db *Db) DeleteAllReasons(height int64, subspaceID uint64) error {
+	stmt := `DELETE FROM report_reason WHERE subspace_id = $1 AND height <= $2`
+	_, err := db.Sql.Exec(stmt, subspaceID, height)
 	return err
 }
 

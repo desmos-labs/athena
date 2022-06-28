@@ -1,6 +1,8 @@
 package types
 
-import reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
+import (
+	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
+)
 
 type Reaction struct {
 	reactionstypes.Reaction

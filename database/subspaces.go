@@ -44,6 +44,13 @@ func (db *Db) DeleteSubspace(height int64, id uint64) error {
 	return err
 }
 
+// DeleteAllSubspaces removes all the subspaces from the database
+func (db *Db) DeleteAllSubspaces(height int64) error {
+	stmt := `DELETE FROM subspace WHERE height <= $1`
+	_, err := db.Sql.Exec(stmt, height)
+	return err
+}
+
 // --------------------------------------------------------------------------------------------------------------------
 
 // getUserGroupRowID returns the row id associated to the section with the given details
@@ -170,6 +177,18 @@ func (db *Db) RemoveUserFromGroup(member types.UserGroupMember) error {
 
 	stmt := `DELETE FROM subspace_user_group_member WHERE group_row_id = $1 AND member_address = $2 AND height <= $3`
 	_, err = db.Sql.Exec(stmt, rowID, member.Member, member.Height)
+	return err
+}
+
+// RemoveAllUsersFromGroup removes all the users from the given user group
+func (db *Db) RemoveAllUsersFromGroup(height int64, subspaceID uint64, groupID uint32) error {
+	rowID, err := db.getUserGroupRowID(subspaceID, groupID)
+	if err != nil {
+		return err
+	}
+
+	stmt := `DELETE FROM subspace_user_group_member WHERE group_row_id = $1 AND height <= $2`
+	_, err = db.Sql.Exec(stmt, rowID, height)
 	return err
 }
 

@@ -150,6 +150,10 @@ replace (
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
+	// We need to replace Tendermint to make sure that the Websocket client is built properly
+	// Our tendermint/tendermint branch is: https://github.com/desmos-labs/tendermint v0.34.x-djuno
+	github.com/tendermint/tendermint => github.com/desmos-labs/tendermint v0.32.2-0.20220628083258-25b9d227e839
+
 	// Latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2

@@ -19,19 +19,19 @@ var (
 
 // Module represents the x/fees module handler
 type Module struct {
-	cdc           codec.Codec
-	db            *database.Db
-	node          node.Node
-	reportsClient reportstypes.QueryClient
+	cdc    codec.Codec
+	db     *database.Db
+	node   node.Node
+	client reportstypes.QueryClient
 }
 
 // NewModule allows to build a new Module instance
 func NewModule(node node.Node, grpcConnection *grpc.ClientConn, cdc codec.Codec, db *database.Db) *Module {
 	return &Module{
-		cdc:           cdc,
-		db:            db,
-		node:          node,
-		reportsClient: reportstypes.NewQueryClient(grpcConnection),
+		cdc:    cdc,
+		db:     db,
+		node:   node,
+		client: reportstypes.NewQueryClient(grpcConnection),
 	}
 }
 

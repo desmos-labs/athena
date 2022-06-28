@@ -47,6 +47,16 @@ DELETE FROM reaction WHERE post_row_id = (
 	return err
 }
 
+// DeleteAllReactions removes all the reactions from the database
+func (db *Db) DeleteAllReactions(height int64, subspaceID uint64, postID uint64) error {
+	stmt := `
+DELETE FROM reaction WHERE post_row_id = (
+	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2    
+) AND height <= $3`
+	_, err := db.Sql.Exec(stmt, subspaceID, postID, height)
+	return err
+}
+
 // --------------------------------------------------------------------------------------------------------------------
 
 // SaveRegisteredReaction stores the given registered reaction inside the database
@@ -74,6 +84,12 @@ WHERE registered_reaction.height <= excluded.height`
 func (db *Db) DeleteRegisteredReaction(height int64, subspaceID uint64, reactionID uint32) error {
 	stmt := `DELETE FROM registered_reaction WHERE subspace_id = $1 AND id = $2 AND height <= $3`
 	_, err := db.Sql.Exec(stmt, subspaceID, reactionID, height)
+	return err
+}
+
+func (db *Db) DeleteAllRegisteredReactions(height int64, subspaceID uint64) error {
+	stmt := `DELETE FROM registered_reaction WHERE subspace_id = $1 AND height <= $2`
+	_, err := db.Sql.Exec(stmt, subspaceID, height)
 	return err
 }
 

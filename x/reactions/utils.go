@@ -11,7 +11,7 @@ import (
 
 // updateReaction updates the stored data about the given reaction at the specified height
 func (m *Module) updateReaction(height int64, subspaceID uint64, postID uint64, reactionID uint32) error {
-	res, err := m.reactionsClient.Reaction(
+	res, err := m.client.Reaction(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&reactionstypes.QueryReactionRequest{
 			SubspaceId: subspaceID,
@@ -29,7 +29,7 @@ func (m *Module) updateReaction(height int64, subspaceID uint64, postID uint64, 
 // updateRegisteredReaction updates the stored data about the given registered reaction at the specified height
 func (m *Module) updateRegisteredReaction(height int64, subspaceID uint64, reactionID uint32) error {
 	// Get the registered reaction
-	res, err := m.reactionsClient.RegisteredReaction(
+	res, err := m.client.RegisteredReaction(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&reactionstypes.QueryRegisteredReactionRequest{SubspaceId: subspaceID, ReactionId: reactionID},
 	)
@@ -44,7 +44,7 @@ func (m *Module) updateRegisteredReaction(height int64, subspaceID uint64, react
 // updateReactionParams updates the stored data about the given reaction params at the specified height
 func (m *Module) updateReactionParams(height int64, subspaceID uint64) error {
 	// Get the params
-	res, err := m.reactionsClient.ReactionsParams(
+	res, err := m.client.ReactionsParams(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&reactionstypes.QueryReactionsParamsRequest{SubspaceId: subspaceID},
 	)

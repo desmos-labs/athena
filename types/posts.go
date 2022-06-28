@@ -1,6 +1,8 @@
 package types
 
-import poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+import (
+	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+)
 
 type Post struct {
 	poststypes.Post

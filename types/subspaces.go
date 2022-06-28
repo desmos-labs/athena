@@ -1,6 +1,8 @@
 package types
 
-import subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+import (
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+)
 
 type Subspace struct {
 	subspacestypes.Subspace

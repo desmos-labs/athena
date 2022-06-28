@@ -12,7 +12,7 @@ import (
 // updatePost updates the stored data about the given post at the specified height
 func (m *Module) updatePost(height int64, subspaceID uint64, postID uint64) error {
 	// Get the post
-	res, err := m.postsClient.Post(
+	res, err := m.client.Post(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&poststypes.QueryPostRequest{SubspaceId: subspaceID, PostId: postID},
 	)
@@ -27,7 +27,7 @@ func (m *Module) updatePost(height int64, subspaceID uint64, postID uint64) erro
 // updateParams updates the stored params with the ones for the given height
 func (m *Module) updateParams(height int64) error {
 	// Get the params
-	res, err := m.postsClient.Params(
+	res, err := m.client.Params(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&poststypes.QueryParamsRequest{},
 	)
