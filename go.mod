@@ -7,13 +7,13 @@ require (
 	github.com/cosmos/ibc-go/v2 v2.3.0
 	github.com/desmos-labs/desmos/v3 v3.2.0
 	github.com/forbole/juno/v3 v3.0.1
-	github.com/go-co-op/gocron v1.14.0
+	github.com/go-co-op/gocron v1.15.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.27.0
-	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.3
+	github.com/spf13/cobra v1.5.0
+	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.19
 	google.golang.org/grpc v1.45.0
 )
