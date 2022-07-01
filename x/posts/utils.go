@@ -2,6 +2,7 @@ package posts
 
 import (
 	"context"
+	"fmt"
 
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	"github.com/forbole/juno/v3/node/remote"
@@ -26,6 +27,11 @@ func (m *Module) updatePost(height int64, subspaceID uint64, postID uint64) erro
 
 // updateParams updates the stored params with the ones for the given height
 func (m *Module) updateParams(height int64) error {
+	height, err := m.node.LatestHeight()
+	if err != nil {
+		return fmt.Errorf("error while getting latest block height: %s", err)
+	}
+
 	// Get the params
 	res, err := m.client.Params(
 		remote.GetHeightRequestContext(context.Background(), height),
