@@ -93,4 +93,4 @@ CREATE TABLE posts_params
     height     BIGINT  NOT NULL,
     CHECK (one_row_id)
 );
-CREATE INDEX posts_params_height_index ON reports_params (height);
+CREATE INDEX posts_params_height_index ON posts_params (height);
