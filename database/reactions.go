@@ -62,13 +62,13 @@ DELETE FROM reaction WHERE post_row_id = (
 // SaveRegisteredReaction stores the given registered reaction inside the database
 func (db *Db) SaveRegisteredReaction(reaction types.RegisteredReaction) error {
 	stmt := `
-INSERT INTO registered_reaction (subspace_id, id, shorthand_code, display_value, height) 
+INSERT INTO subspace_registered_reaction (subspace_id, id, shorthand_code, display_value, height) 
 VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT ON CONSTRAINT unique_subspace_registered_reaction DO UPDATE 
     SET shorthand_code = excluded.shorthand_code,
         display_value = excluded.display_value,
         height = excluded.height
-WHERE registered_reaction.height <= excluded.height`
+WHERE subspace_registered_reaction.height <= excluded.height`
 
 	_, err := db.Sql.Exec(stmt,
 		reaction.SubspaceID,
@@ -82,13 +82,13 @@ WHERE registered_reaction.height <= excluded.height`
 
 // DeleteRegisteredReaction removes the given registered reaction from the database
 func (db *Db) DeleteRegisteredReaction(height int64, subspaceID uint64, reactionID uint32) error {
-	stmt := `DELETE FROM registered_reaction WHERE subspace_id = $1 AND id = $2 AND height <= $3`
+	stmt := `DELETE FROM subspace_registered_reaction WHERE subspace_id = $1 AND id = $2 AND height <= $3`
 	_, err := db.Sql.Exec(stmt, subspaceID, reactionID, height)
 	return err
 }
 
 func (db *Db) DeleteAllRegisteredReactions(height int64, subspaceID uint64) error {
-	stmt := `DELETE FROM registered_reaction WHERE subspace_id = $1 AND height <= $2`
+	stmt := `DELETE FROM subspace_registered_reaction WHERE subspace_id = $1 AND height <= $2`
 	_, err := db.Sql.Exec(stmt, subspaceID, height)
 	return err
 }

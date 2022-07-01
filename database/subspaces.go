@@ -199,7 +199,6 @@ WHERE subspace_user_permission.height <= excluded.height`
 
 	_, err = db.Sql.Exec(stmt,
 		sectionRowID,
-		permission.SubspaceID,
 		permission.User,
 		dbtypes.ConvertPermissions(permission.Permissions),
 		permission.Height,

@@ -11,7 +11,7 @@ CREATE TABLE reaction
     CONSTRAINT unique_post_reaction UNIQUE (post_row_id, id)
 );
 
-CREATE TABLE registered_reaction
+CREATE TABLE subspace_registered_reaction
 (
     /* Required for Hasura links */
     row_id         SERIAL NOT NULL PRIMARY KEY,

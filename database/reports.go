@@ -11,42 +11,69 @@ import (
 
 // SaveReport saves the given report data inside the database
 func (db *Db) SaveReport(report types.Report) error {
-	reasonRowsIDs := make(pq.Int64Array, len(report.ReasonsIDs))
-	for i, reasonID := range report.ReasonsIDs {
-		rowID, err := db.getReasonRowID(report.SubspaceID, reasonID)
-		if err != nil {
-			return err
-		}
-		reasonRowsIDs[i] = rowID
-	}
-
 	stmt := `
-INSERT INTO report (subspace_id, id, reason_rows_ids, message, reporter_address, target, creation_date, height) 
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO report (subspace_id, id, message, reporter_address, target, creation_date, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 ON CONFLICT ON CONSTRAINT unique_subspace_report DO UPDATE 
-    SET reason_rows_ids = excluded.reason_rows_ids,
-        message = excluded.message,
+    SET message = excluded.message,
         reporter_address = excluded.reporter_address,
         target = excluded.target,
         creation_date = excluded.creation_date,
         height = excluded.height
-WHERE report.height <= excluded.height`
+WHERE report.height <= excluded.height
+RETURNING row_id`
 
 	targetBz, err := db.EncodingConfig.Marshaler.MarshalJSON(report.Target)
 	if err != nil {
 		return fmt.Errorf("failed to json encode report target: %s", err)
 	}
 
-	_, err = db.Sql.Exec(stmt,
+	var reportRowID uint64
+	err = db.Sql.QueryRow(stmt,
 		report.SubspaceID,
 		report.ID,
-		reasonRowsIDs,
 		report.Message,
 		report.Reporter,
 		string(targetBz),
 		report.CreationDate,
 		report.Height,
-	)
+	).Scan(&reportRowID)
+
+	err = db.insertReportReasons(reportRowID, report.SubspaceID, report.ReasonsIDs)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (db *Db) insertReportReasons(reportRowID uint64, subspaceID uint64, reasonsIDs []uint32) error {
+	if reasonsIDs == nil {
+		return nil
+	}
+
+	reasonRowsIDs := make(pq.Int64Array, len(reasonsIDs))
+	for i, reasonID := range reasonsIDs {
+		rowID, err := db.getReasonRowID(subspaceID, reasonID)
+		if err != nil {
+			return err
+		}
+		reasonRowsIDs[i] = rowID
+	}
+
+	stmt := `INSERT INTO report_reason (report_row_id, reason_row_id) VALUES `
+
+	var vars []interface{}
+	for i, reasonRowID := range reasonRowsIDs {
+		ei := i * 2
+		stmt += fmt.Sprintf(`($%d, $%d),`, ei+1, ei+2)
+		vars = append(vars, reportRowID, reasonRowID)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Trim trailing ,
+	stmt += `ON CONFLICT DO NOTHING`
+
+	_, err := db.Sql.Exec(stmt, vars...)
 	return err
 }
 
@@ -67,7 +94,7 @@ func (db *Db) DeleteAllReports(height int64, subspaceID uint64) error {
 // --------------------------------------------------------------------------------------------------------------------
 
 func (db *Db) getReasonRowID(subspaceID uint64, reasonID uint32) (int64, error) {
-	stmt := `SELECT row_id FROM report_reason WHERE subspace_id = $1 AND id = $2`
+	stmt := `SELECT row_id FROM subspace_report_reason WHERE subspace_id = $1 AND id = $2`
 
 	var rowID int64
 	err := db.Sql.QueryRow(stmt, subspaceID, reasonID).Scan(&rowID)
@@ -81,13 +108,13 @@ func (db *Db) getReasonRowID(subspaceID uint64, reasonID uint32) (int64, error) 
 // SaveReason saves the given reason insinde the database
 func (db *Db) SaveReason(reason types.Reason) error {
 	stmt := `
-INSERT INTO report_reason (subspace_id, id, title, description, height) 
+INSERT INTO subspace_report_reason (subspace_id, id, title, description, height) 
 VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT ON CONSTRAINT unique_subspace_reason DO UPDATE 
     SET title = excluded.title,
         description = excluded.description,
         height = excluded.height
-WHERE report_reason.height <= excluded.height`
+WHERE subspace_report_reason.height <= excluded.height`
 
 	_, err := db.Sql.Exec(stmt, reason.SubspaceID, reason.ID, reason.Title, reason.Description, reason.Height)
 	return err
@@ -95,27 +122,15 @@ WHERE report_reason.height <= excluded.height`
 
 // DeleteReason removes the reason having the given id from the database along with all the associated reports
 func (db *Db) DeleteReason(height int64, subspaceID uint64, reasonID uint32) error {
-	reasonRowID, err := db.getReasonRowID(subspaceID, reasonID)
-	if err != nil {
-		return err
-	}
-
-	// Delete the associated reports
-	stmt := `DELETE FROM report WHERE $1=ANY(reason_rows_ids) AND height <= $2`
-	_, err = db.Sql.Exec(stmt, reasonRowID, height)
-	if err != nil {
-		return err
-	}
-
 	// Delete the reason
-	stmt = `DELETE FROM report_reason WHERE subspace_id = $1 AND id = $2 AND height <= $2`
-	_, err = db.Sql.Exec(stmt, subspaceID, reasonID, height)
+	stmt := `DELETE FROM subspace_report_reason WHERE subspace_id = $1 AND id = $2 AND height <= $2`
+	_, err := db.Sql.Exec(stmt, subspaceID, reasonID, height)
 	return err
 }
 
 // DeleteAllReasons deletes all the reasons from the database
 func (db *Db) DeleteAllReasons(height int64, subspaceID uint64) error {
-	stmt := `DELETE FROM report_reason WHERE subspace_id = $1 AND height <= $2`
+	stmt := `DELETE FROM subspace_report_reason WHERE subspace_id = $1 AND height <= $2`
 	_, err := db.Sql.Exec(stmt, subspaceID, height)
 	return err
 }

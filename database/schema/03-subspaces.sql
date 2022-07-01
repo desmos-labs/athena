@@ -44,7 +44,7 @@ CREATE TABLE subspace_user_group_member
     /* Required for Hasura links */
     row_id         SERIAL NOT NULL,
 
-    group_row_id   BIGINT NOT NULL REFERENCES subspace_user_group (row_id),
+    group_row_id   BIGINT NOT NULL REFERENCES subspace_user_group (row_id) ON DELETE CASCADE,
     member_address TEXT   NOT NULL,
     height         BIGINT NOT NULL,
     CONSTRAINT unique_subspace_group_membership UNIQUE (group_row_id, member_address)
