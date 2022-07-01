@@ -3,10 +3,11 @@ package profiles
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
+
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
 	"github.com/forbole/juno/v3/types/config"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
@@ -49,8 +50,8 @@ func postsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
+			log.Debug().Int64("height", height).Msg("refreshing posts")
 			for _, subspace := range subs {
-				log.Debug().Int64("height", height).Uint64("subspace", subspace.ID).Msg("refreshing posts")
 				err = postsModule.RefreshPostsData(height, subspace.ID)
 				if err != nil {
 					return err

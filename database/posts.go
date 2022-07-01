@@ -43,7 +43,7 @@ func (db *Db) SavePost(post types.Post) error {
 	stmt := `
 INSERT INTO post (subspace_id, section_row_id, id, external_id, text, author_address, conversation_row_id, reply_settings, creation_date, last_edited_date, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-ON CONFLICT DO UPDATE 
+ON CONFLICT ON CONSTRAINT unique_subspace_post DO UPDATE 
     SET external_id = excluded.external_id,
         text = excluded.text,
         author_address = excluded.author_address,
@@ -52,7 +52,8 @@ ON CONFLICT DO UPDATE
         creation_date = excluded.creation_date,
         last_edited_date = excluded.last_edited_date,
         height = excluded.height
-WHERE post.height <= excluded.height`
+WHERE post.height <= excluded.height
+RETURNING row_id`
 
 	var rowID uint64
 	err = db.Sql.QueryRow(stmt,
@@ -111,6 +112,10 @@ func (db *Db) savePostEntities(postRowID uint64, entities *poststypes.Entities) 
 }
 
 func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.Tag) error {
+	if hashtags == nil {
+		return nil
+	}
+
 	stmt := `INSERT INTO post_hashtag (post_row_id, start_index, end_index, tag) VALUES `
 
 	var vars []interface{}
@@ -128,6 +133,10 @@ func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.Tag) erro
 }
 
 func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.Tag) error {
+	if mentions == nil {
+		return nil
+	}
+
 	stmt := `INSERT INTO post_mention (post_row_id, start_index, end_index, mention_address) VALUES `
 
 	var vars []interface{}
@@ -144,12 +153,16 @@ func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.Tag) erro
 	return err
 }
 
-func (db *Db) savePostURLs(postRowID uint64, hashtags []poststypes.Url) error {
-	// Save the hashtags
+func (db *Db) savePostURLs(postRowID uint64, urls []poststypes.Url) error {
+	if urls == nil {
+		return nil
+	}
+
+	// Save the urls
 	stmt := `INSERT INTO post_url (post_row_id, start_index, end_index, url, display_value) VALUES `
 
 	var vars []interface{}
-	for i, url := range hashtags {
+	for i, url := range urls {
 		ei := i * 5
 		stmt += fmt.Sprintf(`($%d, $%d, $%d, $%d, $%d),`, ei+1, ei+2, ei+3, ei+4, ei+5)
 		vars = append(vars, postRowID, url.Start, url.End, url.Url, url.DisplayUrl)
@@ -224,7 +237,7 @@ func (db *Db) SavePostAttachment(attachment types.PostAttachment) error {
 	stmt := `
 INSERT INTO post_attachment (post_row_id, id, content, height) 
 VALUES ($1, $2, $3, $4)
-ON CONFLICT DO UPDATE 
+ON CONFLICT ON CONSTRAINT unique_post_attachment DO UPDATE 
     SET content = excluded.content,
         height = excluded.height
 WHERE post_attachment.height <= excluded.height`
@@ -265,7 +278,7 @@ func (db *Db) SavePollAnswer(answer types.PollAnswer) error {
 	stmt := `
 INSERT INTO poll_answer (attachment_row_id, answers_indexes, user_address, height)
 VALUES ($1, $2, $3, $4)
-ON CONFLICT DO UPDATE 
+ON CONFLICT ON CONSTRAINT unique_user_answer DO UPDATE 
     SET answers_indexes = excluded.answers_indexes,
         user_address = excluded.user_address,
         height = excluded.height

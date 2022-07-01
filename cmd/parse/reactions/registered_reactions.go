@@ -3,10 +3,11 @@ package profiles
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
+
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
 	"github.com/forbole/juno/v3/types/config"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
@@ -17,7 +18,7 @@ import (
 // registeredReactionsCmd returns a Cobra command that allows to refresh all the registered reactions
 func registeredReactionsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 	return &cobra.Command{
-		Use:   "posts",
+		Use:   "registered-reactions",
 		Short: "Fetch all the posts reactions from the node and save them properly",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
@@ -49,10 +50,8 @@ func registeredReactionsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
+			log.Debug().Int64("height", height).Msg("refreshing registered reactions")
 			for _, subspace := range subspaces {
-				log.Debug().Int64("height", height).Uint64("subspace", subspace.ID).
-					Msg("refreshing registered reactions")
-
 				// Refresh the registered reactions
 				err := reactionsModule.RefreshRegisteredReactionsData(height, subspace.ID)
 				if err != nil {

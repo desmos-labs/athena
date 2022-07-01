@@ -14,7 +14,7 @@ func (db *Db) SaveSubspace(subspace types.Subspace) error {
 	stmt := `
 INSERT INTO subspace (id, name, description, treasury_address, owner_address, creator_address, creation_time, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-ON CONFLICT DO UPDATE 
+ON CONFLICT (id) DO UPDATE 
     SET name = excluded.name,
         description = excluded.description,
         treasury_address = excluded.treasury_address,
@@ -76,7 +76,7 @@ func (db *Db) SaveSection(section types.Section) error {
 	stmt := `
 INSERT INTO subspace_section (subspace_id, id, parent_row_id, name, description, height) 
 VALUES ($1, $2, $3, $4, $5, $6)
-ON CONFLICT DO UPDATE 
+ON CONFLICT ON CONSTRAINT unique_subspace_section DO UPDATE 
     SET name = excluded.name,
         description = excluded.description,
         parent_row_id = excluded.parent_row_id,
@@ -125,7 +125,7 @@ func (db *Db) SaveUserGroup(group types.UserGroup) error {
 
 	stmt := `
 INSERT INTO subspace_user_group (subspace_id, section_row_id, id, name, description, permissions, height) 
-VALUES ($1, $2, $3, $4, $5, $6)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 ON CONFLICT ON CONSTRAINT unique_subspace_user_group DO UPDATE 
     SET name = excluded.name,
         description = excluded.description,
@@ -139,7 +139,7 @@ WHERE subspace_user_group.height <= excluded.height`
 		group.ID,
 		group.Name,
 		dbtypes.ToNullString(group.Description),
-		group.Permissions,
+		dbtypes.ConvertPermissions(group.Permissions),
 		group.Height,
 	)
 	return err
@@ -180,18 +180,6 @@ func (db *Db) RemoveUserFromGroup(member types.UserGroupMember) error {
 	return err
 }
 
-// RemoveAllUsersFromGroup removes all the users from the given user group
-func (db *Db) RemoveAllUsersFromGroup(height int64, subspaceID uint64, groupID uint32) error {
-	rowID, err := db.getUserGroupRowID(subspaceID, groupID)
-	if err != nil {
-		return err
-	}
-
-	stmt := `DELETE FROM subspace_user_group_member WHERE group_row_id = $1 AND height <= $2`
-	_, err = db.Sql.Exec(stmt, rowID, height)
-	return err
-}
-
 // --------------------------------------------------------------------------------------------------------------------
 
 // SaveUserPermission stores the given permissions inside the database
@@ -213,7 +201,7 @@ WHERE subspace_user_permission.height <= excluded.height`
 		sectionRowID,
 		permission.SubspaceID,
 		permission.User,
-		permission.Permissions,
+		dbtypes.ConvertPermissions(permission.Permissions),
 		permission.Height,
 	)
 	return err

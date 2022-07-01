@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/cosmos/cosmos-sdk/types/query"
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	"github.com/forbole/juno/v3/node/remote"
@@ -18,75 +20,79 @@ import (
 func (m *Module) RefreshSubspacesData(height int64) error {
 	subspaces, err := m.QueryAllSubspaces(height)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while querying subspaces: %s", err)
 	}
 
 	err = m.db.DeleteAllSubspaces(height)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while deleting subspaces: %s", err)
 	}
 
 	for _, subspace := range subspaces {
+		log.Debug().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
+
 		// Save the subspace
 		err = m.db.SaveSubspace(subspace)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while saving subspace: %s", err)
 		}
 
 		// Update the sections
 		sections, err := m.queryAllSections(height, subspace.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while querying subspace sections: %s", err)
 		}
 
 		for _, section := range sections {
+			log.Debug().Uint64("subspace", subspace.ID).Uint32("section", section.ID).Msg("refreshing section")
+
 			err = m.db.SaveSection(section)
 			if err != nil {
-				return err
+				return fmt.Errorf("error while saving subspace section: %s", err)
 			}
 		}
 
 		// Update the user groups
 		groups, err := m.queryAllUserGroups(height, subspace.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while querying subspace user groups: %s", err)
 		}
+
 		for _, group := range groups {
+			log.Debug().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group")
+
 			err = m.db.SaveUserGroup(group)
 			if err != nil {
-				return err
+				return fmt.Errorf("error while saving subspace user group: %s", err)
 			}
 
 			// Update the members
 			members, err := m.queryAllUserGroupMembers(height, group.SubspaceID, group.ID)
 			if err != nil {
-				return err
-			}
-
-			err = m.db.RemoveAllUsersFromGroup(height, group.SubspaceID, group.ID)
-			if err != nil {
-				return err
+				return fmt.Errorf("error while querying user group members: %s", err)
 			}
 
 			// Save the members
+			log.Debug().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group members")
 			for _, member := range members {
 				err = m.db.AddUserToGroup(member)
 				if err != nil {
-					return err
+					return fmt.Errorf("error while saving user group member: %s", err)
 				}
 			}
 		}
 
 		// Update the user permissions
+		log.Debug().Uint64("subspace", subspace.ID).Msg("refreshing permissions")
 		permissions, err := m.queryAllUserPermissions(height, subspace.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while querying user permissions: %s", err)
 		}
 
 		for _, permission := range permissions {
 			err = m.db.SaveUserPermission(permission)
 			if err != nil {
-				return err
+				return fmt.Errorf("error while saving user permissions: %s", err)
 			}
 		}
 	}

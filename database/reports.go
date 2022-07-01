@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/lib/pq"
+
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
 // SaveReport saves the given report data inside the database
 func (db *Db) SaveReport(report types.Report) error {
-	reasonRowsIDs := make([]uint32, len(report.ReasonsIDs))
+	reasonRowsIDs := make(pq.Int64Array, len(report.ReasonsIDs))
 	for i, reasonID := range report.ReasonsIDs {
 		rowID, err := db.getReasonRowID(report.SubspaceID, reasonID)
 		if err != nil {
@@ -30,7 +32,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_report DO UPDATE
         height = excluded.height
 WHERE report.height <= excluded.height`
 
-	reportBz, err := db.EncodingConfig.Marshaler.MarshalJSON(report.Target)
+	targetBz, err := db.EncodingConfig.Marshaler.MarshalJSON(report.Target)
 	if err != nil {
 		return fmt.Errorf("failed to json encode report target: %s", err)
 	}
@@ -41,8 +43,9 @@ WHERE report.height <= excluded.height`
 		reasonRowsIDs,
 		report.Message,
 		report.Reporter,
-		string(reportBz),
+		string(targetBz),
 		report.CreationDate,
+		report.Height,
 	)
 	return err
 }
@@ -63,10 +66,10 @@ func (db *Db) DeleteAllReports(height int64, subspaceID uint64) error {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-func (db *Db) getReasonRowID(subspaceID uint64, reasonID uint32) (uint32, error) {
+func (db *Db) getReasonRowID(subspaceID uint64, reasonID uint32) (int64, error) {
 	stmt := `SELECT row_id FROM report_reason WHERE subspace_id = $1 AND id = $2`
 
-	var rowID uint32
+	var rowID int64
 	err := db.Sql.QueryRow(stmt, subspaceID, reasonID).Scan(&rowID)
 	if err != nil {
 		return 0, err

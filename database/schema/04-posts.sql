@@ -14,7 +14,7 @@ CREATE TABLE post
     creation_date       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     last_edited_date    TIMESTAMP WITHOUT TIME ZONE,
     height              BIGINT                      NOT NULL,
-    CONSTRAINT unique_subspace_id UNIQUE (subspace_id, id)
+    CONSTRAINT unique_subspace_post UNIQUE (subspace_id, id)
 );
 
 CREATE TABLE post_hashtag

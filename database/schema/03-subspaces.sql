@@ -34,7 +34,7 @@ CREATE TABLE subspace_user_group
     id             BIGINT NOT NULL,
     name           TEXT   NOT NULL,
     description    TEXT,
-    permissions    INT    NOT NULL,
+    permissions    TEXT[] NOT NULL,
     height         BIGINT NOT NULL,
     CONSTRAINT unique_subspace_user_group UNIQUE (subspace_id, id)
 );
@@ -57,7 +57,7 @@ CREATE TABLE subspace_user_permission
 
     section_row_id BIGINT NOT NULL REFERENCES subspace_section (row_id) ON DELETE CASCADE,
     user_address   TEXT   NOT NULL,
-    permissions    INT    NOT NULL,
+    permissions    TEXT[] NOT NULL,
     height         BIGINT NOT NULL,
     CONSTRAINT unique_subspace_permission UNIQUE (section_row_id, user_address)
 );

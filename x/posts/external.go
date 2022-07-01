@@ -2,6 +2,9 @@ package posts
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
@@ -19,14 +22,16 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 	err = m.db.DeleteAllPosts(height)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while deleting all the posts: %s", err)
 	}
 
 	// Refresh posts
 	for _, post := range posts {
+		log.Debug().Uint64("subspace", post.SubspaceID).Uint64("post", post.ID).Msg("refreshing post")
+
 		err = m.db.SavePost(post)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while saving post: %s", err)
 		}
 
 		attachments, err := m.queryPostAttachments(height, post.SubspaceID, post.ID)
@@ -36,13 +41,19 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 		// Refresh attachments
 		for _, attachment := range attachments {
+			log.Debug().Uint64("subspace", attachment.SubspaceID).Uint64("post", attachment.PostID).
+				Uint32("attachment", attachment.ID).Msg("refreshing attachment")
+
 			err = m.db.SavePostAttachment(attachment)
 			if err != nil {
-				return err
+				return fmt.Errorf("error while saving post attachment: %s", err)
 			}
 
 			// Refresh poll answers
 			if _, isPoll := attachment.Content.GetCachedValue().(*poststypes.Poll); isPoll {
+				log.Debug().Uint64("subspace", attachment.SubspaceID).Uint64("post", attachment.PostID).
+					Uint32("poll", attachment.ID).Msg("refreshing poll answers")
+
 				answers, err := m.queryPollAnswers(height, attachment.SubspaceID, attachment.PostID, attachment.ID)
 				if err != nil {
 					return err
@@ -51,7 +62,7 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 				for _, answer := range answers {
 					err = m.db.SavePollAnswer(answer)
 					if err != nil {
-						return err
+						return fmt.Errorf("errror while saving poll answer: %s", err)
 					}
 				}
 			}

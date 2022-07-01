@@ -16,7 +16,7 @@ func (db *Db) SaveReaction(reaction types.Reaction) error {
 	stmt := `
 INSERT INTO reaction (post_row_id, id, value, author_address, height) 
 VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT DO UPDATE 
+ON CONFLICT ON CONSTRAINT unique_post_reaction DO UPDATE 
     SET value = excluded.value,
         author_address = excluded.author_address,
         height = excluded.height
@@ -64,7 +64,7 @@ func (db *Db) SaveRegisteredReaction(reaction types.RegisteredReaction) error {
 	stmt := `
 INSERT INTO registered_reaction (subspace_id, id, shorthand_code, display_value, height) 
 VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT DO UPDATE 
+ON CONFLICT ON CONSTRAINT unique_subspace_registered_reaction DO UPDATE 
     SET shorthand_code = excluded.shorthand_code,
         display_value = excluded.display_value,
         height = excluded.height
@@ -101,7 +101,7 @@ func (db *Db) SaveReactionParams(params types.ReactionParams) error {
 	stmt := `
 INSERT INTO subspace_registered_reaction_params (subspace_id, enabled, height) 
 VALUES ($1, $2, $3)
-ON CONFLICT DO UPDATE 
+ON CONFLICT (subspace_id) DO UPDATE 
     SET enabled = excluded.enabled,
         height = excluded.height
 WHERE subspace_registered_reaction_params.height <= excluded.height`
@@ -115,7 +115,7 @@ WHERE subspace_registered_reaction_params.height <= excluded.height`
 	stmt = `
 INSERT INTO subspace_free_text_params (subspace_id, enabled, max_length, reg_ex, height) 
 VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT DO UPDATE 
+ON CONFLICT (subspace_id) DO UPDATE 
     SET enabled = excluded.enabled,
         max_length = excluded.max_length,
         reg_ex = excluded.reg_ex,
