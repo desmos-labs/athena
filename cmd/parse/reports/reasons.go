@@ -50,7 +50,7 @@ func reasonsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			log.Debug().Int64("height", height).Msg("refreshing reasons")
+			log.Info().Int64("height", height).Msg("refreshing reasons")
 			for _, subspace := range subspaces {
 				err := reportsModule.RefreshReasonsData(height, subspace.ID)
 				if err != nil {

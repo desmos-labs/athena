@@ -25,7 +25,7 @@ func (m *Module) RefreshReportsData(height int64, subspaceID uint64) error {
 	}
 
 	for _, report := range reports {
-		log.Debug().Uint64("subspace", report.SubspaceID).Uint64("report", report.ID).Msg("refreshing report")
+		log.Info().Uint64("subspace", report.SubspaceID).Uint64("report", report.ID).Msg("refreshing report")
 
 		err = m.db.SaveReport(report)
 		if err != nil {
@@ -49,7 +49,7 @@ func (m *Module) RefreshReasonsData(height int64, subspaceID uint64) error {
 	}
 
 	for _, reason := range reasons {
-		log.Debug().Uint64("subspace", reason.SubspaceID).Uint32("reason", reason.ID).Msg("refreshing reason")
+		log.Info().Uint64("subspace", reason.SubspaceID).Uint32("reason", reason.ID).Msg("refreshing reason")
 
 		err = m.db.SaveReason(reason)
 		if err != nil {

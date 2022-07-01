@@ -50,7 +50,7 @@ func reportsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			log.Debug().Int64("height", height).Msg("refreshing reports")
+			log.Info().Int64("height", height).Msg("refreshing reports")
 			for _, subspace := range subspaces {
 				err := reportsModule.RefreshReportsData(height, subspace.ID)
 				if err != nil {

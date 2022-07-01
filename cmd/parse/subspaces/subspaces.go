@@ -41,7 +41,7 @@ func subspacesCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			log.Debug().Int64("height", height).Msg("refreshing subspaces")
+			log.Info().Int64("height", height).Msg("refreshing subspaces")
 			return profilesModule.RefreshSubspacesData(height)
 		},
 	}

@@ -27,7 +27,7 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 	// Refresh posts
 	for _, post := range posts {
-		log.Debug().Uint64("subspace", post.SubspaceID).Uint64("post", post.ID).Msg("refreshing post")
+		log.Info().Uint64("subspace", post.SubspaceID).Uint64("post", post.ID).Msg("refreshing post")
 
 		err = m.db.SavePost(post)
 		if err != nil {
@@ -41,7 +41,7 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 		// Refresh attachments
 		for _, attachment := range attachments {
-			log.Debug().Uint64("subspace", attachment.SubspaceID).Uint64("post", attachment.PostID).
+			log.Info().Uint64("subspace", attachment.SubspaceID).Uint64("post", attachment.PostID).
 				Uint32("attachment", attachment.ID).Msg("refreshing attachment")
 
 			err = m.db.SavePostAttachment(attachment)
@@ -51,7 +51,7 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 			// Refresh poll answers
 			if _, isPoll := attachment.Content.GetCachedValue().(*poststypes.Poll); isPoll {
-				log.Debug().Uint64("subspace", attachment.SubspaceID).Uint64("post", attachment.PostID).
+				log.Info().Uint64("subspace", attachment.SubspaceID).Uint64("post", attachment.PostID).
 					Uint32("poll", attachment.ID).Msg("refreshing poll answers")
 
 				answers, err := m.queryPollAnswers(height, attachment.SubspaceID, attachment.PostID, attachment.ID)

@@ -52,7 +52,7 @@ func reactionsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			log.Debug().Int64("height", height).Msg("refreshing reactions")
+			log.Info().Int64("height", height).Msg("refreshing reactions")
 			for _, subspace := range subspaces {
 				// Get the posts
 				posts, err := postsModule.QuerySubspacePosts(height, subspace.ID)

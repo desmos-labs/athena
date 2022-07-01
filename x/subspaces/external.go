@@ -29,7 +29,7 @@ func (m *Module) RefreshSubspacesData(height int64) error {
 	}
 
 	for _, subspace := range subspaces {
-		log.Debug().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
+		log.Info().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
 
 		// Save the subspace
 		err = m.db.SaveSubspace(subspace)
@@ -44,7 +44,7 @@ func (m *Module) RefreshSubspacesData(height int64) error {
 		}
 
 		for _, section := range sections {
-			log.Debug().Uint64("subspace", subspace.ID).Uint32("section", section.ID).Msg("refreshing section")
+			log.Info().Uint64("subspace", subspace.ID).Uint32("section", section.ID).Msg("refreshing section")
 
 			err = m.db.SaveSection(section)
 			if err != nil {
@@ -59,7 +59,7 @@ func (m *Module) RefreshSubspacesData(height int64) error {
 		}
 
 		for _, group := range groups {
-			log.Debug().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group")
+			log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group")
 
 			err = m.db.SaveUserGroup(group)
 			if err != nil {
@@ -73,7 +73,7 @@ func (m *Module) RefreshSubspacesData(height int64) error {
 			}
 
 			// Save the members
-			log.Debug().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group members")
+			log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group members")
 			for _, member := range members {
 				err = m.db.AddUserToGroup(member)
 				if err != nil {
@@ -83,7 +83,7 @@ func (m *Module) RefreshSubspacesData(height int64) error {
 		}
 
 		// Update the user permissions
-		log.Debug().Uint64("subspace", subspace.ID).Msg("refreshing permissions")
+		log.Info().Uint64("subspace", subspace.ID).Msg("refreshing permissions")
 		permissions, err := m.queryAllUserPermissions(height, subspace.ID)
 		if err != nil {
 			return fmt.Errorf("error while querying user permissions: %s", err)
