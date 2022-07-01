@@ -2,6 +2,7 @@ package reports
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/desmos-labs/djuno/v2/types"
 
@@ -40,7 +41,12 @@ func (m *Module) updateReason(height int64, subspaceID uint64, reasonID uint32) 
 }
 
 // updateParams updates the stored params for the given height
-func (m *Module) updateParams(height int64) error {
+func (m *Module) updateParams() error {
+	height, err := m.node.LatestHeight()
+	if err != nil {
+		return fmt.Errorf("error while getting latest block height: %s", err)
+	}
+
 	// Get the params
 	res, err := m.client.Params(
 		remote.GetHeightRequestContext(context.Background(), height),
