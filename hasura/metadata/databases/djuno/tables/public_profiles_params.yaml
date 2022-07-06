@@ -1,0 +1,9 @@
+table:
+  schema: public
+  name: profiles_params
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - params
+      filter: {}

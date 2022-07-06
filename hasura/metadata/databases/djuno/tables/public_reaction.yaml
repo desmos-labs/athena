@@ -1,6 +1,6 @@
 table:
   schema: public
-  name: post_attachment
+  name: reaction
 object_relationships:
   - name: post
     using:
@@ -9,7 +9,8 @@ select_permissions:
   - role: anonymous
     permission:
       columns:
-        - content
+        - author_address
         - id
+        - value
       filter: {}
       allow_aggregations: true

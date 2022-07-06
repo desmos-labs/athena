@@ -1,29 +1,27 @@
 table:
-  name: application_link
   schema: public
+  name: application_link
 object_relationships:
-- name: profile
-  using:
-    foreign_key_constraint_on: user_address
+  - name: profile
+    using:
+      foreign_key_constraint_on: user_address
 array_relationships:
-- name: application_link_oracle_requests
-  using:
-    foreign_key_constraint_on:
-      column: application_link_id
-      table:
-        name: application_link_oracle_request
-        schema: public
+  - name: application_link_oracle_requests
+    using:
+      foreign_key_constraint_on:
+        column: application_link_id
+        table:
+          schema: public
+          name: application_link_oracle_request
 select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - id
-    - user_address
-    - application
-    - username
-    - state
-    - result
-    - creation_time
-    - height
-    filter: {}
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - application
+        - creation_time
+        - result
+        - state
+        - user_address
+        - username
+      filter: {}
+      allow_aggregations: true

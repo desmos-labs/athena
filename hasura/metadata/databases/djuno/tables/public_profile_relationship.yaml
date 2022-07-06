@@ -1,20 +1,19 @@
 table:
-  name: profile_relationship
   schema: public
+  name: profile_relationship
 object_relationships:
-- name: profile
-  using:
-    foreign_key_constraint_on: receiver_address
-- name: profileBySenderAddress
-  using:
-    foreign_key_constraint_on: sender_address
+  - name: receiver
+    using:
+      foreign_key_constraint_on: receiver_address
+  - name: sender
+    using:
+      foreign_key_constraint_on: sender_address
 select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - sender_address
-    - receiver_address
-    - subspace
-    - height
-    filter: {}
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - receiver_address
+        - sender_address
+        - subspace
+      filter: {}
+      allow_aggregations: true

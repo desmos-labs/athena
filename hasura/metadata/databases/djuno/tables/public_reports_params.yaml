@@ -1,0 +1,10 @@
+table:
+  schema: public
+  name: reports_params
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - params
+      filter: {}
+      allow_aggregations: true

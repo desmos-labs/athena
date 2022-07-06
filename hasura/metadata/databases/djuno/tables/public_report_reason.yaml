@@ -1,0 +1,16 @@
+table:
+  schema: public
+  name: report_reason
+object_relationships:
+  - name: reason
+    using:
+      foreign_key_constraint_on: reason_row_id
+  - name: report
+    using:
+      foreign_key_constraint_on: report_row_id
+select_permissions:
+  - role: anonymous
+    permission:
+      columns: []
+      filter: {}
+      allow_aggregations: true

@@ -1,15 +1,17 @@
 table:
   schema: public
-  name: post_attachment
+  name: subspace_registered_reaction
 object_relationships:
-  - name: post
+  - name: subspace
     using:
-      foreign_key_constraint_on: post_row_id
+      foreign_key_constraint_on: subspace_id
 select_permissions:
   - role: anonymous
     permission:
       columns:
-        - content
+        - display_value
         - id
+        - shorthand_code
+        - subspace_id
       filter: {}
       allow_aggregations: true

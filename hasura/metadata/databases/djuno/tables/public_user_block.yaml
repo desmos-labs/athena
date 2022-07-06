@@ -1,21 +1,20 @@
 table:
-  name: user_block
   schema: public
+  name: user_block
 object_relationships:
-- name: profile
-  using:
-    foreign_key_constraint_on: blocked_user_address
-- name: profileByBlockerAddress
-  using:
-    foreign_key_constraint_on: blocker_address
+  - name: blocked
+    using:
+      foreign_key_constraint_on: blocked_user_address
+  - name: blocker
+    using:
+      foreign_key_constraint_on: blocker_address
 select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - blocker_address
-    - blocked_user_address
-    - reason
-    - subspace
-    - height
-    filter: {}
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - blocked_user_address
+        - blocker_address
+        - reason
+        - subspace
+      filter: {}
+      allow_aggregations: true

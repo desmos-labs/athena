@@ -1,0 +1,76 @@
+table:
+  schema: public
+  name: subspace
+object_relationships:
+  - name: free_text_reactions_params
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: subspace_free_text_params
+  - name: registered_reactions_params
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: subspace_registered_reaction_params
+        insertion_order: null
+        column_mapping:
+          id: subspace_id
+array_relationships:
+  - name: posts
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: post
+  - name: registered_reactions
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: subspace_registered_reaction
+  - name: report_reasons
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: subspace_report_reason
+  - name: reports
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: report
+  - name: sections
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: subspace_section
+  - name: user_groups
+    using:
+      foreign_key_constraint_on:
+        column: subspace_id
+        table:
+          schema: public
+          name: subspace_user_group
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - creation_time
+        - creator_address
+        - description
+        - id
+        - name
+        - owner_address
+        - treasury_address
+      filter: {}
+      allow_aggregations: true

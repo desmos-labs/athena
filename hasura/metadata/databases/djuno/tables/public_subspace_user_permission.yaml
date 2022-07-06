@@ -1,15 +1,15 @@
 table:
   schema: public
-  name: post_attachment
+  name: subspace_user_permission
 object_relationships:
-  - name: post
+  - name: section
     using:
-      foreign_key_constraint_on: post_row_id
+      foreign_key_constraint_on: section_row_id
 select_permissions:
   - role: anonymous
     permission:
       columns:
-        - content
-        - id
+        - permissions
+        - user_address
       filter: {}
       allow_aggregations: true

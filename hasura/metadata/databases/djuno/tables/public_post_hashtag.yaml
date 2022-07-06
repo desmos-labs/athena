@@ -1,6 +1,6 @@
 table:
   schema: public
-  name: post_attachment
+  name: post_hashtag
 object_relationships:
   - name: post
     using:
@@ -9,7 +9,8 @@ select_permissions:
   - role: anonymous
     permission:
       columns:
-        - content
-        - id
+        - end_index
+        - start_index
+        - tag
       filter: {}
       allow_aggregations: true

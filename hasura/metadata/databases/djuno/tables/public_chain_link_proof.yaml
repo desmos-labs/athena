@@ -1,19 +1,16 @@
 table:
-  name: chain_link_proof
   schema: public
+  name: chain_link_proof
 object_relationships:
-- name: chain_link
-  using:
-    foreign_key_constraint_on: chain_link_id
+  - name: chain_link
+    using:
+      foreign_key_constraint_on: chain_link_id
 select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - id
-    - chain_link_id
-    - public_key
-    - plain_text
-    - signature
-    - height
-    filter: {}
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - plain_text
+        - public_key
+        - signature
+      filter: {}
+      allow_aggregations: true

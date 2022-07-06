@@ -1,0 +1,27 @@
+table:
+  schema: public
+  name: report
+object_relationships:
+  - name: subspace
+    using:
+      foreign_key_constraint_on: subspace_id
+array_relationships:
+  - name: reasons
+    using:
+      foreign_key_constraint_on:
+        column: report_row_id
+        table:
+          schema: public
+          name: report_reason
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - creation_date
+        - id
+        - message
+        - reporter_address
+        - subspace_id
+        - target
+      filter: {}
+      allow_aggregations: true

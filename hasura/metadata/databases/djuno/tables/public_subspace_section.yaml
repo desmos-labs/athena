@@ -1,0 +1,49 @@
+table:
+  schema: public
+  name: subspace_section
+object_relationships:
+  - name: parent
+    using:
+      foreign_key_constraint_on: parent_row_id
+  - name: subspace
+    using:
+      foreign_key_constraint_on: subspace_id
+array_relationships:
+  - name: children
+    using:
+      foreign_key_constraint_on:
+        column: parent_row_id
+        table:
+          schema: public
+          name: subspace_section
+  - name: posts
+    using:
+      foreign_key_constraint_on:
+        column: section_row_id
+        table:
+          schema: public
+          name: post
+  - name: user_groups
+    using:
+      foreign_key_constraint_on:
+        column: section_row_id
+        table:
+          schema: public
+          name: subspace_user_group
+  - name: user_permissions
+    using:
+      foreign_key_constraint_on:
+        column: section_row_id
+        table:
+          schema: public
+          name: subspace_user_permission
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - description
+        - id
+        - name
+        - subspace_id
+      filter: {}
+      allow_aggregations: true

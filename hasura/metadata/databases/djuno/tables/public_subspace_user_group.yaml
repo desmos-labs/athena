@@ -1,0 +1,29 @@
+table:
+  schema: public
+  name: subspace_user_group
+object_relationships:
+  - name: section
+    using:
+      foreign_key_constraint_on: section_row_id
+  - name: subspace
+    using:
+      foreign_key_constraint_on: subspace_id
+array_relationships:
+  - name: members
+    using:
+      foreign_key_constraint_on:
+        column: group_row_id
+        table:
+          schema: public
+          name: subspace_user_group_member
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - description
+        - id
+        - name
+        - permissions
+        - subspace_id
+      filter: {}
+      allow_aggregations: true
