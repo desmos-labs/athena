@@ -14,7 +14,6 @@
 - "!include public_post_url.yaml"
 - "!include public_posts_params.yaml"
 - "!include public_profile.yaml"
-- "!include public_profile_relationship.yaml"
 - "!include public_profiles_params.yaml"
 - "!include public_reaction.yaml"
 - "!include public_report.yaml"
@@ -30,3 +29,4 @@
 - "!include public_subspace_user_group_member.yaml"
 - "!include public_subspace_user_permission.yaml"
 - "!include public_user_block.yaml"
+- "!include public_user_relationship.yaml"
