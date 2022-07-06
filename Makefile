@@ -1,14 +1,15 @@
 VERSION := $(shell echo $(shell git describe --always) | sed 's/^v//')
+TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 COMMIT := $(shell git log -1 --format='%H')
-DOCKER := $(shell which docker)
 BUILDDIR ?= $(CURDIR)/build
+DOCKER := $(shell which docker)
 
 export GO111MODULE = on
 
 all: lint test-unit install
 
 ###############################################################################
-# Build / Install
+###                                Build flags                              ###
 ###############################################################################
 
 # These lines here are essential to include the muslc library for static linking of libraries
@@ -24,12 +25,14 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 # Process linker flags
 ldflags = -X 'github.com/forbole/juno/v3/cmd.Version=$(VERSION)' \
  	-X 'github.com/forbole/juno/v3/cmd.Commit=$(COMMIT)' \
-  	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+  	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+  	-X "github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)"
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 ifeq ($(LINK_STATICALLY),true)
   ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
 endif
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 ###############################################################################
 ###                                  Build                                  ###
