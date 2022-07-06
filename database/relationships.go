@@ -43,7 +43,7 @@ ON CONFLICT ON CONSTRAINT unique_blockage DO UPDATE
     SET blocker_address = excluded.blocker_address,
     	blocked_address = excluded.blocked_address,
     	reason = excluded.reason, 
-    	subspace = excluded.subspace_id
+    	subspace_id = excluded.subspace_id
 WHERE user_block.height <= excluded.height`
 	_, err := db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.Reason, block.SubspaceID, block.Height)
 	return err
@@ -53,7 +53,7 @@ WHERE user_block.height <= excluded.height`
 func (db Db) DeleteBlockage(block types.Blockage) error {
 	stmt := `
 DELETE FROM user_block 
-WHERE blocker_address = $1 AND blocked_user_address = $2 AND subspace_id = $3 AND height <= $4`
+WHERE blocker_address = $1 AND blocked_address = $2 AND subspace_id = $3 AND height <= $4`
 	_, err := db.Sql.Exec(stmt, block.Blocker, block.Blocked, block.SubspaceID, block.Height)
 	return err
 }
