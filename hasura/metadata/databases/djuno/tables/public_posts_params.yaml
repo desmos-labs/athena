@@ -7,4 +7,4 @@ select_permissions:
       columns:
         - params
       filter: {}
-      allow_aggregations: true
+      limit: 1

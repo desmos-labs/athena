@@ -14,4 +14,4 @@ select_permissions:
         - shorthand_code
         - subspace_id
       filter: {}
-      allow_aggregations: true
+      limit: 1

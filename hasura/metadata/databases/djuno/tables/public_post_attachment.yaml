@@ -12,4 +12,5 @@ select_permissions:
         - content
         - id
       filter: {}
+      limit: 50
       allow_aggregations: true

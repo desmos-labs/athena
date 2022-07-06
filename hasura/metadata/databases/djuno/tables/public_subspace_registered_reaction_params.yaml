@@ -12,4 +12,4 @@ select_permissions:
         - enabled
         - subspace_id
       filter: {}
-      allow_aggregations: true
+      limit: 1

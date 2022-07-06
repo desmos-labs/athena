@@ -73,4 +73,4 @@ select_permissions:
         - owner_address
         - treasury_address
       filter: {}
-      allow_aggregations: true
+      limit: 20

@@ -10,6 +10,7 @@ import (
 	parseposts "github.com/desmos-labs/djuno/v2/cmd/parse/posts"
 	parseprofiles "github.com/desmos-labs/djuno/v2/cmd/parse/profiles"
 	parsereactions "github.com/desmos-labs/djuno/v2/cmd/parse/reactions"
+	parserelationships "github.com/desmos-labs/djuno/v2/cmd/parse/relationships"
 	parsereports "github.com/desmos-labs/djuno/v2/cmd/parse/reports"
 	parsesubspaces "github.com/desmos-labs/djuno/v2/cmd/parse/subspaces"
 )
@@ -26,6 +27,7 @@ func NewParseCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 		parsegenesis.NewGenesisCmd(parseCfg),
 		parseblocks.NewBlocksCmd(parseCfg),
 		parseprofiles.NewProfilesCmd(parseCfg),
+		parserelationships.NewRelationshipsCmd(parseCfg),
 		parsesubspaces.NewSubspacesCmd(parseCfg),
 		parseposts.NewPostsCmd(parseCfg),
 		parsereactions.NewReactionsCmd(parseCfg),

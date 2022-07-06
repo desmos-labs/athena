@@ -11,4 +11,5 @@ select_permissions:
       columns:
         - member_address
       filter: {}
+      limit: 50
       allow_aggregations: true

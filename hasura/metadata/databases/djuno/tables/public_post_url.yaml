@@ -14,4 +14,4 @@ select_permissions:
         - start_index
         - url
       filter: {}
-      allow_aggregations: true
+      limit: 50

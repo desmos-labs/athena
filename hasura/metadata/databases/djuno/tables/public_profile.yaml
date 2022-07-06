@@ -9,6 +9,13 @@ array_relationships:
         table:
           schema: public
           name: application_link
+  - name: blocked_users
+    using:
+      foreign_key_constraint_on:
+        column: blocked_address
+        table:
+          schema: public
+          name: user_block
   - name: chain_links
     using:
       foreign_key_constraint_on:
@@ -16,48 +23,34 @@ array_relationships:
         table:
           schema: public
           name: chain_link
-  - name: dtagTransferRequestsBySenderAddress
+  - name: followage
+    using:
+      foreign_key_constraint_on:
+        column: counterparty_address
+        table:
+          schema: public
+          name: user_relationship
+  - name: following
+    using:
+      foreign_key_constraint_on:
+        column: creator_address
+        table:
+          schema: public
+          name: user_relationship
+  - name: incoming_dtag_transfer_requests
+    using:
+      foreign_key_constraint_on:
+        column: receiver_address
+        table:
+          schema: public
+          name: dtag_transfer_requests
+  - name: outgoing_dtag_transfer_requests
     using:
       foreign_key_constraint_on:
         column: sender_address
         table:
           schema: public
           name: dtag_transfer_requests
-  - name: dtag_transfer_requests
-    using:
-      foreign_key_constraint_on:
-        column: receiver_address
-        table:
-          schema: public
-          name: dtag_transfer_requests
-  - name: profileRelationshipsBySenderAddress
-    using:
-      foreign_key_constraint_on:
-        column: sender_address
-        table:
-          schema: public
-          name: profile_relationship
-  - name: profile_relationships
-    using:
-      foreign_key_constraint_on:
-        column: receiver_address
-        table:
-          schema: public
-          name: profile_relationship
-  - name: userBlocksByBlockerAddress
-    using:
-      foreign_key_constraint_on:
-        column: blocker_address
-        table:
-          schema: public
-          name: user_block
-  - name: user_blocks
-    using:
-      foreign_key_constraint_on:
-        column: blocked_user_address
-        table:
-          schema: public
-          name: user_block
 select_permissions:
   - role: anonymous
     permission:
@@ -70,4 +63,4 @@ select_permissions:
         - nickname
         - profile_pic
       filter: {}
-      allow_aggregations: true
+      limit: 20

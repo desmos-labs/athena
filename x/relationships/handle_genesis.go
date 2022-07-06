@@ -25,7 +25,7 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 
 	// Save blockages
 	for _, blockage := range genState.Blocks {
-		err := m.db.SaveBlockage(types.NewBlockage(blockage, doc.InitialHeight))
+		err := m.db.SaveUserBlock(types.NewBlockage(blockage, doc.InitialHeight))
 		if err != nil {
 			return err
 		}
