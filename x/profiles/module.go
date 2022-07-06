@@ -2,9 +2,10 @@ package profiles
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 	"github.com/forbole/juno/v3/node"
 	"google.golang.org/grpc"
+
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/database"
 

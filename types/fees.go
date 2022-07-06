@@ -1,7 +1,7 @@
 package types
 
 import (
-	feestypes "github.com/desmos-labs/desmos/v3/x/fees/types"
+	feestypes "github.com/desmos-labs/desmos/v4/x/fees/types"
 )
 
 type FeesParams struct {

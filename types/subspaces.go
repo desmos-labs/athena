@@ -1,6 +1,8 @@
 package types
 
-import subspacestypes "github.com/desmos-labs/desmos/v3/x/subspaces/types"
+import (
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+)
 
 type Subspace struct {
 	subspacestypes.Subspace
@@ -14,15 +16,27 @@ func NewSubspace(subspace subspacestypes.Subspace, height int64) Subspace {
 	}
 }
 
-type UserPermission struct {
-	subspacestypes.ACLEntry
+type Section struct {
+	subspacestypes.Section
 	Height int64
 }
 
-func NewUserPermission(permission subspacestypes.ACLEntry, height int64) UserPermission {
+func NewSection(section subspacestypes.Section, height int64) Section {
+	return Section{
+		Section: section,
+		Height:  height,
+	}
+}
+
+type UserPermission struct {
+	subspacestypes.UserPermission
+	Height int64
+}
+
+func NewUserPermission(permission subspacestypes.UserPermission, height int64) UserPermission {
 	return UserPermission{
-		ACLEntry: permission,
-		Height:   height,
+		UserPermission: permission,
+		Height:         height,
 	}
 }
 

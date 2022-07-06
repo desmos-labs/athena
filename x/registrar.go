@@ -3,6 +3,11 @@ package x
 import (
 	"fmt"
 
+	"github.com/desmos-labs/djuno/v2/x/posts"
+	"github.com/desmos-labs/djuno/v2/x/reactions"
+
+	"github.com/desmos-labs/djuno/v2/x/reports"
+
 	"github.com/desmos-labs/djuno/v2/x/subspaces"
 
 	"github.com/desmos-labs/djuno/v2/x/fees"
@@ -50,11 +55,17 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	profilesModule := profiles.NewModule(node, grpcConnection, cdc, desmosDb)
 	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, desmosDb)
 	subspacesModule := subspaces.NewModule(node, grpcConnection, cdc, desmosDb)
+	reportsModule := reports.NewModule(node, grpcConnection, cdc, desmosDb)
+	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
+	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
 
 	return []modules.Module{
 		feesModule,
 		profilesModule,
 		relationshipsModule,
 		subspacesModule,
+		reportsModule,
+		postsModule,
+		reactionsModule,
 	}
 }

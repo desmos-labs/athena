@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"time"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v3/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 
@@ -15,7 +15,7 @@ import (
 
 	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 
-	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 )
 
 func (suite *DbTestSuite) TestDesmosDb_SaveUserIfNotExisting() {

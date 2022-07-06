@@ -7,7 +7,11 @@ import (
 	parseblocks "github.com/forbole/juno/v3/cmd/parse/blocks"
 	parsegenesis "github.com/forbole/juno/v3/cmd/parse/genesis"
 
+	parseposts "github.com/desmos-labs/djuno/v2/cmd/parse/posts"
 	parseprofiles "github.com/desmos-labs/djuno/v2/cmd/parse/profiles"
+	parsereactions "github.com/desmos-labs/djuno/v2/cmd/parse/reactions"
+	parsereports "github.com/desmos-labs/djuno/v2/cmd/parse/reports"
+	parsesubspaces "github.com/desmos-labs/djuno/v2/cmd/parse/subspaces"
 )
 
 // NewParseCmd returns the Cobra command allowing to parse some data without having to re-sync the whole database
@@ -22,6 +26,10 @@ func NewParseCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 		parsegenesis.NewGenesisCmd(parseCfg),
 		parseblocks.NewBlocksCmd(parseCfg),
 		parseprofiles.NewProfilesCmd(parseCfg),
+		parsesubspaces.NewSubspacesCmd(parseCfg),
+		parseposts.NewPostsCmd(parseCfg),
+		parsereactions.NewReactionsCmd(parseCfg),
+		parsereports.NewReportsCmd(parseCfg),
 	)
 
 	return cmd

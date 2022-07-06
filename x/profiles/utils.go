@@ -5,8 +5,9 @@ import (
 	"fmt"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 	"github.com/forbole/juno/v3/node/remote"
+
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

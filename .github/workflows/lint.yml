@@ -14,10 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - name: Checkout
+      - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Get diff
+      - name: Setup Go 🧰
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
+
+      - name: Compute diff 📜
         uses: technote-space/get-diff-action@v6.1.0
         with:
           SUFFIX_FILTER: |
@@ -25,10 +30,11 @@ jobs:
             .mod
             .sum
 
-      - name: Lint
+      - name: Run lint ✅
         uses: golangci/golangci-lint-action@v3.2.0
         with:
+          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: v1.28
           args: --timeout 10m
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.github_token }}
         if: "env.GIT_DIFF != ''"

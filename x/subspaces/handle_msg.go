@@ -6,8 +6,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	subspacestypes "github.com/desmos-labs/desmos/v3/x/subspaces/types"
 	juno "github.com/forbole/juno/v3/types"
+
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -26,7 +27,19 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgEditSubspace(tx, desmosMsg)
 
 	case *subspacestypes.MsgDeleteSubspace:
-		return m.handleMsgDeleteSubspace(desmosMsg)
+		return m.handleMsgDeleteSubspace(tx, desmosMsg)
+
+	case *subspacestypes.MsgCreateSection:
+		return m.handleMsgCreateSection(tx, index, desmosMsg)
+
+	case *subspacestypes.MsgEditSection:
+		return m.handleMsgEditSection(tx, desmosMsg)
+
+	case *subspacestypes.MsgMoveSection:
+		return m.handleMsgMoveSection(tx, desmosMsg)
+
+	case *subspacestypes.MsgDeleteSection:
+		return m.handleMsgDeleteSection(tx, desmosMsg)
 
 	case *subspacestypes.MsgCreateUserGroup:
 		return m.handleMsgCreateUserGroup(tx, index, desmosMsg)
@@ -34,11 +47,14 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 	case *subspacestypes.MsgEditUserGroup:
 		return m.handleMsgEditUserGroup(tx, desmosMsg)
 
+	case *subspacestypes.MsgMoveUserGroup:
+		return m.handleMsgMoveUserGroup(tx, desmosMsg)
+
 	case *subspacestypes.MsgSetUserGroupPermissions:
 		return m.handleMsgSetUserGroupPermissions(tx, desmosMsg)
 
 	case *subspacestypes.MsgDeleteUserGroup:
-		return m.handleMsgDeleteUserGroup(desmosMsg)
+		return m.handleMsgDeleteUserGroup(tx, desmosMsg)
 
 	case *subspacestypes.MsgAddUserToUserGroup:
 		return m.handleMsgAddUserToUserGroup(tx, desmosMsg)
@@ -83,8 +99,44 @@ func (m *Module) handleMsgEditSubspace(tx *juno.Tx, msg *subspacestypes.MsgEditS
 }
 
 // handleMsgDeleteSubspace handles a MsgDeleteSubspace
-func (m *Module) handleMsgDeleteSubspace(msg *subspacestypes.MsgDeleteSubspace) error {
-	return m.db.DeleteSubspace(msg.SubspaceID)
+func (m *Module) handleMsgDeleteSubspace(tx *juno.Tx, msg *subspacestypes.MsgDeleteSubspace) error {
+	return m.db.DeleteSubspace(tx.Height, msg.SubspaceID)
+}
+
+// -----------------------------------------------------------------------------------------------------
+
+// handleMsgCreateSection handles a MsgCreateSection
+func (m *Module) handleMsgCreateSection(tx *juno.Tx, index int, msg *subspacestypes.MsgCreateSection) error {
+	// Get the subspace id
+	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreateSubspace)
+	if err != nil {
+		return err
+	}
+	sectionIDStr, err := tx.FindAttributeByKey(event, subspacestypes.AttributeKeySectionID)
+	if err != nil {
+		return err
+	}
+	sectionID, err := subspacestypes.ParseSectionID(sectionIDStr)
+	if err != nil {
+		return err
+	}
+
+	return m.updateSection(tx.Height, msg.SubspaceID, sectionID)
+}
+
+// handleMsgEditSection handles a MsgEditSection
+func (m *Module) handleMsgEditSection(tx *juno.Tx, msg *subspacestypes.MsgEditSection) error {
+	return m.updateSection(tx.Height, msg.SubspaceID, msg.SectionID)
+}
+
+// handleMsgMoveSection handles a MsgMoveSection
+func (m *Module) handleMsgMoveSection(tx *juno.Tx, msg *subspacestypes.MsgMoveSection) error {
+	return m.updateSection(tx.Height, msg.SubspaceID, msg.SectionID)
+}
+
+// handleMsgDeleteSection handles a MsgDeleteSection
+func (m *Module) handleMsgDeleteSection(tx *juno.Tx, msg *subspacestypes.MsgDeleteSection) error {
+	return m.db.DeleteSection(tx.Height, msg.SubspaceID, msg.SectionID)
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -113,14 +165,19 @@ func (m *Module) handleMsgEditUserGroup(tx *juno.Tx, msg *subspacestypes.MsgEdit
 	return m.updateUserGroup(tx.Height, msg.SubspaceID, msg.GroupID)
 }
 
+// handleMsgMoveUserGroup handles a MsgMoveUserGroup
+func (m *Module) handleMsgMoveUserGroup(tx *juno.Tx, msg *subspacestypes.MsgMoveUserGroup) error {
+	return m.updateUserGroup(tx.Height, msg.SubspaceID, msg.GroupID)
+}
+
 // handleMsgSetUserGroupPermissions handles a MsgSetUserGroupPermissions properly
 func (m *Module) handleMsgSetUserGroupPermissions(tx *juno.Tx, msg *subspacestypes.MsgSetUserGroupPermissions) error {
 	return m.updateUserGroup(tx.Height, msg.SubspaceID, msg.GroupID)
 }
 
 // handleMsgDeleteUserGroup handles a MsgDeleteUserGroup
-func (m *Module) handleMsgDeleteUserGroup(msg *subspacestypes.MsgDeleteUserGroup) error {
-	return m.db.DeleteUserGroup(msg.SubspaceID, msg.GroupID)
+func (m *Module) handleMsgDeleteUserGroup(tx *juno.Tx, msg *subspacestypes.MsgDeleteUserGroup) error {
+	return m.db.DeleteUserGroup(tx.Height, msg.SubspaceID, msg.GroupID)
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -139,5 +196,5 @@ func (m *Module) handleMsgRemoveUserFromUserGroup(tx *juno.Tx, msg *subspacestyp
 
 // handleMsgSetUserPermissions handles a MsgSetUserPermissions
 func (m *Module) handleMsgSetUserPermissions(tx *juno.Tx, msg *subspacestypes.MsgSetUserPermissions) error {
-	return m.updateUserPermissions(tx.Height, msg.SubspaceID, msg.User)
+	return m.updateUserPermissions(tx.Height, msg.SubspaceID, msg.SectionID, msg.User)
 }

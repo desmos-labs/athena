@@ -13,9 +13,10 @@ import (
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
-	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
+	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	juno "github.com/forbole/juno/v3/types"
+
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

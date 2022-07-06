@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/forbole/juno/v3/node/builder"
-
-	profilestypes "github.com/desmos-labs/desmos/v3/x/profiles/types"
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
 	"github.com/forbole/juno/v3/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/utils"
@@ -24,7 +23,7 @@ import (
 func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "chain-links",
-		Short: "Fix the chain links stored by re-parsing them",
+		Short: "Fetch the chain links stored on chain and save them",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Debug().Msg("parsing chain links")
 
@@ -47,13 +46,8 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			node, err := builder.BuildNode(config.Cfg.Node, parseCtx.EncodingConfig)
-			if err != nil {
-				return err
-			}
-
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-			profilesModule := profiles.NewModule(node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
+			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 
 			for _, address := range addresses {
 				log.Debug().Str("address", address).Msg("querying transactions")
