@@ -24,4 +24,4 @@ select_permissions:
         - user_address
         - username
       filter: {}
-      allow_aggregations: true
+      limit: 50

@@ -13,4 +13,4 @@ select_permissions:
         - start_index
         - tag
       filter: {}
-      allow_aggregations: true
+      limit: 50

@@ -16,4 +16,5 @@ select_permissions:
         - sender_address
         - subspace
       filter: {}
+      limit: 50
       allow_aggregations: true

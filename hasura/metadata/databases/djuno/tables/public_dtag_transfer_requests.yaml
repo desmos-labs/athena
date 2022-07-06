@@ -15,4 +15,4 @@ select_permissions:
         - receiver_address
         - sender_address
       filter: {}
-      allow_aggregations: true
+      limit: 50

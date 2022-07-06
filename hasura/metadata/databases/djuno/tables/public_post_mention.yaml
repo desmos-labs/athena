@@ -22,4 +22,4 @@ select_permissions:
         - mention_address
         - start_index
       filter: {}
-      allow_aggregations: true
+      limit: 50

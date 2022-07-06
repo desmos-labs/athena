@@ -24,4 +24,5 @@ select_permissions:
         - subspace_id
         - target
       filter: {}
+      limit: 50
       allow_aggregations: true
