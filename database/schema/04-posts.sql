@@ -51,6 +51,15 @@ CREATE TABLE post_url
     display_value TEXT
 );
 
+CREATE TABLE post_tag
+(
+    /* Required for Hasura links */
+    row_id      SERIAL NOT NULL PRIMARY KEY,
+
+    post_row_id BIGINT NOT NULL REFERENCES post (row_id) ON DELETE CASCADE,
+    tag         TEXT   NOT NULL
+);
+
 CREATE TABLE post_reference
 (
     /* Required for Hasura links */
