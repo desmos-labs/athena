@@ -1,18 +1,18 @@
-CREATE TABLE profile_relationship
+CREATE TABLE user_relationship
 (
-    sender_address   TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
-    receiver_address TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
-    subspace         TEXT   NOT NULL,
-    height           BIGINT NOT NULL,
-    CONSTRAINT unique_relationship UNIQUE (sender_address, receiver_address, subspace)
+    creator_address      TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
+    counterparty_address TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
+    subspace_id          BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
+    height               BIGINT NOT NULL,
+    CONSTRAINT unique_relationship UNIQUE (creator_address, counterparty_address, subspace_id)
 );
 
 CREATE TABLE user_block
 (
-    blocker_address      TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
-    blocked_user_address TEXT   NOT NULL REFERENCES profile (address),
-    reason               TEXT,
-    subspace             TEXT   NOT NULL,
-    height               BIGINT NOT NULL,
-    CONSTRAINT unique_blockage UNIQUE (blocker_address, blocked_user_address, subspace)
+    blocker_address TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
+    blocked_address TEXT   NOT NULL REFERENCES profile (address) ON DELETE CASCADE,
+    reason          TEXT,
+    subspace_id     BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,
+    height          BIGINT NOT NULL,
+    CONSTRAINT unique_blockage UNIQUE (blocker_address, blocked_address, subspace_id)
 );

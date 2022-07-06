@@ -80,7 +80,7 @@ func (m *Module) handleMsgBlockUser(tx *juno.Tx, msg *relationshipstypes.MsgBloc
 		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
-	return m.db.SaveBlockage(types.NewBlockage(
+	return m.db.SaveUserBlock(types.NewBlockage(
 		relationshipstypes.NewUserBlock(
 			msg.Blocker,
 			msg.Blocked,
@@ -93,7 +93,7 @@ func (m *Module) handleMsgBlockUser(tx *juno.Tx, msg *relationshipstypes.MsgBloc
 
 // handleMsgUnblockUser allows to handle a MsgUnblockUser properly
 func (m *Module) handleMsgUnblockUser(tx *juno.Tx, msg *relationshipstypes.MsgUnblockUser) error {
-	return m.db.RemoveBlockage(types.NewBlockage(
+	return m.db.DeleteBlockage(types.NewBlockage(
 		relationshipstypes.NewUserBlock(msg.Blocker, msg.Blocked, "", msg.SubspaceID),
 		tx.Height,
 	))

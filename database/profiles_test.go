@@ -201,7 +201,7 @@ func (suite *DbTestSuite) saveBlockage() types.Blockage {
 	)
 
 	// Save the blockage
-	err := suite.database.SaveBlockage(blockage)
+	err := suite.database.SaveUserBlock(blockage)
 	suite.Require().NoError(err)
 
 	return blockage
@@ -210,7 +210,7 @@ func (suite *DbTestSuite) saveBlockage() types.Blockage {
 func (suite *DbTestSuite) TestDesmosDB_SaveUserBlockage() {
 	blockage := suite.saveBlockage()
 
-	err := suite.database.SaveBlockage(blockage)
+	err := suite.database.SaveUserBlock(blockage)
 	suite.Require().NoError(err, "double inserting blockage should return no error")
 
 	var rows []dbtypes.BlockageRow
@@ -230,7 +230,7 @@ func (suite *DbTestSuite) TestDesmosDB_SaveUserBlockage() {
 func (suite *DbTestSuite) TestDesmosDB_RemoveUserBlockage() {
 	blockage := suite.saveBlockage()
 
-	err := suite.database.RemoveBlockage(blockage)
+	err := suite.database.DeleteBlockage(blockage)
 	suite.Require().NoError(err)
 
 	var rows []dbtypes.BlockageRow
@@ -239,7 +239,7 @@ func (suite *DbTestSuite) TestDesmosDB_RemoveUserBlockage() {
 
 	suite.Require().Len(rows, 0)
 
-	err = suite.database.RemoveBlockage(blockage)
+	err = suite.database.DeleteBlockage(blockage)
 	suite.Require().NoError(err, "deleting non existing blockage should return no error")
 }
 
