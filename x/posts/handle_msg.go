@@ -1,8 +1,9 @@
 package posts
 
 import (
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	"github.com/gogo/protobuf/proto"
+
+	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 

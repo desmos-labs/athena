@@ -6,8 +6,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
 	"github.com/forbole/juno/v3/node/remote"
+
+	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

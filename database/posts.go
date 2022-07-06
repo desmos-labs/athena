@@ -219,7 +219,7 @@ SELECT row_id FROM post_attachment WHERE post_row_id = (
 ) and id = $3`
 
 	var rowID int64
-	err := db.Sql.QueryRow(stmt, subspaceID, postID).Scan(&rowID)
+	err := db.Sql.QueryRow(stmt, subspaceID, postID, attachmentID).Scan(&rowID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return rowID, nil
 	}

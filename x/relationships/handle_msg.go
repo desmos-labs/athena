@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 	"github.com/gogo/protobuf/proto"
+
+	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 
 	"github.com/rs/zerolog/log"
 

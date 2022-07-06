@@ -38,6 +38,9 @@ RETURNING row_id`
 		report.CreationDate,
 		report.Height,
 	).Scan(&reportRowID)
+	if err != nil {
+		return err
+	}
 
 	err = db.insertReportReasons(reportRowID, report.SubspaceID, report.ReasonsIDs)
 	if err != nil {

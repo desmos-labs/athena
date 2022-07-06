@@ -2,10 +2,11 @@ package posts
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	"github.com/forbole/juno/v3/modules"
 	"github.com/forbole/juno/v3/node"
 	"google.golang.org/grpc"
+
+	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/database"
 )

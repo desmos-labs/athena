@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"sort"
 
-	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
 	"github.com/forbole/juno/v3/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/utils"

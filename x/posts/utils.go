@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	"github.com/forbole/juno/v3/node/remote"
+
+	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

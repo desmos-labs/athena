@@ -1,8 +1,9 @@
 package reports
 
 import (
-	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 	"github.com/gogo/protobuf/proto"
+
+	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 
 	"github.com/rs/zerolog/log"
 

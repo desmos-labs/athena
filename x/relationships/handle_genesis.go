@@ -3,8 +3,9 @@ package relationships
 import (
 	"encoding/json"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

@@ -9,8 +9,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	"github.com/forbole/juno/v3/node/remote"
+
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	"github.com/desmos-labs/djuno/v2/utils"

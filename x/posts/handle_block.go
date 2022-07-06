@@ -1,10 +1,11 @@
 package posts
 
 import (
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	juno "github.com/forbole/juno/v3/types"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 )
 
 // HandleBlock implements modules.BlockModule

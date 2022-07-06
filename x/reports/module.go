@@ -2,10 +2,11 @@ package reports
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 	"github.com/forbole/juno/v3/modules"
 	"github.com/forbole/juno/v3/node"
 	"google.golang.org/grpc"
+
+	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
 
 	"github.com/desmos-labs/djuno/v2/database"
 )

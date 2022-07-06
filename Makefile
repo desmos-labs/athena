@@ -25,27 +25,46 @@ ldflags = -X 'github.com/forbole/juno/v3/cmd.Version=$(VERSION)' \
  	-X 'github.com/forbole/juno/v3/cmd.Commit=$(COMMIT)' \
   	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
 
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 ifeq ($(LINK_STATICALLY),true)
   ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
 endif
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+###############################################################################
+###                                  Build                                  ###
+###############################################################################
+BUILD_TARGETS := build install
 
-build: go.sum
-ifeq ($(OS),Windows_NT)
-	@echo "building djuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/djuno.exe ./cmd/djuno
-else
-	@echo "building djuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/djuno ./cmd/djuno
-endif
+build: BUILD_ARGS=-o $(BUILDDIR)
 
-install: go.sum
-	@echo "installing djuno binary..."
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/djuno
+$(BUILD_TARGETS): go.sum $(BUILDDIR)/
+	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+
+$(BUILDDIR)/:
+	mkdir -p $(BUILDDIR)/
+
+.PHONY: build install
 
 ###############################################################################
-# Tests / CI
+###                          Tools & Dependencies                           ###
+###############################################################################
+
+go-mod-cache: go.sum
+	@echo "--> Download go modules to local cache"
+	@go mod download
+
+go.sum: go.mod
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+	@go mod tidy
+
+clean:
+	rm -rf $(BUILDDIR)/
+
+.PHONY: go-mod-cache go.sum clean
+
+###############################################################################
+###                           Tests & Simulation                            ###
 ###############################################################################
 
 coverage:
@@ -64,20 +83,27 @@ test-unit: start-docker-test
 	@echo "Executing unit tests..."
 	@go test -mod=readonly -v -coverprofile coverage.txt ./...
 
+.PHONY: coverage stop-docker-test start-docker-test test-unit
+
+###############################################################################
+###                                Linting                                  ###
+###############################################################################
+golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
+
 lint:
-	golangci-lint run --out-format=tab
+	@echo "--> Running linter"
+	@go run $(golangci_lint_cmd) run --timeout=10m
 
 lint-fix:
-	golangci-lint run --fix --out-format=tab --issues-exit-code=0
+	@echo "--> Running linter"
+	@go run $(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
+
 .PHONY: lint lint-fix
 
 format:
-	find . -name '*.go' -type f -not -path "*.git*" | xargs gofmt -w -s
-	find . -name '*.go' -type f -not -path "*.git*" | xargs misspell -w
-	find . -name '*.go' -type f -not -path "*.git*" | xargs goimports -w -local github.com/desmos-labs/djuno
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs gofmt -w -s
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs misspell -w
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs goimports -w -local github.com/desmos-labs/desmos
 .PHONY: format
 
-clean:
-	rm -f tools-stamp ./build/**
-
-.PHONY: install build ci-test ci-lint coverage clean start-docker-test
+.PHONY: lint lint-fix format

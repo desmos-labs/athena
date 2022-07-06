@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Prepare tags
+      - name: Prepare tags 🏷️
         id: prep
         run: |
           DOCKER_IMAGE=desmoslabs/djuno
@@ -51,7 +51,7 @@ jobs:
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
-      - name: Build and push
+      - name: Build and push 📤
         uses: docker/build-push-action@v3
         with:
           context: .
