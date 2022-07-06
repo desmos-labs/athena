@@ -24,4 +24,4 @@ RUN cp /lib/libwasmvm_muslc.${arch}.a /usr/local/lib/libwasmvm_muslc.a
 # force it to use static lib (from above) not standard libgo_cosmwasm.so file
 RUN BUILD_TAGS=muslc GOOS=linux GOARCH=amd64 LEDGER_ENABLED=true LINK_STATICALLY=true make build
 RUN echo "Ensuring binary is statically linked ..." \
-  && (file ./build/desmos | grep "statically linked")
+  && (file ./build/djuno | grep "statically linked")

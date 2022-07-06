@@ -25,7 +25,7 @@ RUN apk add --update ca-certificates
 RUN apk add --no-cache bash
 
 # Copy over binaries from the build-env
-COPY --from=desmoslabs/builder:latest /code/build/desmos /usr/bin/desmos
+COPY --from=desmoslabs/builder:latest /code/build/djuno /usr/bin/djuno
 
 # Run djuno by default, omit entrypoint to ease using container with desmos
 CMD ["djuno"]
