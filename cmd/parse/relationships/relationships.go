@@ -51,7 +51,7 @@ func relationshipsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			log.Info().Int64("height", height).Msg("refreshing reasons")
+			log.Info().Int64("height", height).Msg("refreshing relationships")
 			for _, subspace := range subspaces {
 				err := relationshipsModule.RefreshRelationshipsData(height, subspace.ID)
 				if err != nil {
