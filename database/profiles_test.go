@@ -2,8 +2,9 @@ package database_test
 
 import (
 	"encoding/hex"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	"time"
+
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 

@@ -79,6 +79,12 @@ RETURNING row_id`
 		return err
 	}
 
+	// Insert the tags
+	err = db.savePostTags(rowID, post.Tags)
+	if err != nil {
+		return err
+	}
+
 	// Insert the reference
 	err = db.savePostReferences(rowID, post.ReferencedPosts)
 	if err != nil {
@@ -111,12 +117,19 @@ func (db *Db) savePostEntities(postRowID uint64, entities *poststypes.Entities) 
 	return nil
 }
 
-func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.Tag) error {
+func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.TextTag) error {
+	// Delete all hashtags first
+	stmt := `DELETE FROM post_hashtag WHERE post_row_id = $1`
+	_, err := db.Sql.Exec(stmt, postRowID)
+	if err != nil {
+		return err
+	}
+
 	if hashtags == nil {
 		return nil
 	}
 
-	stmt := `INSERT INTO post_hashtag (post_row_id, start_index, end_index, tag) VALUES `
+	stmt = `INSERT INTO post_hashtag (post_row_id, start_index, end_index, tag) VALUES `
 
 	var vars []interface{}
 	for i, hashtag := range hashtags {
@@ -128,16 +141,23 @@ func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.Tag) erro
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err := db.Sql.Exec(stmt, vars...)
+	_, err = db.Sql.Exec(stmt, vars...)
 	return err
 }
 
-func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.Tag) error {
+func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.TextTag) error {
+	// Delete all mentions first
+	stmt := `DELETE FROM post_mention WHERE post_row_id = $1`
+	_, err := db.Sql.Exec(stmt, postRowID)
+	if err != nil {
+		return err
+	}
+
 	if mentions == nil {
 		return nil
 	}
 
-	stmt := `INSERT INTO post_mention (post_row_id, start_index, end_index, mention_address) VALUES `
+	stmt = `INSERT INTO post_mention (post_row_id, start_index, end_index, mention_address) VALUES `
 
 	var vars []interface{}
 	for i, mention := range mentions {
@@ -149,17 +169,24 @@ func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.Tag) erro
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err := db.Sql.Exec(stmt, vars...)
+	_, err = db.Sql.Exec(stmt, vars...)
 	return err
 }
 
 func (db *Db) savePostURLs(postRowID uint64, urls []poststypes.Url) error {
+	// Delete all urls first
+	stmt := `DELETE FROM post_url WHERE post_row_id = $1`
+	_, err := db.Sql.Exec(stmt, postRowID)
+	if err != nil {
+		return err
+	}
+
 	if urls == nil {
 		return nil
 	}
 
 	// Save the urls
-	stmt := `INSERT INTO post_url (post_row_id, start_index, end_index, url, display_value) VALUES `
+	stmt = `INSERT INTO post_url (post_row_id, start_index, end_index, url, display_value) VALUES `
 
 	var vars []interface{}
 	for i, url := range urls {
@@ -171,16 +198,52 @@ func (db *Db) savePostURLs(postRowID uint64, urls []poststypes.Url) error {
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err := db.Sql.Exec(stmt, vars...)
+	_, err = db.Sql.Exec(stmt, vars...)
+	return err
+}
+
+func (db *Db) savePostTags(postRowID uint64, tags []string) error {
+	// Delete all tags first
+	stmt := `DELETE FROM post_tag WHERE post_row_id = $1`
+	_, err := db.Sql.Exec(stmt, postRowID)
+	if err != nil {
+		return err
+	}
+
+	if tags == nil {
+		return nil
+	}
+
+	// Save the urls
+	stmt = `INSERT INTO post_tag (post_row_id, tag) VALUES `
+
+	var vars []interface{}
+	for i, tag := range tags {
+		ei := i * 2
+		stmt += fmt.Sprintf(`($%d, $%d),`, ei+1, ei+2)
+		vars = append(vars, postRowID, tag)
+	}
+
+	stmt = stmt[:len(stmt)-1] // Trim trailing ,
+	stmt += `ON CONFLICT DO NOTHING`
+
+	_, err = db.Sql.Exec(stmt, vars...)
 	return err
 }
 
 func (db *Db) savePostReferences(postRowID uint64, references []poststypes.PostReference) error {
+	// Delete all references first
+	stmt := `DELETE FROM post_hashtag WHERE post_row_id = $1`
+	_, err := db.Sql.Exec(stmt, postRowID)
+	if err != nil {
+		return err
+	}
+
 	if len(references) == 0 {
 		return nil
 	}
 
-	stmt := `INSERT INTO post_reference (post_row_id, type, reference_id, position_index) VALUES `
+	stmt = `INSERT INTO post_reference (post_row_id, type, reference_id, position_index) VALUES `
 
 	var vars []interface{}
 	for i, ref := range references {
@@ -192,7 +255,7 @@ func (db *Db) savePostReferences(postRowID uint64, references []poststypes.PostR
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err := db.Sql.Exec(stmt, vars...)
+	_, err = db.Sql.Exec(stmt, vars...)
 	return err
 }
 
