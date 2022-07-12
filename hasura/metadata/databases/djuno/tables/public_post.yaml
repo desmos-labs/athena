@@ -63,6 +63,13 @@ array_relationships:
         table:
           schema: public
           name: post_reference
+  - name: tags
+    using:
+      foreign_key_constraint_on:
+        column: post_row_id
+        table:
+          schema: public
+          name: post_tag
   - name: urls
     using:
       foreign_key_constraint_on:
@@ -83,4 +90,5 @@ select_permissions:
         - subspace_id
         - text
       filter: {}
+      limit: 100
       allow_aggregations: true
