@@ -20,6 +20,8 @@ import (
 
 	"github.com/forbole/juno/v3/modules/registrar"
 
+	"github.com/forbole/juno/v3/modules/telemetry"
+
 	"github.com/forbole/juno/v3/modules"
 
 	"github.com/desmos-labs/djuno/v2/database"
@@ -58,6 +60,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	reportsModule := reports.NewModule(node, grpcConnection, cdc, desmosDb)
 	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
 	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
+	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
 	return []modules.Module{
 		feesModule,
@@ -67,5 +70,6 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		reportsModule,
 		postsModule,
 		reactionsModule,
+		telemetryModule,
 	}
 }
