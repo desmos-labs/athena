@@ -2,6 +2,7 @@ package x
 
 import (
 	"fmt"
+	"github.com/desmos-labs/djuno/v2/x/notifications"
 
 	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/reactions"
@@ -60,6 +61,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	reportsModule := reports.NewModule(node, grpcConnection, cdc, desmosDb)
 	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
 	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule)
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
 	return []modules.Module{
@@ -70,6 +72,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		reportsModule,
 		postsModule,
 		reactionsModule,
+		notificationsModule,
 		telemetryModule,
 	}
 }
