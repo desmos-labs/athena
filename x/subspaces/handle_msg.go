@@ -157,7 +157,21 @@ func (m *Module) handleMsgCreateUserGroup(tx *juno.Tx, index int, msg *subspaces
 		return err
 	}
 
-	return m.updateUserGroup(tx.Height, msg.SubspaceID, groupID)
+	// Update the user group
+	err = m.updateUserGroup(tx.Height, msg.SubspaceID, groupID)
+	if err != nil {
+		return err
+	}
+
+	// Handle initial members
+	for _, member := range msg.InitialMembers {
+		err = m.db.AddUserToGroup(types.NewUserGroupMember(msg.SubspaceID, groupID, member, tx.Height))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // handleMsgEditUserGroup handles a MsgEditUserGroup
