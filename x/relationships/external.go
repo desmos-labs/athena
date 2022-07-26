@@ -36,6 +36,40 @@ func (m *Module) RefreshRelationshipsData(height int64, subspaceID uint64) error
 	return nil
 }
 
+// queryAllRelationships queries all the relationships for the given subspace from the node
+func (m *Module) queryAllRelationships(height int64, subspaceID uint64) ([]types.Relationship, error) {
+	var relationships []types.Relationship
+
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := m.client.Relationships(
+			remote.GetHeightRequestContext(context.Background(), height),
+			&relationshipstypes.QueryRelationshipsRequest{
+				SubspaceId: subspaceID,
+				Pagination: &query.PageRequest{
+					Key: nextKey,
+				},
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, relationship := range res.Relationships {
+			relationships = append(relationships, types.NewRelationship(relationship, height))
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+	}
+
+	return relationships, nil
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 // RefreshUserBlocksData refreshes all the user blocks data for the given subspace
 func (m *Module) RefreshUserBlocksData(height int64, subspaceID uint64) error {
 	userBlocks, err := m.queryAllUserBlocks(height, subspaceID)
@@ -61,37 +95,6 @@ func (m *Module) RefreshUserBlocksData(height int64, subspaceID uint64) error {
 	return nil
 }
 
-// queryAllRelationships queries all the relationships for the given subspace from the node
-func (m *Module) queryAllRelationships(height int64, subspaceID uint64) ([]types.Relationship, error) {
-	var relationships []types.Relationship
-
-	var nextKey []byte
-	var stop = false
-	for !stop {
-		res, err := m.client.Relationships(
-			remote.GetHeightRequestContext(context.Background(), height),
-			&relationshipstypes.QueryRelationshipsRequest{
-				SubspaceId: subspaceID,
-				Pagination: &query.PageRequest{
-					Key: nextKey,
-				},
-			})
-		if err != nil {
-			return nil, err
-		}
-
-		for _, relationship := range res.Relationships {
-			relationships = append(relationships, types.NewRelationship(relationship, height))
-		}
-
-		nextKey = res.Pagination.NextKey
-		stop = nextKey == nil
-	}
-
-	return relationships, nil
-
-}
-
 // queryAllUserBlocks queries all the user blocks for the given subspace from the node
 func (m *Module) queryAllUserBlocks(height int64, subspaceID uint64) ([]types.Blockage, error) {
 	var userBlocks []types.Blockage
@@ -106,7 +109,8 @@ func (m *Module) queryAllUserBlocks(height int64, subspaceID uint64) ([]types.Bl
 				Pagination: &query.PageRequest{
 					Key: nextKey,
 				},
-			})
+			},
+		)
 		if err != nil {
 			return nil, err
 		}

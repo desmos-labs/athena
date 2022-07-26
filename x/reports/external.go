@@ -37,30 +37,6 @@ func (m *Module) RefreshReportsData(height int64, subspaceID uint64) error {
 	return nil
 }
 
-// RefreshReasonsData refreshes all the reasons data for the given subspace
-func (m *Module) RefreshReasonsData(height int64, subspaceID uint64) error {
-	reasons, err := m.queryAllReasons(height, subspaceID)
-	if err != nil {
-		return err
-	}
-
-	err = m.db.DeleteAllReasons(height, subspaceID)
-	if err != nil {
-		return err
-	}
-
-	for _, reason := range reasons {
-		log.Info().Uint64("subspace", reason.SubspaceID).Uint32("reason", reason.ID).Msg("refreshing reason")
-
-		err = m.db.SaveReason(reason)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // queryAllReports queries all the reports for the given subspace from the node
 func (m *Module) queryAllReports(height int64, subspaceID uint64) ([]types.Report, error) {
 	var reports []types.Report
@@ -90,6 +66,32 @@ func (m *Module) queryAllReports(height int64, subspaceID uint64) ([]types.Repor
 	}
 
 	return reports, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// RefreshReasonsData refreshes all the reasons data for the given subspace
+func (m *Module) RefreshReasonsData(height int64, subspaceID uint64) error {
+	reasons, err := m.queryAllReasons(height, subspaceID)
+	if err != nil {
+		return err
+	}
+
+	err = m.db.DeleteAllReasons(height, subspaceID)
+	if err != nil {
+		return err
+	}
+
+	for _, reason := range reasons {
+		log.Info().Uint64("subspace", reason.SubspaceID).Uint32("reason", reason.ID).Msg("refreshing reason")
+
+		err = m.db.SaveReason(reason)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // queryAllReasons queries all the reasons for the given subspace from the node
