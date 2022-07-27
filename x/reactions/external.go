@@ -2,6 +2,7 @@ package reactions
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/rs/zerolog/log"
 
@@ -41,12 +42,12 @@ func (m *Module) RefreshRegisteredReactionsData(height int64, subspaceID uint64)
 func (m *Module) RefreshReactionsData(height int64, subspaceID uint64, postID uint64) error {
 	reactions, err := m.queryAllReactions(height, subspaceID, postID)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while querying the reactions: %s", err)
 	}
 
 	err = m.db.DeleteAllReactions(height, subspaceID, postID)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while deleting all the reactions: %s", err)
 	}
 
 	for _, reaction := range reactions {
@@ -54,7 +55,7 @@ func (m *Module) RefreshReactionsData(height int64, subspaceID uint64, postID ui
 
 		err = m.db.SaveReaction(reaction)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while saving reaction: %s", err)
 		}
 	}
 

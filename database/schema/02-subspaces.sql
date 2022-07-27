@@ -34,7 +34,7 @@ CREATE TABLE subspace_user_group
     id             BIGINT NOT NULL,
     name           TEXT   NOT NULL,
     description    TEXT,
-    permissions    TEXT[] NOT NULL,
+    permissions    TEXT[],
     height         BIGINT NOT NULL,
     CONSTRAINT unique_subspace_user_group UNIQUE (subspace_id, id)
 );

@@ -266,10 +266,10 @@ func (db *Db) DeletePost(height int64, subspaceID uint64, postID uint64) error {
 	return err
 }
 
-// DeleteAllPosts removes all the posts from the database
-func (db *Db) DeleteAllPosts(height int64) error {
-	stmt := `DELETE FROM post WHERE height <= $1`
-	_, err := db.Sql.Exec(stmt, height)
+// DeleteAllPosts removes all the posts for the given subspace from the database
+func (db *Db) DeleteAllPosts(height int64, subspaceID uint64) error {
+	stmt := `DELETE FROM post WHERE height <= $1 AND subspace_id = $2`
+	_, err := db.Sql.Exec(stmt, height, subspaceID)
 	return err
 }
 
