@@ -2,7 +2,6 @@ package reactions
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/rs/zerolog/log"
 
