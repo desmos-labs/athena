@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	juno "github.com/forbole/juno/v3/types"
+
 	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/desmos-labs/djuno/v2/types"
@@ -19,7 +21,7 @@ import (
 type packetHandler = func(height int64, packet channeltypes.Packet) (bool, error)
 
 // handlePacket tries handling the given packet that was received at the given height
-func (m *Module) handlePacket(height int64, packet channeltypes.Packet) error {
+func (m *Module) handlePacket(tx *juno.Tx, packet channeltypes.Packet) error {
 	// Try handling the packet
 	handlers := []packetHandler{
 		m.handleLinkChainAccountPacketData,
@@ -28,7 +30,7 @@ func (m *Module) handlePacket(height int64, packet channeltypes.Packet) error {
 	}
 
 	for _, handler := range handlers {
-		handled, err := handler(height, packet)
+		handled, err := handler(tx.Height, packet)
 		if handled {
 			return err
 		}
@@ -54,7 +56,7 @@ func (m *Module) handleLinkChainAccountPacketData(height int64, packet channelty
 	}
 
 	// Get the link from the chain
-	res, err := m.profilesClient.ChainLinks(
+	res, err := m.client.ChainLinks(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&profilestypes.QueryChainLinksRequest{
 			User:      packetData.DestinationAddress,
@@ -87,7 +89,7 @@ func (m *Module) handleOracleRequestPacketData(height int64, packet channeltypes
 		return false, nil
 	}
 
-	res, err := m.profilesClient.ApplicationLinkByClientID(
+	res, err := m.client.ApplicationLinkByClientID(
 		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
 	)
@@ -107,7 +109,7 @@ func (m *Module) handleOracleResponsePacketData(height int64, packet channeltype
 		return false, nil
 	}
 
-	res, err := m.profilesClient.ApplicationLinkByClientID(
+	res, err := m.client.ApplicationLinkByClientID(
 		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
 	)

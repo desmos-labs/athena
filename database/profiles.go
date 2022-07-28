@@ -182,6 +182,15 @@ RETURNING id`
 	return db.saveChainLinkProof(chainLinkID, link.Proof, link.Height)
 }
 
+// getChainLinkID returns the id of the chain link for the given user, with the given chain config and external address
+func (db Db) getChainLinkID(userAddress string, chainConfigID int64, externalAddress string) (int64, error) {
+	stmt := `SELECT id from chain_link WHERE user_address = $1 AND chain_config_id = $2 AND external_address = $3`
+
+	var id int64
+	err := db.Sql.QueryRow(stmt, userAddress, chainConfigID, externalAddress).Scan(&id)
+	return id, err
+}
+
 // saveChainLinkProof stores the given proof as associated with the chain link having the given id
 func (db Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, height int64) error {
 	publicKeyBz, err := db.EncodingConfig.Marshaler.MarshalJSON(proof.PubKey)
@@ -230,6 +239,46 @@ RETURNING id`
 	return id, err
 }
 
+// getChainLinkConfigID returns the chain link config id with the given name
+func (db Db) getChainLinkConfigID(name string) (int64, error) {
+	stmt := `SELECT id FROM chain_link_chain_config WHERE name = $1`
+
+	var id int64
+	err := db.Sql.QueryRow(stmt, name).Scan(&id)
+	return id, err
+}
+
+// SaveDefaultChainLink saves the given chain link as a default chain link
+func (db Db) SaveDefaultChainLink(chainLink types.ChainLink) error {
+	stmt := `
+INSERT INTO default_chain_link (user_address, chain_link_id, chain_config_id, height) 
+VALUES ($1, $2, $3, $4)
+ON CONFLICT ON CONSTRAINT unique_default_chain_link DO UPDATE 
+    SET chain_link_id = excluded.chain_link_id, 
+        chain_config_id = excluded.chain_config_id, 
+        height = excluded.height
+WHERE default_chain_link.height <= excluded.height`
+
+	chainLinkConfigID, err := db.getChainLinkConfigID(chainLink.ChainConfig.Name)
+	if err != nil {
+		return err
+	}
+
+	var address profilestypes.AddressData
+	err = db.EncodingConfig.Marshaler.UnpackAny(chainLink.Address, &address)
+	if err != nil {
+		return fmt.Errorf("error while reading link address as AddressData: %s", err)
+	}
+
+	chainLinkID, err := db.getChainLinkID(chainLink.User, chainLinkConfigID, address.GetValue())
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Sql.Exec(stmt, chainLink.User, chainLinkID, chainLinkConfigID, chainLink.Height)
+	return err
+}
+
 // DeleteChainLink removes from the database the chain link made for the given user and having the provided
 // external address and linked to the chain with the given name
 func (db Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
@@ -260,8 +309,8 @@ func (db Db) SaveApplicationLink(link types.ApplicationLink) error {
 
 	// Save the link
 	stmt := `
-INSERT INTO application_link (user_address, application, username, state, result, creation_time, height) 
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO application_link (user_address, application, username, state, result, creation_time, expiration_time, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT ON CONSTRAINT unique_application_link DO UPDATE 
     SET user_address = excluded.user_address, 
     	application = excluded.application,
@@ -269,6 +318,7 @@ ON CONFLICT ON CONSTRAINT unique_application_link DO UPDATE
     	state = excluded.state,
     	result = excluded.result, 
     	creation_time = excluded.creation_time,
+    	expiration_time = excluded.expiration_time,
     	height = excluded.height
 WHERE application_link.height <= excluded.height
 RETURNING id`
@@ -285,7 +335,7 @@ RETURNING id`
 	var linkID int64
 	err := db.Sql.QueryRow(stmt,
 		link.User, link.Data.Application, link.Data.Username, link.State.String(),
-		result, link.CreationTime, link.Height,
+		result, link.CreationTime, link.ExpirationTime, link.Height,
 	).Scan(&linkID)
 	if err != nil {
 		return err

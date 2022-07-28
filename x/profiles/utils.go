@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/juno/v3/node/remote"
 
 	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
@@ -12,33 +12,157 @@ import (
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
-// UpdateProfiles updates the profiles associated with the given addresses, if any.
-func (m *Module) UpdateProfiles(height int64, addresses []string) error {
-	for _, address := range addresses {
-		res, err := m.profilesClient.Profile(
+// --------------------------------------------------------------------------------------------------------------------
+
+// updateUserChainLinks updates the chain links for the given address, if any
+func (m *Module) updateUserChainLinks(height int64, address string) error {
+	chainLinks, err := m.queryAllUserChainLinks(height, address)
+	if err != nil {
+		return err
+	}
+
+	for _, chainLink := range chainLinks {
+		err = m.db.SaveChainLink(chainLink)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+// queryAllUserChainLinks queries all the chain links for the given address
+func (m *Module) queryAllUserChainLinks(height int64, address string) ([]types.ChainLink, error) {
+	var chainLinks []types.ChainLink
+
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := m.client.ChainLinks(
 			remote.GetHeightRequestContext(context.Background(), height),
-			profilestypes.NewQueryProfileRequest(address),
+			&profilestypes.QueryChainLinksRequest{
+				User: address,
+				Pagination: &query.PageRequest{
+					Key: nextKey,
+				},
+			},
 		)
 		if err != nil {
-			return fmt.Errorf("error while getting profile from gRPC: %s", err)
+			return nil, err
 		}
 
-		if res.Profile != nil {
-			var account authtypes.AccountI
-			err = m.cdc.UnpackAny(res.Profile, &account)
-			if err != nil {
-				return fmt.Errorf("error while unpacking profile: %s", err)
-			}
+		for _, link := range res.Links {
+			chainLinks = append(chainLinks, types.NewChainLink(link, height))
+		}
 
-			err = m.db.SaveProfile(types.NewProfile(account.(*profilestypes.Profile), height))
-			if err != nil {
-				return fmt.Errorf("error while saving profile: %s", err)
-			}
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+	}
+
+	return chainLinks, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// updateUserDefaultChainLinks updates the default chain links associated with the given address, if any
+func (m *Module) updateUserDefaultChainLinks(height int64, address string) error {
+	chainLinks, err := m.queryAllUserDefaultChainLinks(height, address)
+	if err != nil {
+		return err
+	}
+
+	for _, chainLink := range chainLinks {
+		err = m.db.SaveDefaultChainLink(chainLink)
+		if err != nil {
+			return err
 		}
 	}
 
 	return nil
 }
+
+// queryAllUserDefaultChainLinks queries all the default chain links for the given address
+func (m *Module) queryAllUserDefaultChainLinks(height int64, address string) ([]types.ChainLink, error) {
+	var chainLinks []types.ChainLink
+
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := m.client.DefaultExternalAddresses(
+			remote.GetHeightRequestContext(context.Background(), height),
+			&profilestypes.QueryDefaultExternalAddressesRequest{
+				Owner: address,
+				Pagination: &query.PageRequest{
+					Key: nextKey,
+				},
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, link := range res.Links {
+			chainLinks = append(chainLinks, types.NewChainLink(link, height))
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+	}
+
+	return chainLinks, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// updateUserApplicationLinks updates the application links associated with the given address, if any
+func (m *Module) updateUserApplicationLinks(height int64, address string) error {
+	applicationLinks, err := m.queryAllUserApplicationLinks(height, address)
+	if err != nil {
+		return err
+	}
+
+	for _, applicationLink := range applicationLinks {
+		err = m.db.SaveApplicationLink(applicationLink)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// queryAllUserApplicationLinks queries all the application links for the given address
+func (m *Module) queryAllUserApplicationLinks(height int64, address string) ([]types.ApplicationLink, error) {
+	var chainLinks []types.ApplicationLink
+
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := m.client.ApplicationLinks(
+			remote.GetHeightRequestContext(context.Background(), height),
+			&profilestypes.QueryApplicationLinksRequest{
+				User: address,
+				Pagination: &query.PageRequest{
+					Key: nextKey,
+				},
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, link := range res.Links {
+			chainLinks = append(chainLinks, types.NewApplicationLink(link, height))
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+	}
+
+	return chainLinks, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // updateParams allows to update the profiles params by fetching them from the chain
 func (m *Module) updateParams() error {
@@ -47,7 +171,7 @@ func (m *Module) updateParams() error {
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}
 
-	res, err := m.profilesClient.Params(
+	res, err := m.client.Params(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&profilestypes.QueryParamsRequest{},
 	)

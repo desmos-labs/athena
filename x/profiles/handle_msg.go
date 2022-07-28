@@ -1,12 +1,8 @@
 package profiles
 
 import (
-	"context"
 	"fmt"
 	"strings"
-	"time"
-
-	"github.com/forbole/juno/v3/node/remote"
 
 	"github.com/gogo/protobuf/proto"
 
@@ -47,25 +43,25 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleDTagTransferRequestDeletion(tx.Height, desmosMsg.Sender, desmosMsg.Receiver)
 
 	case *profilestypes.MsgLinkChainAccount:
-		return m.handleMsgChainLink(tx, index, desmosMsg)
+		return m.handleMsgChainLink(tx, desmosMsg)
 
 	case *profilestypes.MsgUnlinkChainAccount:
-		return m.handleMsgUnlinkChainAccount(tx.Height, desmosMsg)
+		return m.handleMsgUnlinkChainAccount(tx, desmosMsg)
 
 	case *profilestypes.MsgLinkApplication:
 		return m.handleMsgLinkApplication(tx, desmosMsg)
 
 	case *channeltypes.MsgRecvPacket:
-		return m.handlePacket(tx.Height, desmosMsg.Packet)
+		return m.handlePacket(tx, desmosMsg.Packet)
 
 	case *channeltypes.MsgAcknowledgement:
-		return m.handlePacket(tx.Height, desmosMsg.Packet)
+		return m.handlePacket(tx, desmosMsg.Packet)
 
 	case *channeltypes.MsgTimeout:
-		return m.handlePacket(tx.Height, desmosMsg.Packet)
+		return m.handlePacket(tx, desmosMsg.Packet)
 
 	case *profilestypes.MsgUnlinkApplication:
-		return m.handleMsgUnlinkApplication(tx.Height, desmosMsg)
+		return m.handleMsgUnlinkApplication(tx, desmosMsg)
 	}
 
 	log.Debug().Str("module", "profiles").Str("message", proto.MessageName(msg)).
@@ -132,7 +128,7 @@ func (m *Module) handleDTagTransferRequestDeletion(height int64, sender, receive
 // -----------------------------------------------------------------------------------------------------
 
 // handleMsgChainLink allows to handle a MsgLinkChainAccount properly
-func (m *Module) handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.MsgLinkChainAccount) error {
+func (m *Module) handleMsgChainLink(tx *juno.Tx, msg *profilestypes.MsgLinkChainAccount) error {
 	// Update the involved account profile
 	addresses := []string{msg.Signer}
 	err := m.UpdateProfiles(tx.Height, addresses)
@@ -140,36 +136,25 @@ func (m *Module) handleMsgChainLink(tx *juno.Tx, index int, msg *profilestypes.M
 		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
-	// Get the creation time
-	event, err := tx.FindEventByType(index, profilestypes.EventTypeLinkChainAccount)
-	if err != nil {
-		return err
-	}
-	creationTimeStr, err := tx.FindAttributeByKey(event, profilestypes.AttributeKeyChainLinkCreationTime)
-	if err != nil {
-		return err
-	}
-	creationTime, err := time.Parse(time.RFC3339, creationTimeStr)
+	// Save the chain links
+	err = m.updateUserChainLinks(tx.Height, msg.Signer)
 	if err != nil {
 		return err
 	}
 
-	// Unpack the address data
-	var address profilestypes.AddressData
-	err = m.cdc.UnpackAny(msg.ChainAddress, &address)
-	if err != nil {
-		return fmt.Errorf("error while unpacking address data: %s", err)
-	}
-
-	return m.db.SaveChainLink(types.NewChainLink(
-		profilestypes.NewChainLink(msg.Signer, address, msg.Proof, msg.ChainConfig, creationTime),
-		tx.Height,
-	))
+	// Update the default chain links
+	return m.updateUserDefaultChainLinks(tx.Height, msg.Signer)
 }
 
 // handleMsgUnlinkChainAccount allows to handle a MsgUnlinkChainAccount properly
-func (m *Module) handleMsgUnlinkChainAccount(height int64, msg *profilestypes.MsgUnlinkChainAccount) error {
-	return m.db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName, height)
+func (m *Module) handleMsgUnlinkChainAccount(tx *juno.Tx, msg *profilestypes.MsgUnlinkChainAccount) error {
+	err := m.db.DeleteChainLink(msg.Owner, msg.Target, msg.ChainName, tx.Height)
+	if err != nil {
+		return err
+	}
+
+	// Update the default chain links
+	return m.updateUserDefaultChainLinks(tx.Height, msg.Owner)
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -183,26 +168,10 @@ func (m *Module) handleMsgLinkApplication(tx *juno.Tx, msg *profilestypes.MsgLin
 		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
 	}
 
-	res, err := m.profilesClient.ApplicationLinks(
-		remote.GetHeightRequestContext(context.Background(), tx.Height),
-		profilestypes.NewQueryApplicationLinksRequest(msg.Sender, msg.LinkData.Application, msg.LinkData.Username, nil),
-	)
-	if err != nil {
-		return fmt.Errorf("error while getting application link: %s", err)
-	}
-
-	if len(res.Links) == 0 {
-		return fmt.Errorf("no application link found on chain")
-	}
-
-	if len(res.Links) > 1 {
-		return fmt.Errorf("duplicated application link found on chain")
-	}
-
-	return m.db.SaveApplicationLink(types.NewApplicationLink(res.Links[0], tx.Height))
+	return m.updateUserApplicationLinks(tx.Height, msg.Sender)
 }
 
 // handleMsgUnlinkApplication allows to handle a MsgUnlinkApplication properly
-func (m *Module) handleMsgUnlinkApplication(height int64, msg *profilestypes.MsgUnlinkApplication) error {
-	return m.db.DeleteApplicationLink(msg.Signer, msg.Application, msg.Username, height)
+func (m *Module) handleMsgUnlinkApplication(tx *juno.Tx, msg *profilestypes.MsgUnlinkApplication) error {
+	return m.db.DeleteApplicationLink(msg.Signer, msg.Application, msg.Username, tx.Height)
 }

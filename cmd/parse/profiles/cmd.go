@@ -13,6 +13,7 @@ func NewProfilesCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		applicationLinksCmd(parseCfg),
 		chainLinksCmd(parseCfg),
 	)
 

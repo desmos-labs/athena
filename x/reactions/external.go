@@ -2,7 +2,6 @@ package reactions
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/rs/zerolog/log"
 
@@ -38,36 +37,6 @@ func (m *Module) RefreshRegisteredReactionsData(height int64, subspaceID uint64)
 	return nil
 }
 
-// RefreshReactionsData refreshes the reactions data for the given post
-func (m *Module) RefreshReactionsData(height int64, subspaceID uint64, postID uint64) error {
-	reactions, err := m.queryAllReactions(height, subspaceID, postID)
-	if err != nil {
-		return fmt.Errorf("error while querying the reactions: %s", err)
-	}
-
-	err = m.db.DeleteAllReactions(height, subspaceID, postID)
-	if err != nil {
-		return fmt.Errorf("error while deleting all the reactions: %s", err)
-	}
-
-	for _, reaction := range reactions {
-		log.Info().Uint64("subspace", reaction.SubspaceID).Uint32("reaction", reaction.ID).Msg("refreshing reaction")
-
-		err = m.db.SaveReaction(reaction)
-		if err != nil {
-			return fmt.Errorf("error while saving reaction: %s", err)
-		}
-	}
-
-	return nil
-}
-
-// RefreshParamsData refreshes the reactions params for the given subspace
-func (m *Module) RefreshParamsData(height int64, subspaceID uint64) error {
-	log.Info().Uint64("subspace", subspaceID).Msg("refreshing reactions params")
-	return m.updateReactionParams(height, subspaceID)
-}
-
 // queryAllRegisteredReactions queries all the registered reactions for the given subspace from the node
 func (m *Module) queryAllRegisteredReactions(height int64, subspaceID uint64) ([]types.RegisteredReaction, error) {
 	var reactions []types.RegisteredReaction
@@ -97,6 +66,32 @@ func (m *Module) queryAllRegisteredReactions(height int64, subspaceID uint64) ([
 	}
 
 	return reactions, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// RefreshReactionsData refreshes the reactions data for the given post
+func (m *Module) RefreshReactionsData(height int64, subspaceID uint64, postID uint64) error {
+	reactions, err := m.queryAllReactions(height, subspaceID, postID)
+	if err != nil {
+		return err
+	}
+
+	err = m.db.DeleteAllReactions(height, subspaceID, postID)
+	if err != nil {
+		return err
+	}
+
+	for _, reaction := range reactions {
+		log.Info().Uint64("subspace", reaction.SubspaceID).Uint32("reaction", reaction.ID).Msg("refreshing reaction")
+
+		err = m.db.SaveReaction(reaction)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // queryAllReactions queries all the reactions for the given post from the node
@@ -129,4 +124,12 @@ func (m *Module) queryAllReactions(height int64, subspaceID uint64, postID uint6
 	}
 
 	return reactions, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// RefreshParamsData refreshes the reactions params for the given subspace
+func (m *Module) RefreshParamsData(height int64, subspaceID uint64) error {
+	log.Info().Uint64("subspace", subspaceID).Msg("refreshing reactions params")
+	return m.updateReactionParams(height, subspaceID)
 }

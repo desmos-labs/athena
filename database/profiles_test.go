@@ -286,7 +286,7 @@ func (suite *DbTestSuite) TestDesmosDB_SaveChainLink() {
 		profilestypes.NewChainLink(
 			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
 			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
-			profilestypes.NewProof(pubKey, &profilestypes.SingleSignatureData{Mode: 1, Signature: signature}, "text"),
+			profilestypes.NewProof(pubKey, &profilestypes.SingleSignature{ValueType: 1, Signature: signature}, "text"),
 			profilestypes.NewChainConfig("desmos"),
 			time.Now(),
 		),
@@ -313,7 +313,7 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
 		profilestypes.NewChainLink(
 			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
 			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
-			profilestypes.NewProof(pubKey, &profilestypes.SingleSignatureData{Mode: 1, Signature: signature}, "text"),
+			profilestypes.NewProof(pubKey, &profilestypes.SingleSignature{ValueType: 1, Signature: signature}, "text"),
 			profilestypes.NewChainConfig("desmos"),
 			time.Now(),
 		),
@@ -370,6 +370,7 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
 			),
 			nil,
 			time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+			time.Date(2021, 1, 1, 00, 00, 00, 000, time.UTC),
 		),
 		100,
 	)

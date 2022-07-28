@@ -13,13 +13,13 @@ import (
 	"github.com/desmos-labs/djuno/v2/x/profiles"
 )
 
-// chainLinksCmd returns a Cobra command that allows to fix the chain links for all the profiles
-func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
+// applicationLinksCmd returns a Cobra command that allows to fix the application links for all the profiles
+func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 	return &cobra.Command{
-		Use:   "chain-links",
-		Short: "Fetch the chain links stored on chain and save them",
+		Use:   "application-links",
+		Short: "Fetch the application links stored on chain and save them",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Debug().Msg("parsing chain links")
+			log.Debug().Msg("parsing application links")
 
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
 			if err != nil {
@@ -43,8 +43,8 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 
-			// Refresh the chain links
-			return profilesModule.RefreshChainLinks(height)
+			// Refresh the application links
+			return profilesModule.RefreshApplicationLinks(height)
 		},
 	}
 }
