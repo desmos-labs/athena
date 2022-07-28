@@ -21,9 +21,9 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 		return err
 	}
 
-	err = m.db.DeleteAllPosts(height)
+	err = m.db.DeleteAllPosts(height, subspaceID)
 	if err != nil {
-		return fmt.Errorf("error while deleting all the posts: %s", err)
+		return fmt.Errorf("error while deleting subspace posts: %s", err)
 	}
 
 	// Refresh posts
