@@ -108,7 +108,7 @@ func (m *Module) handleMsgDeleteSubspace(tx *juno.Tx, msg *subspacestypes.MsgDel
 // handleMsgCreateSection handles a MsgCreateSection
 func (m *Module) handleMsgCreateSection(tx *juno.Tx, index int, msg *subspacestypes.MsgCreateSection) error {
 	// Get the subspace id
-	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreateSubspace)
+	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreateSection)
 	if err != nil {
 		return err
 	}
