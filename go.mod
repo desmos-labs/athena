@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/cosmos/cosmos-sdk v0.45.5
 	github.com/cosmos/ibc-go/v3 v3.1.0
-	github.com/desmos-labs/desmos/v4 v4.2.0
+	github.com/desmos-labs/desmos/v4 v4.3.0
 	github.com/forbole/juno/v3 v3.3.0
 	github.com/go-co-op/gocron v1.15.1
 	github.com/gogo/protobuf v1.3.3
@@ -249,7 +249,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12-0.20220628192153-7743d1d949f1 // indirect
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

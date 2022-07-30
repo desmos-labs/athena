@@ -361,8 +361,8 @@ github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
 github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220620111621-ec38a43a60c9 h1:V8P8q102LhzfLzTHaL7w/lnKaaafUI/lLHO1vEi1qfA=
 github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220620111621-ec38a43a60c9/go.mod h1:WOqtDxN3eCCmnYLVla10xG7lEXkFjpTaqm2a2WasgCc=
-github.com/desmos-labs/desmos/v4 v4.2.0 h1:9tMNjE9xBOi5qQx6VC1EPGiqSkIfiQj/ToQC2j8aED8=
-github.com/desmos-labs/desmos/v4 v4.2.0/go.mod h1:v+ykjqnJUjERNtbdinHv4EoP8KiwDHsumdHwTjHV/CA=
+github.com/desmos-labs/desmos/v4 v4.3.0 h1:ZCTcScGOx3ZznFJC4L/2q3q2eJDVrvUZFFCKszggaig=
+github.com/desmos-labs/desmos/v4 v4.3.0/go.mod h1:egfM2ip/Ybj/eHBaAU61clLPR/RJC/Lx4rGYSGypWe8=
 github.com/desmos-labs/tendermint v0.32.2-0.20220628083258-25b9d227e839 h1:pg4A/Y/bR/tt8yuuzDsuDvQCZ/JvBH3fH88BJc4T6F4=
 github.com/desmos-labs/tendermint v0.32.2-0.20220628083258-25b9d227e839/go.mod h1:R5+wgIwSxMdKQcmOaeudL0Cjkr3HDkhpcdum6VeU3R4=
 github.com/desmos-labs/wasmd v0.23.1-0.20220525160858-4494e885f34a h1:/I5jVg5JGEDc2tqu+96lavSfXxGf1ZfjU6B5ZJyBv8E=
@@ -2217,8 +2217,9 @@ google.golang.org/protobuf v1.25.1-0.20200805231151-a709e31e5d12/go.mod h1:9JNX7
 google.golang.org/protobuf v1.26.0-rc.1/go.mod h1:jlhhOSvTdKEhbULTjvd4ARK9grFBp09yW+WbY/TyQbw=
 google.golang.org/protobuf v1.26.0/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
 google.golang.org/protobuf v1.27.1/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
-google.golang.org/protobuf v1.28.0 h1:w43yiav+6bVFTBQFZX0r7ipe9JQ1QsbMgHwbBziscLw=
 google.golang.org/protobuf v1.28.0/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
+google.golang.org/protobuf v1.28.1 h1:d0NfwRgPtno5B1Wa6L2DAG+KivqkdutMf1UhdNx175w=
+google.golang.org/protobuf v1.28.1/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
 gopkg.in/alecthomas/kingpin.v2 v2.2.6/go.mod h1:FMv+mEhP44yOT+4EoQTLFTRgOQ1FBLkstjWtayDeSgw=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
