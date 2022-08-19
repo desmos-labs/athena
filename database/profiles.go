@@ -364,7 +364,14 @@ WHERE application_link_oracle_request.height <= excluded.height`
 		return fmt.Errorf("error while serializing oracle request call data: %s", err)
 	}
 
-	_, err = db.Sql.Exec(stmt, linkID, request.ID, request.OracleScriptID, string(callDataBz), request.ClientID, height)
+	_, err = db.Sql.Exec(stmt,
+		linkID,
+		fmt.Sprintf("%d", request.ID),
+		fmt.Sprintf("%d", request.OracleScriptID),
+		string(callDataBz),
+		request.ClientID,
+		height,
+	)
 	return err
 }
 

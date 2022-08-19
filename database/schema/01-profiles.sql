@@ -90,8 +90,8 @@ CREATE TABLE application_link_oracle_request
 (
     id                  SERIAL NOT NULL PRIMARY KEY,
     application_link_id BIGINT NOT NULL REFERENCES application_link (id) ON DELETE CASCADE,
-    request_id          BIGINT NOT NULL,
-    script_id           BIGINT NOT NULL,
+    request_id          TEXT   NOT NULL,
+    script_id           TEXT   NOT NULL,
     call_data           JSONB  NOT NULL,
     client_id           TEXT   NOT NULL,
     height              BIGINT NOT NULL,
