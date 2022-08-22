@@ -8,7 +8,7 @@ import (
 )
 
 // SaveFeesParams allows to store the given fees params
-func (db Db) SaveFeesParams(params types.FeesParams) error {
+func (db *Db) SaveFeesParams(params types.FeesParams) error {
 	paramsBz, err := json.Marshal(&params.Params)
 	if err != nil {
 		return fmt.Errorf("error while marshaling fees params: %s", err)

@@ -35,6 +35,6 @@ func NewModule(node node.Node, grpcConnection *grpc.ClientConn, cdc codec.Codec,
 }
 
 // Name implements modules.Module
-func (m Module) Name() string {
+func (m *Module) Name() string {
 	return "fees"
 }

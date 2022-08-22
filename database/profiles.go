@@ -16,7 +16,7 @@ import (
 )
 
 // SaveProfilesParams allows to store the given profiles params
-func (db Db) SaveProfilesParams(params types.ProfilesParams) error {
+func (db *Db) SaveProfilesParams(params types.ProfilesParams) error {
 	paramsBz, err := json.Marshal(&params.Params)
 	if err != nil {
 		return fmt.Errorf("error while marshaling profiles params: %s", err)
@@ -43,7 +43,7 @@ WHERE profiles_params.height <= excluded.height`
 // SaveUserIfNotExisting creates a new user having the given address if it does not exist yet.
 // Upon creating the user, returns that.
 // If any error is raised during the process, returns that.
-func (db Db) SaveUserIfNotExisting(address string, height int64) error {
+func (db *Db) SaveUserIfNotExisting(address string, height int64) error {
 	stmt := `INSERT INTO profile (address, height) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 	_, err := db.Sqlx.Exec(stmt, address, height)
 	return err
@@ -51,7 +51,7 @@ func (db Db) SaveUserIfNotExisting(address string, height int64) error {
 
 // GetUserByAddress returns the user row having the given address.
 // If the user does not exist yet, returns nil instead.
-func (db Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
+func (db *Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 	var rows []dbtypes.ProfileRow
 	err := db.Sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
 	if err != nil {
@@ -70,7 +70,7 @@ func (db Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 
 // SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db Db) SaveProfile(profile types.Profile) error {
+func (db *Db) SaveProfile(profile types.Profile) error {
 	log.Info().Str("dtag", profile.DTag).Msg("saving profile")
 
 	stmt := `
@@ -97,7 +97,7 @@ WHERE profile.height <= excluded.height`
 }
 
 // DeleteProfile allows to delete the profile of the user having the given address
-func (db Db) DeleteProfile(address string, height int64) error {
+func (db *Db) DeleteProfile(address string, height int64) error {
 	log.Info().Str("address", address).Msg("deleting profile")
 
 	stmt := `DELETE FROM profile WHERE address = $1 AND height <= $2`
@@ -106,7 +106,7 @@ func (db Db) DeleteProfile(address string, height int64) error {
 }
 
 // GetProfilesAddresses returns all the addresses of the various profiles accounts
-func (db Db) GetProfilesAddresses() ([]string, error) {
+func (db *Db) GetProfilesAddresses() ([]string, error) {
 	var rows []string
 	err := db.Sqlx.Select(&rows, `SELECT address FROM profile`)
 	if err != nil {
@@ -118,7 +118,7 @@ func (db Db) GetProfilesAddresses() ([]string, error) {
 // ---------------------------------------------------------------------------------------------------
 
 // SaveDTagTransferRequest saves a new transfer request from sender to receiver
-func (db Db) SaveDTagTransferRequest(request types.DTagTransferRequest) error {
+func (db *Db) SaveDTagTransferRequest(request types.DTagTransferRequest) error {
 	stmt := `
 INSERT INTO dtag_transfer_requests (sender_address, receiver_address, height) 
 VALUES ($1, $2, $3) 
@@ -132,7 +132,7 @@ WHERE dtag_transfer_requests.height <= excluded.height`
 }
 
 // DeleteDTagTransferRequest deletes the DTag requests from sender to receiver
-func (db Db) DeleteDTagTransferRequest(request types.DTagTransferRequest) error {
+func (db *Db) DeleteDTagTransferRequest(request types.DTagTransferRequest) error {
 	stmt := `
 DELETE FROM dtag_transfer_requests 
 WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
@@ -143,7 +143,7 @@ WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
 // ---------------------------------------------------------------------------------------------------
 
 // SaveChainLink allows to store inside the db the provided chain link
-func (db Db) SaveChainLink(link types.ChainLink) error {
+func (db *Db) SaveChainLink(link types.ChainLink) error {
 	log.Info().Str("user", link.User).Str("address", link.GetAddressData().String()).Msg("saving chain link")
 
 	// Insert the chain config
@@ -183,7 +183,7 @@ RETURNING id`
 }
 
 // getChainLinkID returns the id of the chain link for the given user, with the given chain config and external address
-func (db Db) getChainLinkID(userAddress string, chainConfigID int64, externalAddress string) (int64, error) {
+func (db *Db) getChainLinkID(userAddress string, chainConfigID int64, externalAddress string) (int64, error) {
 	stmt := `SELECT id from chain_link WHERE user_address = $1 AND chain_config_id = $2 AND external_address = $3`
 
 	var id int64
@@ -192,7 +192,7 @@ func (db Db) getChainLinkID(userAddress string, chainConfigID int64, externalAdd
 }
 
 // saveChainLinkProof stores the given proof as associated with the chain link having the given id
-func (db Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, height int64) error {
+func (db *Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, height int64) error {
 	publicKeyBz, err := db.EncodingConfig.Marshaler.MarshalJSON(proof.PubKey)
 	if err != nil {
 		return fmt.Errorf("error serializing chain link proof public key: %s", err)
@@ -226,7 +226,7 @@ WHERE chain_link_proof.height <= excluded.height`
 }
 
 // saveChainLinkChainConfig stores the given chain config and returns the row id
-func (db Db) saveChainLinkChainConfig(config profilestypes.ChainConfig) (int64, error) {
+func (db *Db) saveChainLinkChainConfig(config profilestypes.ChainConfig) (int64, error) {
 	stmt := `
 INSERT INTO chain_link_chain_config (name) 
 VALUES ($1)
@@ -240,7 +240,7 @@ RETURNING id`
 }
 
 // getChainLinkConfigID returns the chain link config id with the given name
-func (db Db) getChainLinkConfigID(name string) (int64, error) {
+func (db *Db) getChainLinkConfigID(name string) (int64, error) {
 	stmt := `SELECT id FROM chain_link_chain_config WHERE name = $1`
 
 	var id int64
@@ -249,7 +249,7 @@ func (db Db) getChainLinkConfigID(name string) (int64, error) {
 }
 
 // SaveDefaultChainLink saves the given chain link as a default chain link
-func (db Db) SaveDefaultChainLink(chainLink types.ChainLink) error {
+func (db *Db) SaveDefaultChainLink(chainLink types.ChainLink) error {
 	stmt := `
 INSERT INTO default_chain_link (user_address, chain_link_id, chain_config_id, height) 
 VALUES ($1, $2, $3, $4)
@@ -281,7 +281,7 @@ WHERE default_chain_link.height <= excluded.height`
 
 // DeleteChainLink removes from the database the chain link made for the given user and having the provided
 // external address and linked to the chain with the given name
-func (db Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
+func (db *Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
 	log.Info().Str("user", user).Str("address", externalAddress).Msg("deleting chain link")
 
 	stmt := `
@@ -295,7 +295,7 @@ WHERE user_address = $1
 }
 
 // DeleteProfileChainLinks deletes all the chain links for the user having the given address
-func (db Db) DeleteProfileChainLinks(user string) error {
+func (db *Db) DeleteProfileChainLinks(user string) error {
 	_, err := db.Sql.Exec(`DELETE from chain_link WHERE user_address = $1`, user)
 	return err
 }
@@ -303,7 +303,7 @@ func (db Db) DeleteProfileChainLinks(user string) error {
 // ---------------------------------------------------------------------------------------------------
 
 // SaveApplicationLink stores the given application link inside the database
-func (db Db) SaveApplicationLink(link types.ApplicationLink) error {
+func (db *Db) SaveApplicationLink(link types.ApplicationLink) error {
 	log.Info().Str("user", link.User).Str("app", link.Data.Application).
 		Str("username", link.Data.Username).Msg("saving app link")
 
@@ -346,7 +346,7 @@ RETURNING id`
 }
 
 // saveOracleRequest stores the given oracle request associating it with the link having the provided id
-func (db Db) saveOracleRequest(linkID int64, request profilestypes.OracleRequest, height int64) error {
+func (db *Db) saveOracleRequest(linkID int64, request profilestypes.OracleRequest, height int64) error {
 	stmt := `
 INSERT INTO application_link_oracle_request (application_link_id, request_id, script_id, call_data, client_id, height) 
 VALUES ($1, $2, $3, $4, $5, $6)
@@ -377,7 +377,7 @@ WHERE application_link_oracle_request.height <= excluded.height`
 
 // DeleteApplicationLink allows to delete the application link associated to the given user,
 // having the given application and username values
-func (db Db) DeleteApplicationLink(user, application, username string, height int64) error {
+func (db *Db) DeleteApplicationLink(user, application, username string, height int64) error {
 	log.Info().Str("user", user).Str("app", application).Str("username", username).Msg("deleting app link")
 
 	stmt := `
