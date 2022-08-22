@@ -233,7 +233,7 @@ func (db *Db) savePostTags(postRowID uint64, tags []string) error {
 
 func (db *Db) savePostReferences(postRowID uint64, references []poststypes.PostReference) error {
 	// Delete all references first
-	stmt := `DELETE FROM post_hashtag WHERE post_row_id = $1`
+	stmt := `DELETE FROM post_reference WHERE post_row_id = $1`
 	_, err := db.Sql.Exec(stmt, postRowID)
 	if err != nil {
 		return err
