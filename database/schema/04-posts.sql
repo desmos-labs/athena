@@ -63,12 +63,12 @@ CREATE TABLE post_tag
 CREATE TABLE post_reference
 (
     /* Required for Hasura links */
-    row_id         SERIAL NOT NULL PRIMARY KEY,
+    row_id           SERIAL NOT NULL PRIMARY KEY,
 
-    post_row_id    BIGINT NOT NULL REFERENCES post (row_id) ON DELETE CASCADE,
-    type           TEXT   NOT NULL,
-    reference_id   BIGINT NOT NULL,
-    position_index BIGINT
+    post_row_id      BIGINT NOT NULL REFERENCES post (row_id) ON DELETE CASCADE,
+    type             TEXT   NOT NULL,
+    reference_row_id BIGINT NOT NULL REFERENCES post (row_id) ON DELETE CASCADE,
+    position_index   BIGINT
 );
 
 CREATE TABLE post_attachment
