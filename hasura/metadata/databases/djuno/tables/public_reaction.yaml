@@ -2,6 +2,15 @@ table:
   schema: public
   name: reaction
 object_relationships:
+  - name: author
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: profile
+        insertion_order: null
+        column_mapping:
+          author_address: address
   - name: post
     using:
       foreign_key_constraint_on: post_row_id
@@ -13,4 +22,5 @@ select_permissions:
         - id
         - value
       filter: {}
+      limit: 100
       allow_aggregations: true

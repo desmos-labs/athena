@@ -19,6 +19,7 @@ select_permissions:
       columns:
         - application
         - creation_time
+        - expiration_time
         - result
         - state
         - user_address
