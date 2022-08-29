@@ -14,4 +14,4 @@ select_permissions:
         - shorthand_code
         - subspace_id
       filter: {}
-      limit: 1
+      limit: 100

@@ -86,7 +86,7 @@ RETURNING row_id`
 	}
 
 	// Insert the reference
-	err = db.savePostReferences(rowID, post.ReferencedPosts)
+	err = db.savePostReferences(post.SubspaceID, rowID, post.ReferencedPosts)
 	if err != nil {
 		return err
 	}
@@ -231,7 +231,7 @@ func (db *Db) savePostTags(postRowID uint64, tags []string) error {
 	return err
 }
 
-func (db *Db) savePostReferences(postRowID uint64, references []poststypes.PostReference) error {
+func (db *Db) savePostReferences(subspaceID uint64, postRowID uint64, references []poststypes.PostReference) error {
 	// Delete all references first
 	stmt := `DELETE FROM post_reference WHERE post_row_id = $1`
 	_, err := db.Sql.Exec(stmt, postRowID)
@@ -243,13 +243,18 @@ func (db *Db) savePostReferences(postRowID uint64, references []poststypes.PostR
 		return nil
 	}
 
-	stmt = `INSERT INTO post_reference (post_row_id, type, reference_id, position_index) VALUES `
+	stmt = `INSERT INTO post_reference (post_row_id, type, reference_row_id, position_index) VALUES `
 
 	var vars []interface{}
 	for i, ref := range references {
+		referenceRowID, err := db.getPostRowID(subspaceID, ref.PostID)
+		if err != nil {
+			return err
+		}
+
 		ei := i * 4
 		stmt += fmt.Sprintf(`($%d, $%d, $%d, $%d),`, ei+1, ei+2, ei+3, ei+4)
-		vars = append(vars, postRowID, ref.Type.String(), ref.PostID, ref.Position)
+		vars = append(vars, postRowID, ref.Type.String(), referenceRowID, ref.Position)
 	}
 
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
