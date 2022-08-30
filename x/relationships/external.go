@@ -2,6 +2,7 @@ package relationships
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
@@ -15,12 +16,12 @@ import (
 func (m *Module) RefreshRelationshipsData(height int64, subspaceID uint64) error {
 	relationships, err := m.queryAllRelationships(height, subspaceID)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while getting relationships from gRPC: %s", err)
 	}
 
 	err = m.db.DeleteAllRelationships(height, subspaceID)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while deleting relationships: %s", err)
 	}
 
 	for _, relationship := range relationships {
@@ -29,7 +30,7 @@ func (m *Module) RefreshRelationshipsData(height int64, subspaceID uint64) error
 
 		err = m.db.SaveRelationship(relationship)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while saving relationship: %s", err)
 		}
 	}
 
