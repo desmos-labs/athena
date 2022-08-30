@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/forbole/juno/v3/node/remote"
@@ -22,20 +24,22 @@ func (m *Module) UpdateProfiles(height int64, addresses []string) error {
 			profilestypes.NewQueryProfileRequest(address),
 		)
 		if err != nil {
+			// If the profile was not found, just return nil
+			if status.Code(err) == codes.NotFound {
+				return nil
+			}
 			return fmt.Errorf("error while getting profile from gRPC: %s", err)
 		}
 
-		if res.Profile != nil {
-			var account authtypes.AccountI
-			err = m.cdc.UnpackAny(res.Profile, &account)
-			if err != nil {
-				return fmt.Errorf("error while unpacking profile: %s", err)
-			}
+		var account authtypes.AccountI
+		err = m.cdc.UnpackAny(res.Profile, &account)
+		if err != nil {
+			return fmt.Errorf("error while unpacking profile: %s", err)
+		}
 
-			err = m.db.SaveProfile(types.NewProfile(account.(*profilestypes.Profile), height))
-			if err != nil {
-				return fmt.Errorf("error while saving profile: %s", err)
-			}
+		err = m.db.SaveProfile(types.NewProfile(account.(*profilestypes.Profile), height))
+		if err != nil {
+			return fmt.Errorf("error while saving profile: %s", err)
 		}
 	}
 
