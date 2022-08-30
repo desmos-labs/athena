@@ -60,7 +60,7 @@ func NewModule(junoCfg config.Config, postsModule PostsModule) *Module {
 }
 
 // Name implements modules.Module
-func (m Module) Name() string {
+func (m *Module) Name() string {
 	return "notifications"
 }
 

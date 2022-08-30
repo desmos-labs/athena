@@ -9,7 +9,7 @@ import (
 )
 
 // HandleMsg implements modules.MessageModule
-func (m Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
+func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 	if len(tx.Logs) == 0 {
 		return nil
 	}
@@ -29,7 +29,7 @@ func (m Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 }
 
 // handleMsgCreateRelationship handles a MsgCreateRelationship message and sends out the various related notifications
-func (m Module) handleMsgCreateRelationship(msg *relationshipstypes.MsgCreateRelationship) error {
+func (m *Module) handleMsgCreateRelationship(msg *relationshipstypes.MsgCreateRelationship) error {
 	// Skip if the subspace is not the correct one
 	if msg.SubspaceID != m.cfg.SubspaceID {
 		return nil
@@ -39,7 +39,7 @@ func (m Module) handleMsgCreateRelationship(msg *relationshipstypes.MsgCreateRel
 }
 
 // handleMsgCreatePost handles a MsgCreatePost message and sends out the various related notifications
-func (m Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
+func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
 	// Skip if the subspace is not the correct one
 	if msg.SubspaceID != m.cfg.SubspaceID {
 		return nil
@@ -64,7 +64,7 @@ func (m Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgC
 }
 
 // handleMsgAddReaction handles a MsgAddReaction message and sends out the various related notifications
-func (m Module) handleMsgAddReaction(tx *juno.Tx, msg *reactionstypes.MsgAddReaction) error {
+func (m *Module) handleMsgAddReaction(tx *juno.Tx, msg *reactionstypes.MsgAddReaction) error {
 	// Skip if the subspace is not the correct one
 	if msg.SubspaceID != m.cfg.SubspaceID {
 		return nil
