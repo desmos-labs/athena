@@ -3,7 +3,7 @@ package notifications
 import (
 	"fmt"
 
-	"firebase.google.com/go/messaging"
+	"firebase.google.com/go/v4/messaging"
 )
 
 // SendReactionNotifications sends all the notifications to the author of the post that has been reacted to

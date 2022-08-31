@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/messaging"
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/messaging"
 	"github.com/forbole/juno/v3/modules"
 	"github.com/forbole/juno/v3/types/config"
 	"google.golang.org/api/option"

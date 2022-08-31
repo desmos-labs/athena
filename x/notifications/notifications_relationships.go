@@ -3,7 +3,7 @@ package notifications
 import (
 	"fmt"
 
-	"firebase.google.com/go/messaging"
+	"firebase.google.com/go/v4/messaging"
 )
 
 // SendRelationshipNotifications sends the notification to the user towards which a relationship has just been created
