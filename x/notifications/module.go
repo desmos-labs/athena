@@ -37,6 +37,10 @@ func NewModule(junoCfg config.Config, postsModule PostsModule) *Module {
 		panic(err)
 	}
 
+	if cfg == nil {
+		return nil
+	}
+
 	firebaseCfg := firebase.Config{ProjectID: cfg.FirebaseProjectID}
 
 	// Build the firebase app
