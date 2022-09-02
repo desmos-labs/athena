@@ -30,75 +30,114 @@ func (m *Module) RefreshSubspacesData(height int64) error {
 	}
 
 	for _, subspace := range subspaces {
-		log.Info().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
-
-		// Save the subspace
-		err = m.db.SaveSubspace(subspace)
+		err = m.refreshSubspaceData(height, subspace)
 		if err != nil {
-			return fmt.Errorf("error while saving subspace: %s", err)
-		}
-
-		// Update the sections
-		sections, err := m.queryAllSections(height, subspace.ID)
-		if err != nil {
-			return fmt.Errorf("error while querying subspace sections: %s", err)
-		}
-
-		for _, section := range sections {
-			log.Info().Uint64("subspace", subspace.ID).Uint32("section", section.ID).Msg("refreshing section")
-
-			err = m.db.SaveSection(section)
-			if err != nil {
-				return fmt.Errorf("error while saving subspace section: %s", err)
-			}
-		}
-
-		// Update the user groups
-		groups, err := m.queryAllUserGroups(height, subspace.ID)
-		if err != nil {
-			return fmt.Errorf("error while querying subspace user groups: %s", err)
-		}
-
-		for _, group := range groups {
-			log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group")
-
-			err = m.db.SaveUserGroup(group)
-			if err != nil {
-				return fmt.Errorf("error while saving subspace user group: %s", err)
-			}
-
-			// Update the members
-			members, err := m.queryAllUserGroupMembers(height, group.SubspaceID, group.ID)
-			if err != nil {
-				return fmt.Errorf("error while querying user group members: %s", err)
-			}
-
-			// Save the members
-			log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group members")
-			for _, member := range members {
-				err = m.db.AddUserToGroup(member)
-				if err != nil {
-					return fmt.Errorf("error while saving user group member: %s", err)
-				}
-			}
-		}
-
-		// Update the user permissions
-		log.Info().Uint64("subspace", subspace.ID).Msg("refreshing permissions")
-		permissions, err := m.queryAllUserPermissions(height, subspace.ID)
-		if err != nil {
-			return fmt.Errorf("error while querying user permissions: %s", err)
-		}
-
-		for _, permission := range permissions {
-			err = m.db.SaveUserPermission(permission)
-			if err != nil {
-				return fmt.Errorf("error while saving user permissions: %s", err)
-			}
+			return err
 		}
 	}
 
 	return nil
+}
+
+// RefreshSubspaceData refreshes all the data related to the subspace with the given id
+func (m *Module) RefreshSubspaceData(height int64, subspaceID uint64) error {
+	err := m.db.DeleteSubspace(height, subspaceID)
+	if err != nil {
+		return fmt.Errorf("error while deleting subspace: %s", err)
+	}
+
+	subspace, err := m.QuerySubspace(height, subspaceID)
+	if err != nil {
+		return fmt.Errorf("error while querying subspace from gRPC: %s", err)
+	}
+
+	return m.refreshSubspaceData(height, subspace)
+}
+
+// refreshSubspaceData refreshes all the data related to the given subspace, storing them inside the database
+func (m *Module) refreshSubspaceData(height int64, subspace types.Subspace) error {
+	log.Info().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
+
+	// Save the subspace
+	err := m.db.SaveSubspace(subspace)
+	if err != nil {
+		return fmt.Errorf("error while saving subspace: %s", err)
+	}
+
+	// Update the sections
+	sections, err := m.queryAllSections(height, subspace.ID)
+	if err != nil {
+		return fmt.Errorf("error while querying subspace sections: %s", err)
+	}
+
+	for _, section := range sections {
+		log.Info().Uint64("subspace", subspace.ID).Uint32("section", section.ID).Msg("refreshing section")
+
+		err = m.db.SaveSection(section)
+		if err != nil {
+			return fmt.Errorf("error while saving subspace section: %s", err)
+		}
+	}
+
+	// Update the user groups
+	groups, err := m.queryAllUserGroups(height, subspace.ID)
+	if err != nil {
+		return fmt.Errorf("error while querying subspace user groups: %s", err)
+	}
+
+	for _, group := range groups {
+		log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group")
+
+		err = m.db.SaveUserGroup(group)
+		if err != nil {
+			return fmt.Errorf("error while saving subspace user group: %s", err)
+		}
+
+		// Update the members
+		members, err := m.queryAllUserGroupMembers(height, group.SubspaceID, group.ID)
+		if err != nil {
+			return fmt.Errorf("error while querying user group members: %s", err)
+		}
+
+		// Save the members
+		log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group members")
+		for _, member := range members {
+			err = m.db.AddUserToGroup(member)
+			if err != nil {
+				return fmt.Errorf("error while saving user group member: %s", err)
+			}
+		}
+	}
+
+	// Update the user permissions
+	log.Info().Uint64("subspace", subspace.ID).Msg("refreshing permissions")
+	permissions, err := m.queryAllUserPermissions(height, subspace.ID)
+	if err != nil {
+		return fmt.Errorf("error while querying user permissions: %s", err)
+	}
+
+	for _, permission := range permissions {
+		err = m.db.SaveUserPermission(permission)
+		if err != nil {
+			return fmt.Errorf("error while saving user permissions: %s", err)
+		}
+	}
+	return nil
+}
+
+// QuerySubspace queries all the subspace data present on the node at the given height
+func (m *Module) QuerySubspace(height int64, subspaceID uint64) (types.Subspace, error) {
+	res, err := m.client.Subspace(
+		remote.GetHeightRequestContext(context.Background(), height),
+		&subspacestypes.QuerySubspaceRequest{
+			SubspaceId: subspaceID,
+		},
+	)
+	if err != nil {
+		return types.Subspace{}, err
+	}
+
+	return types.NewSubspace(res.Subspace, height), nil
 }
 
 // QueryAllSubspaces queries all the subspaces present on the node at the given height

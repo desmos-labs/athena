@@ -13,6 +13,7 @@ func NewSubspacesCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		subspaceCmd(parseCfg),
 		subspacesCmd(parseCfg),
 	)
 
