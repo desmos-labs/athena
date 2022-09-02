@@ -13,17 +13,24 @@ import (
 
 // updatePost updates the stored data about the given post at the specified height
 func (m *Module) updatePost(height int64, subspaceID uint64, postID uint64) error {
-	// Get the post
+	post, err := m.GetPost(height, subspaceID, postID)
+	if err != nil {
+		return err
+	}
+	return m.db.SavePost(post)
+}
+
+// GetPost gets the given post from the chain
+func (m *Module) GetPost(height int64, subspaceID uint64, postID uint64) (types.Post, error) {
 	res, err := m.client.Post(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&poststypes.QueryPostRequest{SubspaceId: subspaceID, PostId: postID},
 	)
 	if err != nil {
-		return err
+		return types.Post{}, err
 	}
 
-	// Save the post
-	return m.db.SavePost(types.NewPost(res.Post, height))
+	return types.NewPost(res.Post, height), nil
 }
 
 // updateParams updates the stored params with the ones for the given height
