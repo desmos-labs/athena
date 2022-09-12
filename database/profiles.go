@@ -30,7 +30,7 @@ ON CONFLICT (one_row_id) DO UPDATE
         height = excluded.height
 WHERE profiles_params.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt, string(paramsBz), params.Height)
+	_, err = db.SQL.Exec(stmt, string(paramsBz), params.Height)
 	if err != nil {
 		return fmt.Errorf("error while storing profiles params: %s", err)
 	}
@@ -45,7 +45,7 @@ WHERE profiles_params.height <= excluded.height`
 // If any error is raised during the process, returns that.
 func (db *Db) SaveUserIfNotExisting(address string, height int64) error {
 	stmt := `INSERT INTO profile (address, height) VALUES ($1, $2) ON CONFLICT DO NOTHING`
-	_, err := db.Sqlx.Exec(stmt, address, height)
+	_, err := db.SQL.Exec(stmt, address, height)
 	return err
 }
 
@@ -53,7 +53,7 @@ func (db *Db) SaveUserIfNotExisting(address string, height int64) error {
 // If the user does not exist yet, returns nil instead.
 func (db *Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 	var rows []dbtypes.ProfileRow
-	err := db.Sqlx.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
+	err := db.SQL.Select(&rows, `SELECT * FROM profile WHERE address = $1`, address)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ ON CONFLICT (address) DO UPDATE
 		height = excluded.height
 WHERE profile.height <= excluded.height`
 
-	_, err := db.Sql.Exec(
+	_, err := db.SQL.Exec(
 		stmt,
 		profile.GetAddress().String(), profile.Nickname, profile.DTag, profile.Bio,
 		profile.Pictures.Profile, profile.Pictures.Cover, profile.CreationDate,
@@ -101,14 +101,14 @@ func (db *Db) DeleteProfile(address string, height int64) error {
 	log.Info().Str("address", address).Msg("deleting profile")
 
 	stmt := `DELETE FROM profile WHERE address = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, address, height)
+	_, err := db.SQL.Exec(stmt, address, height)
 	return err
 }
 
 // GetProfilesAddresses returns all the addresses of the various profiles accounts
 func (db *Db) GetProfilesAddresses() ([]string, error) {
 	var rows []string
-	err := db.Sqlx.Select(&rows, `SELECT address FROM profile`)
+	err := db.SQL.Select(&rows, `SELECT address FROM profile`)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ ON CONFLICT ON CONSTRAINT unique_request DO UPDATE
     	receiver_address = excluded.receiver_address
 WHERE dtag_transfer_requests.height <= excluded.height`
 
-	_, err := db.Sql.Exec(stmt, request.Sender, request.Receiver, request.Height)
+	_, err := db.SQL.Exec(stmt, request.Sender, request.Receiver, request.Height)
 	return err
 }
 
@@ -136,7 +136,7 @@ func (db *Db) DeleteDTagTransferRequest(request types.DTagTransferRequest) error
 	stmt := `
 DELETE FROM dtag_transfer_requests 
 WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
-	_, err := db.Sql.Exec(stmt, request.Sender, request.Receiver, request.Height)
+	_, err := db.SQL.Exec(stmt, request.Sender, request.Receiver, request.Height)
 	return err
 }
 
@@ -171,7 +171,7 @@ RETURNING id`
 	}
 
 	var chainLinkID int64
-	err = db.Sql.
+	err = db.SQL.
 		QueryRow(stmt, link.User, address.GetValue(), chainConfigID, link.CreationTime, link.Height).
 		Scan(&chainLinkID)
 	if err != nil {
@@ -187,7 +187,7 @@ func (db *Db) getChainLinkID(userAddress string, chainConfigID int64, externalAd
 	stmt := `SELECT id from chain_link WHERE user_address = $1 AND chain_config_id = $2 AND external_address = $3`
 
 	var id int64
-	err := db.Sql.QueryRow(stmt, userAddress, chainConfigID, externalAddress).Scan(&id)
+	err := db.SQL.QueryRow(stmt, userAddress, chainConfigID, externalAddress).Scan(&id)
 	return id, err
 }
 
@@ -221,7 +221,7 @@ WHERE chain_link_proof.height <= excluded.height`
 		return fmt.Errorf("error serializing chain link signature: %s", err)
 	}
 
-	_, err = db.Sql.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, string(signatureBz), height)
+	_, err = db.SQL.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, string(signatureBz), height)
 	return err
 }
 
@@ -235,7 +235,7 @@ ON CONFLICT ON CONSTRAINT unique_chain_config DO UPDATE
 RETURNING id`
 
 	var id int64
-	err := db.Sql.QueryRow(stmt, config.Name).Scan(&id)
+	err := db.SQL.QueryRow(stmt, config.Name).Scan(&id)
 	return id, err
 }
 
@@ -244,7 +244,7 @@ func (db *Db) getChainLinkConfigID(name string) (int64, error) {
 	stmt := `SELECT id FROM chain_link_chain_config WHERE name = $1`
 
 	var id int64
-	err := db.Sql.QueryRow(stmt, name).Scan(&id)
+	err := db.SQL.QueryRow(stmt, name).Scan(&id)
 	return id, err
 }
 
@@ -275,7 +275,7 @@ WHERE default_chain_link.height <= excluded.height`
 		return err
 	}
 
-	_, err = db.Sql.Exec(stmt, chainLink.User, chainLinkID, chainLinkConfigID, chainLink.Height)
+	_, err = db.SQL.Exec(stmt, chainLink.User, chainLinkID, chainLinkConfigID, chainLink.Height)
 	return err
 }
 
@@ -290,13 +290,13 @@ WHERE user_address = $1
   AND external_address = $2
   AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)
   AND height <= $4`
-	_, err := db.Sql.Exec(stmt, user, externalAddress, chainName, height)
+	_, err := db.SQL.Exec(stmt, user, externalAddress, chainName, height)
 	return err
 }
 
 // DeleteProfileChainLinks deletes all the chain links for the user having the given address
 func (db *Db) DeleteProfileChainLinks(user string) error {
-	_, err := db.Sql.Exec(`DELETE from chain_link WHERE user_address = $1`, user)
+	_, err := db.SQL.Exec(`DELETE from chain_link WHERE user_address = $1`, user)
 	return err
 }
 
@@ -333,7 +333,7 @@ RETURNING id`
 	}
 
 	var linkID int64
-	err := db.Sql.QueryRow(stmt,
+	err := db.SQL.QueryRow(stmt,
 		link.User, link.Data.Application, link.Data.Username, link.State.String(),
 		result, link.CreationTime, link.ExpirationTime, link.Height,
 	).Scan(&linkID)
@@ -364,7 +364,7 @@ WHERE application_link_oracle_request.height <= excluded.height`
 		return fmt.Errorf("error while serializing oracle request call data: %s", err)
 	}
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		linkID,
 		fmt.Sprintf("%d", request.ID),
 		fmt.Sprintf("%d", request.OracleScriptID),
@@ -386,6 +386,6 @@ WHERE user_address = $1
   AND application = $2 
   AND username = $3 
   AND height <= $4`
-	_, err := db.Sql.Exec(stmt, user, application, username, height)
+	_, err := db.SQL.Exec(stmt, user, application, username, height)
 	return err
 }

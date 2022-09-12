@@ -51,11 +51,11 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.Require().True(ok)
 
 	// Delete the public schema
-	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.Schema))
+	_, err = desmosDb.SQL.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.Schema))
 	suite.Require().NoError(err)
 
 	// Re-create the schema
-	_, err = desmosDb.Sql.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.Schema))
+	_, err = desmosDb.SQL.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.Schema))
 	suite.Require().NoError(err)
 
 	dirPath := "schema"
@@ -71,7 +71,7 @@ func (suite *DbTestSuite) SetupTest() {
 		commentsRegExp := regexp.MustCompile(`/\*.*\*/`)
 		requests := strings.Split(string(file), ";")
 		for _, request := range requests {
-			_, err := desmosDb.Sql.Exec(commentsRegExp.ReplaceAllString(request, ""))
+			_, err := desmosDb.SQL.Exec(commentsRegExp.ReplaceAllString(request, ""))
 			suite.Require().NoError(err)
 		}
 	}

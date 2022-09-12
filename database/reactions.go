@@ -27,7 +27,7 @@ WHERE reaction.height <= excluded.height`
 		return fmt.Errorf("failed to json encode reaction value: %s", err)
 	}
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		postRowID,
 		reaction.ID,
 		string(valueBz),
@@ -43,7 +43,7 @@ func (db *Db) DeleteReaction(height int64, subspaceID uint64, postID uint64, rea
 DELETE FROM reaction WHERE post_row_id = (
 	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2
 ) AND id = $3 AND height <= $4`
-	_, err := db.Sql.Exec(stmt, subspaceID, postID, reactionID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, postID, reactionID, height)
 	return err
 }
 
@@ -53,7 +53,7 @@ func (db *Db) DeleteAllReactions(height int64, subspaceID uint64, postID uint64)
 DELETE FROM reaction WHERE post_row_id = (
 	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2    
 ) AND height <= $3`
-	_, err := db.Sql.Exec(stmt, subspaceID, postID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, postID, height)
 	return err
 }
 
@@ -70,7 +70,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_registered_reaction DO UPDATE
         height = excluded.height
 WHERE subspace_registered_reaction.height <= excluded.height`
 
-	_, err := db.Sql.Exec(stmt,
+	_, err := db.SQL.Exec(stmt,
 		reaction.SubspaceID,
 		reaction.ID,
 		reaction.ShorthandCode,
@@ -83,13 +83,13 @@ WHERE subspace_registered_reaction.height <= excluded.height`
 // DeleteRegisteredReaction removes the given registered reaction from the database
 func (db *Db) DeleteRegisteredReaction(height int64, subspaceID uint64, reactionID uint32) error {
 	stmt := `DELETE FROM subspace_registered_reaction WHERE subspace_id = $1 AND id = $2 AND height <= $3`
-	_, err := db.Sql.Exec(stmt, subspaceID, reactionID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, reactionID, height)
 	return err
 }
 
 func (db *Db) DeleteAllRegisteredReactions(height int64, subspaceID uint64) error {
 	stmt := `DELETE FROM subspace_registered_reaction WHERE subspace_id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, subspaceID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, height)
 	return err
 }
 
@@ -106,7 +106,7 @@ ON CONFLICT (subspace_id) DO UPDATE
         height = excluded.height
 WHERE subspace_registered_reaction_params.height <= excluded.height`
 
-	_, err := db.Sql.Exec(stmt, params.SubspaceID, params.RegisteredReaction.Enabled, params.Height)
+	_, err := db.SQL.Exec(stmt, params.SubspaceID, params.RegisteredReaction.Enabled, params.Height)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ ON CONFLICT (subspace_id) DO UPDATE
         height = excluded.height
 WHERE subspace_free_text_params.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		params.SubspaceID,
 		params.FreeText.Enabled,
 		params.FreeText.MaxLength,

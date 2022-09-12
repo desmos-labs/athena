@@ -29,7 +29,7 @@ RETURNING row_id`
 	}
 
 	var reportRowID uint64
-	err = db.Sql.QueryRow(stmt,
+	err = db.SQL.QueryRow(stmt,
 		report.SubspaceID,
 		report.ID,
 		report.Message,
@@ -76,21 +76,21 @@ func (db *Db) insertReportReasons(reportRowID uint64, subspaceID uint64, reasons
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err := db.Sql.Exec(stmt, vars...)
+	_, err := db.SQL.Exec(stmt, vars...)
 	return err
 }
 
 // DeleteReport removes the report with the given id from the database
 func (db *Db) DeleteReport(height int64, subspaceID uint64, reportID uint64) error {
 	stmt := `DELETE FROM report WHERE subspace_id = $1 AND id = $2 AND height <= $3`
-	_, err := db.Sql.Exec(stmt, subspaceID, reportID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, reportID, height)
 	return err
 }
 
 // DeleteAllReports removes all the reports from the database
 func (db *Db) DeleteAllReports(height int64, subspaceID uint64) error {
 	stmt := `DELETE FROM report WHERE subspace_id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, subspaceID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, height)
 	return err
 }
 
@@ -100,7 +100,7 @@ func (db *Db) getReasonRowID(subspaceID uint64, reasonID uint32) (int64, error) 
 	stmt := `SELECT row_id FROM subspace_report_reason WHERE subspace_id = $1 AND id = $2`
 
 	var rowID int64
-	err := db.Sql.QueryRow(stmt, subspaceID, reasonID).Scan(&rowID)
+	err := db.SQL.QueryRow(stmt, subspaceID, reasonID).Scan(&rowID)
 	if err != nil {
 		return 0, err
 	}
@@ -119,7 +119,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_reason DO UPDATE
         height = excluded.height
 WHERE subspace_report_reason.height <= excluded.height`
 
-	_, err := db.Sql.Exec(stmt, reason.SubspaceID, reason.ID, reason.Title, reason.Description, reason.Height)
+	_, err := db.SQL.Exec(stmt, reason.SubspaceID, reason.ID, reason.Title, reason.Description, reason.Height)
 	return err
 }
 
@@ -127,14 +127,14 @@ WHERE subspace_report_reason.height <= excluded.height`
 func (db *Db) DeleteReason(height int64, subspaceID uint64, reasonID uint32) error {
 	// Delete the reason
 	stmt := `DELETE FROM subspace_report_reason WHERE subspace_id = $1 AND id = $2 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, subspaceID, reasonID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, reasonID, height)
 	return err
 }
 
 // DeleteAllReasons deletes all the reasons from the database
 func (db *Db) DeleteAllReasons(height int64, subspaceID uint64) error {
 	stmt := `DELETE FROM subspace_report_reason WHERE subspace_id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, subspaceID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, height)
 	return err
 }
 
@@ -155,7 +155,7 @@ ON CONFLICT (one_row_id) DO UPDATE
         height = excluded.height
 WHERE reports_params.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt, string(paramsBz), params.Height)
+	_, err = db.SQL.Exec(stmt, string(paramsBz), params.Height)
 	if err != nil {
 		return fmt.Errorf("error while storing reports params: %s", err)
 	}

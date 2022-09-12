@@ -6,14 +6,12 @@ import (
 	"github.com/forbole/juno/v3/database"
 	"github.com/forbole/juno/v3/database/postgresql"
 	juno "github.com/forbole/juno/v3/types"
-	"github.com/jmoiron/sqlx"
 )
 
 // Db represents a PostgreSQL database with expanded features.
 // so that it can properly store posts and other Desmos-related data.
 type Db struct {
 	*postgresql.Database
-	Sqlx *sqlx.DB
 }
 
 // Cast casts the given database to be a *Db
@@ -39,7 +37,6 @@ func Builder(ctx *database.Context) (database.Database, error) {
 
 	return &Db{
 		Database: psqlDb,
-		Sqlx:     sqlx.NewDb(psqlDb.Sql, "postgresql"),
 	}, nil
 }
 

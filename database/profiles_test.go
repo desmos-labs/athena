@@ -169,7 +169,7 @@ func (suite *DbTestSuite) TestDesmosDb_SaveRelationship() {
 	suite.Require().NoError(err, "double inserting the same relationship should return no error")
 
 	var rows []dbtypes.RelationshipRow
-	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM user_relationship")
+	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_relationship")
 	suite.Require().NoError(err)
 
 	suite.Require().Len(rows, 1)
@@ -188,7 +188,7 @@ func (suite *DbTestSuite) TestDesmosDb_DeleteRelationship() {
 	suite.Require().NoError(err, "removing existing relationship should return no error")
 
 	var rows []dbtypes.RelationshipRow
-	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM user_relationship")
+	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_relationship")
 	suite.Require().NoError(err)
 
 	suite.Require().Len(rows, 0)
@@ -241,7 +241,7 @@ func (suite *DbTestSuite) TestDesmosDB_SaveUserBlockage() {
 	suite.Require().NoError(err, "double inserting blockage should return no error")
 
 	var rows []dbtypes.BlockageRow
-	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM user_block")
+	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_block")
 	suite.Require().NoError(err)
 
 	suite.Require().Len(rows, 1)
@@ -261,7 +261,7 @@ func (suite *DbTestSuite) TestDesmosDB_RemoveUserBlockage() {
 	suite.Require().NoError(err)
 
 	var rows []dbtypes.BlockageRow
-	err = suite.database.Sqlx.Select(&rows, "SELECT * FROM user_block")
+	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_block")
 	suite.Require().NoError(err)
 
 	suite.Require().Len(rows, 0)
@@ -334,15 +334,15 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
 	suite.Require().NoError(err)
 
 	var count int
-	err = suite.database.Sql.QueryRow("SELECT COUNT(id) FROM chain_link").Scan(&count)
+	err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link").Scan(&count)
 	suite.Require().NoError(err)
 	suite.Require().Zero(count)
 
-	err = suite.database.Sql.QueryRow("SELECT COUNT(id) FROM chain_link_proof").Scan(&count)
+	err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_proof").Scan(&count)
 	suite.Require().NoError(err)
 	suite.Require().Zero(count)
 
-	err = suite.database.Sql.QueryRow("SELECT COUNT(id) FROM chain_link_chain_config").Scan(&count)
+	err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_chain_config").Scan(&count)
 	suite.Require().NoError(err)
 	suite.Require().Equal(1, count)
 }
@@ -379,7 +379,7 @@ func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
 	suite.Require().NoError(err)
 
 	var count int
-	err = suite.database.Sql.QueryRow("SELECT COUNT(*) FROM application_link").Scan(&count)
+	err = suite.database.SQL.QueryRow("SELECT COUNT(*) FROM application_link").Scan(&count)
 	suite.Require().NoError(err)
 	suite.Require().Equal(1, count)
 

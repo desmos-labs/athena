@@ -24,7 +24,7 @@ ON CONFLICT (id) DO UPDATE
         height = excluded.height
 WHERE subspace.height <= excluded.height`
 
-	_, err := db.Sql.Exec(stmt,
+	_, err := db.SQL.Exec(stmt,
 		subspace.ID,
 		subspace.Name,
 		dbtypes.ToNullString(subspace.Description),
@@ -40,14 +40,14 @@ WHERE subspace.height <= excluded.height`
 // DeleteSubspace removes the subspace with the given id from the database
 func (db *Db) DeleteSubspace(height int64, id uint64) error {
 	stmt := `DELETE FROM subspace WHERE id = $1 AND height <= $2`
-	_, err := db.Sql.Exec(stmt, id, height)
+	_, err := db.SQL.Exec(stmt, id, height)
 	return err
 }
 
 // DeleteAllSubspaces removes all the subspaces from the database
 func (db *Db) DeleteAllSubspaces(height int64) error {
 	stmt := `DELETE FROM subspace WHERE height <= $1`
-	_, err := db.Sql.Exec(stmt, height)
+	_, err := db.SQL.Exec(stmt, height)
 	return err
 }
 
@@ -58,7 +58,7 @@ func (db *Db) getSectionRowID(subspaceID uint64, sectionID uint32) (sql.NullInt6
 	stmt := `SELECT row_id FROM subspace_section WHERE subspace_id = $1 and id = $2`
 
 	var rowID int64
-	err := db.Sql.QueryRow(stmt, subspaceID, sectionID).Scan(&rowID)
+	err := db.SQL.QueryRow(stmt, subspaceID, sectionID).Scan(&rowID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return sql.NullInt64{Int64: 0, Valid: false}, nil
 	}
@@ -83,7 +83,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_section DO UPDATE
         height = excluded.height
 WHERE subspace_section.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		section.SubspaceID,
 		section.ID,
 		parentRowID,
@@ -97,7 +97,7 @@ WHERE subspace_section.height <= excluded.height`
 // DeleteSection removes the given section from the subspace
 func (db *Db) DeleteSection(height int64, subspaceID uint64, sectionID uint32) error {
 	stmt := `DELETE FROM subspace_section WHERE subspace_id = $1 AND id = $2 AND height <= $3`
-	_, err := db.Sql.Exec(stmt, subspaceID, sectionID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, sectionID, height)
 	return err
 }
 
@@ -108,7 +108,7 @@ func (db *Db) getUserGroupRowID(subspaceID uint64, groupID uint32) (uint64, erro
 	stmt := `SELECT row_id FROM subspace_user_group WHERE subspace_id = $1 and id = $2`
 
 	var rowID uint64
-	err := db.Sql.QueryRow(stmt, subspaceID, groupID).Scan(&rowID)
+	err := db.SQL.QueryRow(stmt, subspaceID, groupID).Scan(&rowID)
 	return rowID, err
 }
 
@@ -133,7 +133,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_user_group DO UPDATE
         height = excluded.height
 WHERE subspace_user_group.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		group.SubspaceID,
 		sectionRowID,
 		group.ID,
@@ -148,7 +148,7 @@ WHERE subspace_user_group.height <= excluded.height`
 // DeleteUserGroup removes the given user group from the subspace
 func (db *Db) DeleteUserGroup(height int64, subspaceID uint64, groupID uint32) error {
 	stmt := `DELETE FROM subspace_user_group WHERE subspace_id = $1 AND id = $2 AND height <= $3`
-	_, err := db.Sql.Exec(stmt, subspaceID, groupID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, groupID, height)
 	return err
 }
 
@@ -164,7 +164,7 @@ INSERT INTO subspace_user_group_member (group_row_id, member_address, height)
 VALUES ($1, $2, $3)
 ON CONFLICT ON CONSTRAINT unique_subspace_group_membership DO NOTHING`
 
-	_, err = db.Sql.Exec(stmt, rowID, member.Member, member.Height)
+	_, err = db.SQL.Exec(stmt, rowID, member.Member, member.Height)
 	return err
 }
 
@@ -176,7 +176,7 @@ func (db *Db) RemoveUserFromGroup(member types.UserGroupMember) error {
 	}
 
 	stmt := `DELETE FROM subspace_user_group_member WHERE group_row_id = $1 AND member_address = $2 AND height <= $3`
-	_, err = db.Sql.Exec(stmt, rowID, member.Member, member.Height)
+	_, err = db.SQL.Exec(stmt, rowID, member.Member, member.Height)
 	return err
 }
 
@@ -197,7 +197,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_permission DO UPDATE
         height = excluded.height
 WHERE subspace_user_permission.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		sectionRowID,
 		permission.User,
 		dbtypes.ConvertPermissions(permission.Permissions),

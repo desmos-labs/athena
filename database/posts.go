@@ -17,7 +17,7 @@ func (db *Db) getPostRowID(subspaceID uint64, postID uint64) (sql.NullInt64, err
 	stmt := `SELECT row_id FROM post WHERE subspace_id = $1 and id = $2`
 
 	var rowID int64
-	err := db.Sql.QueryRow(stmt, subspaceID, postID).Scan(&rowID)
+	err := db.SQL.QueryRow(stmt, subspaceID, postID).Scan(&rowID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return sql.NullInt64{Int64: 0, Valid: false}, nil
 	}
@@ -56,7 +56,7 @@ WHERE post.height <= excluded.height
 RETURNING row_id`
 
 	var rowID uint64
-	err = db.Sql.QueryRow(stmt,
+	err = db.SQL.QueryRow(stmt,
 		post.SubspaceID,
 		sectionRowID,
 		post.ID,
@@ -120,7 +120,7 @@ func (db *Db) savePostEntities(postRowID uint64, entities *poststypes.Entities) 
 func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.TextTag) error {
 	// Delete all hashtags first
 	stmt := `DELETE FROM post_hashtag WHERE post_row_id = $1`
-	_, err := db.Sql.Exec(stmt, postRowID)
+	_, err := db.SQL.Exec(stmt, postRowID)
 	if err != nil {
 		return err
 	}
@@ -141,14 +141,14 @@ func (db *Db) savePostHashtags(postRowID uint64, hashtags []poststypes.TextTag) 
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err = db.Sql.Exec(stmt, vars...)
+	_, err = db.SQL.Exec(stmt, vars...)
 	return err
 }
 
 func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.TextTag) error {
 	// Delete all mentions first
 	stmt := `DELETE FROM post_mention WHERE post_row_id = $1`
-	_, err := db.Sql.Exec(stmt, postRowID)
+	_, err := db.SQL.Exec(stmt, postRowID)
 	if err != nil {
 		return err
 	}
@@ -169,14 +169,14 @@ func (db *Db) savePostMentions(postRowID uint64, mentions []poststypes.TextTag) 
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err = db.Sql.Exec(stmt, vars...)
+	_, err = db.SQL.Exec(stmt, vars...)
 	return err
 }
 
 func (db *Db) savePostURLs(postRowID uint64, urls []poststypes.Url) error {
 	// Delete all urls first
 	stmt := `DELETE FROM post_url WHERE post_row_id = $1`
-	_, err := db.Sql.Exec(stmt, postRowID)
+	_, err := db.SQL.Exec(stmt, postRowID)
 	if err != nil {
 		return err
 	}
@@ -198,14 +198,14 @@ func (db *Db) savePostURLs(postRowID uint64, urls []poststypes.Url) error {
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err = db.Sql.Exec(stmt, vars...)
+	_, err = db.SQL.Exec(stmt, vars...)
 	return err
 }
 
 func (db *Db) savePostTags(postRowID uint64, tags []string) error {
 	// Delete all tags first
 	stmt := `DELETE FROM post_tag WHERE post_row_id = $1`
-	_, err := db.Sql.Exec(stmt, postRowID)
+	_, err := db.SQL.Exec(stmt, postRowID)
 	if err != nil {
 		return err
 	}
@@ -227,14 +227,14 @@ func (db *Db) savePostTags(postRowID uint64, tags []string) error {
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err = db.Sql.Exec(stmt, vars...)
+	_, err = db.SQL.Exec(stmt, vars...)
 	return err
 }
 
 func (db *Db) savePostReferences(subspaceID uint64, postRowID uint64, references []poststypes.PostReference) error {
 	// Delete all references first
 	stmt := `DELETE FROM post_reference WHERE post_row_id = $1`
-	_, err := db.Sql.Exec(stmt, postRowID)
+	_, err := db.SQL.Exec(stmt, postRowID)
 	if err != nil {
 		return err
 	}
@@ -260,21 +260,21 @@ func (db *Db) savePostReferences(subspaceID uint64, postRowID uint64, references
 	stmt = stmt[:len(stmt)-1] // Trim trailing ,
 	stmt += `ON CONFLICT DO NOTHING`
 
-	_, err = db.Sql.Exec(stmt, vars...)
+	_, err = db.SQL.Exec(stmt, vars...)
 	return err
 }
 
 // DeletePost removes the post with the given details from the database
 func (db *Db) DeletePost(height int64, subspaceID uint64, postID uint64) error {
 	stmt := `DELETE FROM post WHERE subspace_id = $1 AND id = $2 AND height <= $3`
-	_, err := db.Sql.Exec(stmt, subspaceID, postID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, postID, height)
 	return err
 }
 
 // DeleteAllPosts removes all the posts for the given subspace from the database
 func (db *Db) DeleteAllPosts(height int64, subspaceID uint64) error {
 	stmt := `DELETE FROM post WHERE height <= $1 AND subspace_id = $2`
-	_, err := db.Sql.Exec(stmt, height, subspaceID)
+	_, err := db.SQL.Exec(stmt, height, subspaceID)
 	return err
 }
 
@@ -287,7 +287,7 @@ SELECT row_id FROM post_attachment WHERE post_row_id = (
 ) and id = $3`
 
 	var rowID int64
-	err := db.Sql.QueryRow(stmt, subspaceID, postID, attachmentID).Scan(&rowID)
+	err := db.SQL.QueryRow(stmt, subspaceID, postID, attachmentID).Scan(&rowID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return rowID, nil
 	}
@@ -315,7 +315,7 @@ WHERE post_attachment.height <= excluded.height`
 		return fmt.Errorf("failed to json encode attachment content: %s", err)
 	}
 
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		postRowID,
 		attachment.ID,
 		string(contentBz),
@@ -330,7 +330,7 @@ func (db *Db) DeletePostAttachment(height int64, subspaceID uint64, postID uint6
 DELETE FROM post_attachment WHERE post_row_id = (
 	SELECT row_id FROM post WHERE subspace_id = $1 AND id = $2
 ) AND id = $3 AND height <= $4`
-	_, err := db.Sql.Exec(stmt, subspaceID, postID, attachmentID, height)
+	_, err := db.SQL.Exec(stmt, subspaceID, postID, attachmentID, height)
 	return err
 }
 
@@ -351,7 +351,7 @@ ON CONFLICT ON CONSTRAINT unique_user_answer DO UPDATE
         user_address = excluded.user_address,
         height = excluded.height
 WHERE poll_answer.height <= excluded.height`
-	_, err = db.Sql.Exec(stmt,
+	_, err = db.SQL.Exec(stmt,
 		attachmentRowID,
 		answer.AnswersIndexes,
 		answer.User,
@@ -377,7 +377,7 @@ ON CONFLICT (one_row_id) DO UPDATE
         height = excluded.height
 WHERE posts_params.height <= excluded.height`
 
-	_, err = db.Sql.Exec(stmt, string(paramsBz), params.Height)
+	_, err = db.SQL.Exec(stmt, string(paramsBz), params.Height)
 	if err != nil {
 		return fmt.Errorf("error while storing reports params: %s", err)
 	}
