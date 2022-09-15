@@ -9,7 +9,7 @@ require (
 	github.com/desmos-labs/desmos/v4 v4.4.1
 
 	// The used branch is github.com/forbole/juno cosmos/v0.45.x
-	github.com/forbole/juno/v3 v3.4.1-0.20220912114027-a9dfa4b1490f
+	github.com/forbole/juno/v3 v3.4.1-0.20220915063519-765d0ec3bc3a
 	github.com/go-co-op/gocron v1.17.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golangci/golangci-lint v1.49.0

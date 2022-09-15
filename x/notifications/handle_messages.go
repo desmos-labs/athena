@@ -2,11 +2,17 @@ package notifications
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 	juno "github.com/forbole/juno/v3/types"
 )
+
+// HandleMsgExec implements modules.AuthzMessageModule
+func (m *Module) HandleMsgExec(index int, _ *authz.MsgExec, _ int, executedMsg sdk.Msg, tx *juno.Tx) error {
+	return m.HandleMsg(index, executedMsg, tx)
+}
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
