@@ -36,7 +36,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgDeletePost(tx, desmosMsg)
 
 	case *poststypes.MsgAddPostAttachment:
-		return m.handleMsgAddPostAttachment(tx, index, desmosMsg)
+		return m.handleMsgAddPostAttachment(tx, desmosMsg)
 
 	case *poststypes.MsgRemovePostAttachment:
 		return m.handleMsgRemovePostAttachment(tx, desmosMsg)
@@ -66,7 +66,14 @@ func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.Msg
 		return err
 	}
 
-	return m.updatePost(tx.Height, msg.SubspaceID, postID)
+	// Update the post
+	err = m.updatePost(tx.Height, msg.SubspaceID, postID)
+	if err != nil {
+		return err
+	}
+
+	// Update the post attachments
+	return m.updatePostAttachments(tx.Height, msg.SubspaceID, postID)
 }
 
 // handleMsgEditPost handles a MsgEditPost
@@ -80,22 +87,8 @@ func (m *Module) handleMsgDeletePost(tx *juno.Tx, msg *poststypes.MsgDeletePost)
 }
 
 // handleMsgAddPostAttachment handles a MsgAddPostAttachment
-func (m *Module) handleMsgAddPostAttachment(tx *juno.Tx, index int, msg *poststypes.MsgAddPostAttachment) error {
-	event, err := tx.FindEventByType(index, poststypes.EventTypeAddPostAttachment)
-	if err != nil {
-		return err
-	}
-	attachmentIDStr, err := tx.FindAttributeByKey(event, poststypes.AttributeKeyPostID)
-	if err != nil {
-		return err
-	}
-	attachmentID, err := poststypes.ParseAttachmentID(attachmentIDStr)
-	if err != nil {
-		return err
-	}
-
-	attachment := poststypes.NewAttachment(msg.SubspaceID, msg.PostID, attachmentID, msg.Content.GetCachedValue().(poststypes.AttachmentContent))
-	return m.db.SavePostAttachment(types.NewPostAttachment(attachment, tx.Height))
+func (m *Module) handleMsgAddPostAttachment(tx *juno.Tx, msg *poststypes.MsgAddPostAttachment) error {
+	return m.updatePostAttachments(tx.Height, msg.SubspaceID, msg.PostID)
 }
 
 // handleMsgRemovePostAttachment handles a MsgRemovePostAttachment

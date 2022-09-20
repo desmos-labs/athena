@@ -33,6 +33,51 @@ func (m *Module) GetPost(height int64, subspaceID uint64, postID uint64) (types.
 	return types.NewPost(res.Post, height), nil
 }
 
+// updatePostAttachments updates the stored attachments for the post having the given id
+func (m *Module) updatePostAttachments(height int64, subspaceID uint64, postID uint64) error {
+	attachments, err := m.getPostAttachments(height, subspaceID, postID)
+	if err != nil {
+		return fmt.Errorf("error while getting post attachments: %s", err)
+	}
+
+	for _, attachment := range attachments {
+		err = m.db.SavePostAttachment(attachment)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Module) getPostAttachments(height int64, subspaceID uint64, postID uint64) ([]types.PostAttachment, error) {
+	var attachments []types.PostAttachment
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := m.client.PostAttachments(
+			remote.GetHeightRequestContext(context.Background(), height),
+			&poststypes.QueryPostAttachmentsRequest{
+				SubspaceId: subspaceID,
+				PostId:     postID,
+				Pagination: nil,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, attachment := range res.Attachments {
+			attachments = append(attachments, types.NewPostAttachment(attachment, height))
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+	}
+
+	return attachments, nil
+}
+
 // updateParams updates the stored params with the ones for the given height
 func (m *Module) updateParams() error {
 	height, err := m.node.LatestHeight()
