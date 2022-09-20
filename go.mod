@@ -7,9 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.8
 	github.com/cosmos/ibc-go/v3 v3.2.0
 	github.com/desmos-labs/desmos/v4 v4.4.1
-
-	// The used branch is github.com/forbole/juno cosmos/v0.45.x
-	github.com/forbole/juno/v3 v3.4.1-0.20220912114027-a9dfa4b1490f
+	github.com/forbole/juno/v3 v3.4.0
 	github.com/go-co-op/gocron v1.17.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golangci/golangci-lint v1.49.0
@@ -291,6 +289,10 @@ replace (
 
 	// Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.45.x-desmos
 	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.43.0-alpha1.0.20220901100415-9b5b590d4347
+
+	// The used branch is github.com/forbole/juno cosmos/v0.45.x
+	// TODO: Remove it once a tagged version is out
+	github.com/forbole/juno/v3 => github.com/forbole/juno/v3 v3.4.1-0.20220912114027-a9dfa4b1490f
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409

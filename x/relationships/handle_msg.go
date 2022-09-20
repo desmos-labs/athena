@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/x/authz"
+
 	"github.com/gogo/protobuf/proto"
 
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
@@ -15,6 +17,11 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
+
+// HandleMsgExec implements modules.AuthzMessageModule
+func (m *Module) HandleMsgExec(index int, _ *authz.MsgExec, _ int, executedMsg sdk.Msg, tx *juno.Tx) error {
+	return m.HandleMsg(index, executedMsg, tx)
+}
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(_ int, msg sdk.Msg, tx *juno.Tx) error {
