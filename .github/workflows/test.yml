@@ -38,11 +38,10 @@ jobs:
             go.sum
 
       - name: Build 🔨
-        run: GOARCH=${{ matrix.go-arch }} LEDGER_ENABLED=false make build
+        run: make build
 
       - name: Test & Coverage report creation 🧪
-        run: |
-          make install test-unit stop-docker-test
+        run: make test-unit stop-docker-test
         if: env.GIT_DIFF
 
       - name: Upload coverage 📤
