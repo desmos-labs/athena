@@ -292,7 +292,7 @@ replace (
 
 	// The used branch is github.com/forbole/juno cosmos/v0.45.x
 	// TODO: Remove it once a tagged version is out
-	github.com/forbole/juno/v3 => github.com/forbole/juno/v3 v3.4.1-0.20220912114027-a9dfa4b1490f
+	github.com/forbole/juno/v3 => github.com/forbole/juno/v3 v3.4.1-0.20220920065218-fbae6b39fe0e
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
