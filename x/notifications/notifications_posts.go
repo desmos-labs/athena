@@ -31,7 +31,7 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 			return err
 		}
 
-		err = m.sendConversationNotification(conversationPost, post)
+		err = m.sendConversationNotification(conversationPost, post, notifiedUsers)
 		if err != nil {
 			return err
 		}
@@ -46,17 +46,17 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 			continue
 		}
 
-		referencedPost, err := m.postsModule.GetPost(height, subspaceID, reference.PostID)
+		originalPost, err := m.postsModule.GetPost(height, subspaceID, reference.PostID)
 		if err != nil {
 			return err
 		}
 
-		err = m.sendPostReferenceNotification(post, reference.Type, referencedPost, notifiedUsers)
+		err = m.sendPostReferenceNotification(originalPost, reference.Type, post, notifiedUsers)
 		if err != nil {
 			return err
 		}
 
-		notifiedUsers = append(notifiedUsers, referencedPost.Author)
+		notifiedUsers = append(notifiedUsers, originalPost.Author)
 	}
 
 	// Send mentions notification
@@ -72,37 +72,42 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 	return nil
 }
 
-func (m *Module) sendConversationNotification(originalPost types.Post, post types.Post) error {
+func (m *Module) sendConversationNotification(originalPost types.Post, reply types.Post, notifiedUsers []string) error {
 	// Skip if the post author and the original author are the same
-	if originalPost.Author == post.Author {
+	if originalPost.Author == reply.Author {
+		return nil
+	}
+
+	// Skip if the referenced post author has already been notified
+	if hasBeenNotified(originalPost.Author, notifiedUsers) {
 		return nil
 	}
 
 	notification := &messaging.Notification{
 		Title: "Someone replied to your post! 💬",
-		Body:  fmt.Sprintf("%s replied to your post", post.Author),
+		Body:  fmt.Sprintf("%s replied to your post", reply.Author),
 	}
 
 	data := map[string]string{
 		NotificationTypeKey:   TypeReply,
 		NotificationActionKey: ActionOpenPost,
 
-		SubspaceIDKey: fmt.Sprintf("%d", post.SubspaceID),
-		PostIDKey:     fmt.Sprintf("%d", post.ID),
-		PostAuthorKey: post.Author,
+		SubspaceIDKey: fmt.Sprintf("%d", reply.SubspaceID),
+		PostIDKey:     fmt.Sprintf("%d", reply.ID),
+		PostAuthorKey: reply.Author,
 	}
 
-	return m.sendNotification(post.Author, notification, data)
+	return m.sendNotification(originalPost.Author, notification, data)
 }
 
-func (m *Module) sendPostReferenceNotification(post types.Post, referenceType poststypes.PostReferenceType, referencedPost types.Post, notifiedUsers []string) error {
+func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenceType poststypes.PostReferenceType, reference types.Post, notifiedUsers []string) error {
 	// Skip if the referenced post and the original post authors are the same
-	if post.Author == referencedPost.Author {
+	if reference.Author == originalPost.Author {
 		return nil
 	}
 
 	// Skip if the referenced post author has already been notified
-	if hasBeenNotified(referencedPost.Author, notifiedUsers) {
+	if hasBeenNotified(originalPost.Author, notifiedUsers) {
 		return nil
 	}
 
@@ -113,21 +118,21 @@ func (m *Module) sendPostReferenceNotification(post types.Post, referenceType po
 		notificationType = TypeReply
 		notification = &messaging.Notification{
 			Title: "Someone commented your post! 💬",
-			Body:  fmt.Sprintf("%s commented on your post", post.Author),
+			Body:  fmt.Sprintf("%s commented on your post", reference.Author),
 		}
 
 	case poststypes.POST_REFERENCE_TYPE_REPOST:
 		notificationType = TypeRepost
 		notification = &messaging.Notification{
 			Title: "Someone reposted your post! 💬",
-			Body:  fmt.Sprintf("%s reposted your post", post.Author),
+			Body:  fmt.Sprintf("%s reposted your post", reference.Author),
 		}
 
 	case poststypes.POST_REFERENCE_TYPE_QUOTE:
 		notificationType = TypeQuote
 		notification = &messaging.Notification{
 			Title: "Someone quoted your post! 💬",
-			Body:  fmt.Sprintf("%s quoted your post", post.Author),
+			Body:  fmt.Sprintf("%s quoted your post", reference.Author),
 		}
 	}
 
@@ -135,12 +140,12 @@ func (m *Module) sendPostReferenceNotification(post types.Post, referenceType po
 		NotificationTypeKey:   notificationType,
 		NotificationActionKey: ActionOpenPost,
 
-		SubspaceIDKey: fmt.Sprintf("%d", post.SubspaceID),
-		PostIDKey:     fmt.Sprintf("%d", post.ID),
-		PostAuthorKey: post.Author,
+		SubspaceIDKey: fmt.Sprintf("%d", originalPost.SubspaceID),
+		PostIDKey:     fmt.Sprintf("%d", originalPost.ID),
+		PostAuthorKey: reference.Author,
 	}
 
-	return m.sendNotification(post.Author, notification, data)
+	return m.sendNotification(originalPost.Author, notification, data)
 }
 
 func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes.TextTag, notifiedUsers []string) error {
@@ -168,7 +173,7 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 		PostAuthorKey: post.Author,
 	}
 
-	return m.sendNotification(post.Author, notification, data)
+	return m.sendNotification(mention.Tag, notification, data)
 }
 
 func hasBeenNotified(user string, notifiedUsers []string) bool {

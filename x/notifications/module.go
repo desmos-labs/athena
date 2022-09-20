@@ -70,7 +70,7 @@ func (m *Module) Name() string {
 
 // sendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
-func (m *Module) sendNotification(topic string, notification *messaging.Notification, data map[string]string) error {
+func (m *Module) sendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
 	// Set the default Flutter click action
 	data[ClickActionKey] = ClickActionValue
 
@@ -87,7 +87,7 @@ func (m *Module) sendNotification(topic string, notification *messaging.Notifica
 		Data:         data,
 		Notification: notification,
 		Android:      androidConfig,
-		Topic:        topic,
+		Topic:        recipient,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
