@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/forbole/juno/v3/modules"
@@ -18,6 +20,8 @@ var (
 )
 
 type Module struct {
+	cdc codec.Codec
+
 	cfg    *Config
 	app    *firebase.App
 	client *messaging.Client
@@ -26,7 +30,7 @@ type Module struct {
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, postsModule PostsModule) *Module {
+func NewModule(junoCfg config.Config, postsModule PostsModule, cdc codec.Codec) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -56,6 +60,7 @@ func NewModule(junoCfg config.Config, postsModule PostsModule) *Module {
 	}
 
 	return &Module{
+		cdc:         cdc,
 		cfg:         cfg,
 		app:         app,
 		client:      client,
