@@ -3,6 +3,8 @@ package notifications
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
+
 	"firebase.google.com/go/v4/messaging"
 )
 
@@ -26,5 +28,7 @@ func (m *Module) SendRelationshipNotifications(subspaceID uint64, user, counterp
 		RelationshipCreatorKey: user,
 	}
 
+	log.Info().Str("module", m.Name()).Str("recipient", counterparty).
+		Str("notification type", TypeFollow).Msg("sending notification")
 	return m.sendNotification(counterparty, notification, data)
 }

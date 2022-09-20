@@ -3,6 +3,8 @@ package notifications
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
+
 	"firebase.google.com/go/v4/messaging"
 )
 
@@ -33,5 +35,7 @@ func (m *Module) SendReactionNotifications(height int64, subspaceID uint64, post
 		ReactionAuthorKey: user,
 	}
 
+	log.Info().Str("module", m.Name()).Str("recipient", post.Author).
+		Str("notification type", TypeReaction).Msg("sending notification")
 	return m.sendNotification(post.Author, notification, data)
 }
