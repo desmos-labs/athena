@@ -13,7 +13,7 @@ const (
 	// Actions
 
 	ClickActionKey   = "click_action"
-	ClickActionValue = "FLUTTER_NOTIFICATION_CLICK"
+	ClickActionValue = "open"
 
 	NotificationActionKey = "action"
 	ActionOpenPost        = "open_post"
