@@ -62,7 +62,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	reportsModule := reports.NewModule(node, grpcConnection, cdc, desmosDb)
 	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
 	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
-	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, cdc)
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, profilesModule, postsModule, cdc)
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
 	return []modules.Module{

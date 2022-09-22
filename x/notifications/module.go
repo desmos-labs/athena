@@ -26,11 +26,12 @@ type Module struct {
 	app    *firebase.App
 	client *messaging.Client
 
-	postsModule PostsModule
+	profilesModule ProfilesModule
+	postsModule    PostsModule
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, postsModule PostsModule, cdc codec.Codec) *Module {
+func NewModule(junoCfg config.Config, profilesModule ProfilesModule, postsModule PostsModule, cdc codec.Codec) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -60,11 +61,12 @@ func NewModule(junoCfg config.Config, postsModule PostsModule, cdc codec.Codec) 
 	}
 
 	return &Module{
-		cdc:         cdc,
-		cfg:         cfg,
-		app:         app,
-		client:      client,
-		postsModule: postsModule,
+		cdc:            cdc,
+		cfg:            cfg,
+		app:            app,
+		client:         client,
+		profilesModule: profilesModule,
+		postsModule:    postsModule,
 	}
 }
 

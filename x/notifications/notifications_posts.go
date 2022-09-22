@@ -87,7 +87,7 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 
 	notification := &messaging.Notification{
 		Title: "Someone replied to your post! 💬",
-		Body:  fmt.Sprintf("%s replied to your post", reply.Author),
+		Body:  fmt.Sprintf("%s replied to your post", m.getDisplayName(reply.Author)),
 	}
 
 	data := map[string]string{
@@ -122,21 +122,21 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 		notificationType = TypeReply
 		notification = &messaging.Notification{
 			Title: "Someone commented your post! 💬",
-			Body:  fmt.Sprintf("%s commented on your post", reference.Author),
+			Body:  fmt.Sprintf("%s commented on your post", m.getDisplayName(reference.Author)),
 		}
 
 	case poststypes.POST_REFERENCE_TYPE_REPOST:
 		notificationType = TypeRepost
 		notification = &messaging.Notification{
 			Title: "Someone reposted your post! 💬",
-			Body:  fmt.Sprintf("%s reposted your post", reference.Author),
+			Body:  fmt.Sprintf("%s reposted your post", m.getDisplayName(reference.Author)),
 		}
 
 	case poststypes.POST_REFERENCE_TYPE_QUOTE:
 		notificationType = TypeQuote
 		notification = &messaging.Notification{
 			Title: "Someone quoted your post! 💬",
-			Body:  fmt.Sprintf("%s quoted your post", reference.Author),
+			Body:  fmt.Sprintf("%s quoted your post", m.getDisplayName(reference.Author)),
 		}
 	}
 
@@ -167,7 +167,7 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 
 	notification := &messaging.Notification{
 		Title: "Someone mentioned you inside a post! 💬",
-		Body:  fmt.Sprintf("%s mentioned you post", post.Author),
+		Body:  fmt.Sprintf("%s mentioned you post", m.getDisplayName(post.Author)),
 	}
 
 	data := map[string]string{

@@ -16,34 +16,58 @@ import (
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
+// GetUserProfile queries the profile for the user having the given address, if any
+func (m *Module) GetUserProfile(userAddress string) (*types.Profile, error) {
+	height, err := m.node.LatestHeight()
+	if err != nil {
+		return nil, fmt.Errorf("error while getting latest height: %s", err)
+	}
+
+	profile, err := m.getProfile(height, userAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	return profile, nil
+}
+
 // UpdateProfiles updates the profiles associated with the given addresses, if any
 func (m *Module) UpdateProfiles(height int64, addresses []string) error {
 	for _, address := range addresses {
-		res, err := m.client.Profile(
-			remote.GetHeightRequestContext(context.Background(), height),
-			profilestypes.NewQueryProfileRequest(address),
-		)
+		profile, err := m.getProfile(height, address)
 		if err != nil {
-			// If the profile was not found, just return nil
-			if status.Code(err) == codes.NotFound {
-				return nil
-			}
-			return fmt.Errorf("error while getting profile from gRPC: %s", err)
+			return err
 		}
 
-		var account authtypes.AccountI
-		err = m.cdc.UnpackAny(res.Profile, &account)
-		if err != nil {
-			return fmt.Errorf("error while unpacking profile: %s", err)
-		}
-
-		err = m.db.SaveProfile(types.NewProfile(account.(*profilestypes.Profile), height))
+		err = m.db.SaveProfile(profile)
 		if err != nil {
 			return fmt.Errorf("error while saving profile: %s", err)
 		}
 	}
 
 	return nil
+}
+
+func (m *Module) getProfile(height int64, address string) (*types.Profile, error) {
+	res, err := m.client.Profile(
+		remote.GetHeightRequestContext(context.Background(), height),
+		profilestypes.NewQueryProfileRequest(address),
+	)
+	if err != nil {
+		// If the profile was not found, just return nil
+		if status.Code(err) == codes.NotFound {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("error while getting profile from gRPC: %s", err)
+	}
+
+	var account authtypes.AccountI
+	err = m.cdc.UnpackAny(res.Profile, &account)
+	if err != nil {
+		return nil, fmt.Errorf("error while unpacking profile: %s", err)
+	}
+
+	return types.NewProfile(account.(*profilestypes.Profile), height), nil
 }
 
 // --------------------------------------------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ func (m *Module) SendRelationshipNotifications(subspaceID uint64, user, counterp
 
 	notification := &messaging.Notification{
 		Title: "You have a new follower! 👥",
-		Body:  fmt.Sprintf("%s has started following you", user),
+		Body:  fmt.Sprintf("%s has started following you", m.getDisplayName(user)),
 	}
 
 	data := map[string]string{

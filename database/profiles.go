@@ -70,7 +70,7 @@ func (db *Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 
 // SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
-func (db *Db) SaveProfile(profile types.Profile) error {
+func (db *Db) SaveProfile(profile *types.Profile) error {
 	log.Info().Str("dtag", profile.DTag).Msg("saving profile")
 
 	stmt := `

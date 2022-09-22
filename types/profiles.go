@@ -9,8 +9,8 @@ type Profile struct {
 	Height int64
 }
 
-func NewProfile(profile *profilestypes.Profile, height int64) Profile {
-	return Profile{
+func NewProfile(profile *profilestypes.Profile, height int64) *Profile {
+	return &Profile{
 		Profile: profile,
 		Height:  height,
 	}
