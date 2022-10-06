@@ -184,6 +184,11 @@ func (db *Db) RemoveUserFromGroup(member types.UserGroupMember) error {
 
 // SaveUserPermission stores the given permissions inside the database
 func (db *Db) SaveUserPermission(permission types.UserPermission) error {
+	// TODO: Investigate why this happened
+	if permission.Permissions == nil {
+		return nil
+	}
+
 	sectionRowID, err := db.getSectionRowID(permission.SubspaceID, permission.SectionID)
 	if err != nil {
 		return err

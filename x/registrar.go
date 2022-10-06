@@ -3,6 +3,8 @@ package x
 import (
 	"fmt"
 
+	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
+
 	"github.com/desmos-labs/djuno/v2/x/notifications"
 
 	"github.com/desmos-labs/djuno/v2/x/posts"
@@ -65,6 +67,9 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	notificationsModule := notifications.NewModule(ctx.JunoConfig, profilesModule, postsModule, cdc)
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
+	// Smart contracts modules
+	tipsModule := tips.NewModule(ctx.JunoConfig, grpcConnection, desmosDb)
+
 	return []modules.Module{
 		feesModule,
 		profilesModule,
@@ -75,5 +80,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		reactionsModule,
 		notificationsModule,
 		telemetryModule,
+
+		tipsModule,
 	}
 }
