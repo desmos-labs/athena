@@ -96,7 +96,7 @@ func (m *Module) handleMsgCreateSubspace(tx *juno.Tx, index int) error {
 		return err
 	}
 
-	return m.updateSubspace(tx.Height, subspaceID)
+	return m.RefreshSubspaceData(tx.Height, subspaceID)
 }
 
 // handleMsgEditSubspace handles a MsgEditSubspace

@@ -51,13 +51,12 @@ func (m *Module) RefreshSubspaceData(height int64, subspaceID uint64) error {
 		return fmt.Errorf("error while querying subspace from gRPC: %s", err)
 	}
 
+	log.Info().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
 	return m.refreshSubspaceData(height, subspace)
 }
 
 // refreshSubspaceData refreshes all the data related to the given subspace, storing them inside the database
 func (m *Module) refreshSubspaceData(height int64, subspace types.Subspace) error {
-	log.Info().Uint64("subspace", subspace.ID).Msg("refreshing subspace")
-
 	// Save the subspace
 	err := m.db.SaveSubspace(subspace)
 	if err != nil {
@@ -71,8 +70,6 @@ func (m *Module) refreshSubspaceData(height int64, subspace types.Subspace) erro
 	}
 
 	for _, section := range sections {
-		log.Info().Uint64("subspace", subspace.ID).Uint32("section", section.ID).Msg("refreshing section")
-
 		err = m.db.SaveSection(section)
 		if err != nil {
 			return fmt.Errorf("error while saving subspace section: %s", err)
@@ -86,8 +83,6 @@ func (m *Module) refreshSubspaceData(height int64, subspace types.Subspace) erro
 	}
 
 	for _, group := range groups {
-		log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group")
-
 		err = m.db.SaveUserGroup(group)
 		if err != nil {
 			return fmt.Errorf("error while saving subspace user group: %s", err)
@@ -100,7 +95,6 @@ func (m *Module) refreshSubspaceData(height int64, subspace types.Subspace) erro
 		}
 
 		// Save the members
-		log.Info().Uint64("subspace", subspace.ID).Uint32("group", group.ID).Msg("refreshing user group members")
 		for _, member := range members {
 			err = m.db.AddUserToGroup(member)
 			if err != nil {
@@ -110,7 +104,6 @@ func (m *Module) refreshSubspaceData(height int64, subspace types.Subspace) erro
 	}
 
 	// Update the user permissions
-	log.Info().Uint64("subspace", subspace.ID).Msg("refreshing permissions")
 	permissions, err := m.queryAllUserPermissions(height, subspace.ID)
 	if err != nil {
 		return fmt.Errorf("error while querying user permissions: %s", err)

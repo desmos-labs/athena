@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/x/contracts"
+	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
 	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
 	"github.com/desmos-labs/djuno/v2/x/reactions"
@@ -51,6 +53,9 @@ func subspaceCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			reactionsModule := reactions.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 			relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 			reportsModule := reports.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
+			contractsModule := contracts.NewModule([]contracts.SmartContractModule{
+				tips.NewModule(config.Cfg, parseCtx.Node, grpcConnection, db),
+			})
 
 			// Get the latest height
 			height, err := parseCtx.Node.LatestHeight()
@@ -111,6 +116,13 @@ func subspaceCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				if err != nil {
 					return err
 				}
+			}
+
+			// Refresh the smart contracts details
+			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing contracts")
+			err = contractsModule.RefreshData(height, subspaceID)
+			if err != nil {
+				return err
 			}
 
 			return nil

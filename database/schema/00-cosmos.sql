@@ -9,3 +9,9 @@ CREATE TABLE block
 );
 CREATE INDEX block_hash_index ON block (hash);
 CREATE INDEX block_proposer_address_index ON block (proposer_address);
+
+CREATE TYPE COIN AS
+(
+    denom  text,
+    amount text
+);
