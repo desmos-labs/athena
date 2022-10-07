@@ -3,35 +3,23 @@ package x
 import (
 	"fmt"
 
+	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x/contracts"
-
 	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
-
+	"github.com/desmos-labs/djuno/v2/x/fees"
 	"github.com/desmos-labs/djuno/v2/x/notifications"
-
 	"github.com/desmos-labs/djuno/v2/x/posts"
+	"github.com/desmos-labs/djuno/v2/x/profiles"
 	"github.com/desmos-labs/djuno/v2/x/reactions"
-
+	"github.com/desmos-labs/djuno/v2/x/relationships"
 	"github.com/desmos-labs/djuno/v2/x/reports"
-
 	"github.com/desmos-labs/djuno/v2/x/subspaces"
 
-	"github.com/desmos-labs/djuno/v2/x/fees"
-
-	"github.com/desmos-labs/djuno/v2/x/relationships"
-
-	"github.com/forbole/juno/v3/node/builder"
-
-	"github.com/forbole/juno/v3/node/remote"
-
-	"github.com/forbole/juno/v3/modules/registrar"
-
-	"github.com/forbole/juno/v3/modules/telemetry"
-
 	"github.com/forbole/juno/v3/modules"
-
-	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/profiles"
+	"github.com/forbole/juno/v3/modules/registrar"
+	"github.com/forbole/juno/v3/modules/telemetry"
+	"github.com/forbole/juno/v3/node/builder"
+	"github.com/forbole/juno/v3/node/remote"
 )
 
 // ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules

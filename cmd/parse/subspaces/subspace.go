@@ -3,10 +3,6 @@ package profiles
 import (
 	"fmt"
 
-	"github.com/desmos-labs/djuno/v2/x/contracts"
-
-	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
-
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
@@ -15,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/x/contracts"
+	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
 	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
 	"github.com/desmos-labs/djuno/v2/x/reactions"
