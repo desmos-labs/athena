@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/x/authz"
 	"github.com/desmos-labs/djuno/v2/x/contracts"
 	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
 	"github.com/desmos-labs/djuno/v2/x/fees"
@@ -47,6 +48,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	}
 
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
+	authzModule := authz.NewModule(node, cdc, desmosDb)
 	feesModule := fees.NewModule(node, grpcConnection, cdc, desmosDb)
 	profilesModule := profiles.NewModule(node, grpcConnection, cdc, desmosDb)
 	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, desmosDb)
@@ -61,6 +63,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	})
 
 	return []modules.Module{
+		authzModule,
 		feesModule,
 		profilesModule,
 		relationshipsModule,
