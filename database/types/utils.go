@@ -22,3 +22,14 @@ func ToNullTime(value *time.Time) sql.NullTime {
 	}
 	return sql.NullTime{Valid: true, Time: *value}
 }
+
+// RemoveEmpty removes all empty strings from the given slice
+func RemoveEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}

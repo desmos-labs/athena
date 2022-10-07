@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	firebase.google.com/go/v4 v4.9.0
+	github.com/CosmWasm/wasmd v0.23.1-0.20220303200417-f35a13fa1209
 	github.com/cosmos/cosmos-sdk v0.45.8
 	github.com/cosmos/ibc-go/v3 v3.2.0
 	github.com/desmos-labs/desmos/v4 v4.4.1
@@ -37,7 +38,6 @@ require (
 	github.com/Antonboom/nilnil v0.1.1 // indirect
 	github.com/BurntSushi/toml v1.2.0 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
-	github.com/CosmWasm/wasmd v0.23.1-0.20220303200417-f35a13fa1209 // indirect
 	github.com/CosmWasm/wasmvm v1.0.0 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 // indirect
