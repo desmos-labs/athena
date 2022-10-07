@@ -5,30 +5,33 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/forbole/juno/v3/node"
+
+	"github.com/desmos-labs/djuno/v2/x/contracts"
+
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/forbole/juno/v3/modules"
 	"github.com/forbole/juno/v3/types/config"
 	"google.golang.org/grpc"
 
 	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/contracts"
+	contractsbase "github.com/desmos-labs/djuno/v2/x/contracts/base"
 )
 
 var (
-	_ modules.Module        = &Module{}
-	_ modules.MessageModule = &Module{}
+	_ contracts.SmartContractModule = &Module{}
 )
 
 type Module struct {
-	*contracts.Module
+	base *contractsbase.Module
 
 	cfg        *Config
-	wasmClient wasmtypes.QueryClient
 	db         *database.Db
+	node       node.Node
+	wasmClient wasmtypes.QueryClient
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, grpcConnection *grpc.ClientConn, db *database.Db) *Module {
+func NewModule(junoCfg config.Config, node node.Node, grpcConnection *grpc.ClientConn, db *database.Db) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -45,16 +48,17 @@ func NewModule(junoCfg config.Config, grpcConnection *grpc.ClientConn, db *datab
 
 	wasmClient := wasmtypes.NewQueryClient(grpcConnection)
 	return &Module{
-		Module:     contracts.NewModule(wasmClient, db),
+		base:       contractsbase.NewModule(wasmClient, db),
 		cfg:        cfg,
-		wasmClient: wasmClient,
 		db:         db,
+		node:       node,
+		wasmClient: wasmClient,
 	}
 }
 
 // Name implements modules.Module
 func (m *Module) Name() string {
-	return "contracts:tips"
+	return "tips"
 }
 
 // getContractConfig returns the configuration for the contract having the given address

@@ -45,7 +45,7 @@ func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmt
 	}
 
 	// Refresh all the contracts for the code id of the tips contract
-	return m.Module.HandleMsgInstantiateContract(tx, index, msg, types.ContractTypeTips)
+	return m.base.HandleMsgInstantiateContract(tx, index, msg, types.ContractTypeTips)
 }
 
 // handleMsgExecuteContract handles a MsgExecuteContract that contains a send_tip message by storing the tip details

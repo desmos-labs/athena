@@ -1,59 +1,53 @@
 package contracts
 
 import (
-	"context"
-	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	"github.com/forbole/juno/v3/modules"
+	"github.com/rs/zerolog/log"
 
-	"github.com/cosmos/cosmos-sdk/types/query"
 	juno "github.com/forbole/juno/v3/types"
-
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/forbole/juno/v3/node/remote"
-
-	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/types"
 )
 
-// Module represents a generic smart contract module that can be extended for custom contracts handling
+// SmartContractModule represents a generic smart contract module
+type SmartContractModule interface {
+	modules.Module
+	modules.MessageModule
+	modules.AuthzMessageModule
+
+	// RefreshData refreshes the smart contract data for the given height and subspace id
+	RefreshData(height int64, subspaceID uint64) error
+}
+
+var (
+	_ SmartContractModule = &Module{}
+)
+
+// Module represents the module that allows to handle all smart contracts modules easily
 type Module struct {
-	wasmClient wasmtypes.QueryClient
-	db         *database.Db
+	modules []SmartContractModule
 }
 
 // NewModule returns a new Module instance
-func NewModule(wasmClient wasmtypes.QueryClient, db *database.Db) *Module {
+func NewModule(modules []SmartContractModule) *Module {
 	return &Module{
-		wasmClient: wasmClient,
-		db:         db,
+		modules: modules,
 	}
 }
 
-// HandleMsgInstantiateContract handles a MsgInstantiateContract instance by refreshing the stored tips contracts
-func (m *Module) HandleMsgInstantiateContract(tx *juno.Tx, index int, _ *wasmtypes.MsgInstantiateContract, contractType string) error {
-	event, err := tx.FindEventByType(index, wasmtypes.EventTypeInstantiate)
-	if err != nil {
-		return fmt.Errorf("no even with type %s found", wasmtypes.EventTypeInstantiate)
-	}
-	address, err := tx.FindAttributeByKey(event, wasmtypes.AttributeKeyContractAddr)
-	if err != nil {
-		return fmt.Errorf("no %s attribute found", wasmtypes.AttributeKeyContractAddr)
-	}
-
-	// Refresh all the contracts for the code id of the tips contract
-	return m.db.SaveContract(types.NewContract(address, contractType, tx.Height))
+// Name implements modules.Module
+func (m Module) Name() string {
+	return "contracts"
 }
 
-// RefreshContracts refreshes the contracts that have been instanciated for the given code id, at the given height.
-// After fetching the data from the chain, such contracts addresses are stored
-// inside the database as contracts of the given type
-func (m *Module) RefreshContracts(height int64, codeID uint64, contractType string) error {
-	contracts, err := m.getAllContractsByCode(height, codeID)
-	if err != nil {
-		return fmt.Errorf("error while getting contracts for code id %d: %s", codeID, err)
-	}
+// HandleMsg implements modules.MessageModule
+func (m Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
+	for _, module := range m.modules {
+		if module == nil {
+			continue
+		}
 
-	for _, contract := range contracts {
-		err = m.db.SaveContract(types.NewContract(contract, contractType, height))
+		err := module.HandleMsg(index, msg, tx)
 		if err != nil {
 			return err
 		}
@@ -62,30 +56,35 @@ func (m *Module) RefreshContracts(height int64, codeID uint64, contractType stri
 	return nil
 }
 
-// getAllContractsByCode returns all the contracts addresses having the given code id at the given height
-func (m *Module) getAllContractsByCode(height int64, codeID uint64) ([]string, error) {
-	var contracts []string
-	var nextKey []byte
-	var stop bool
-
-	for !stop {
-		res, err := m.wasmClient.ContractsByCode(
-			remote.GetHeightRequestContext(context.Background(), height),
-			&wasmtypes.QueryContractsByCodeRequest{
-				CodeId: codeID,
-				Pagination: &query.PageRequest{
-					Key: nextKey,
-				},
-			},
-		)
-		if err != nil {
-			return nil, err
+// HandleMsgExec implements modules.AuthzMessageModule
+func (m Module) HandleMsgExec(index int, msgExec *authz.MsgExec, authzMsgIndex int, executedMsg sdk.Msg, tx *juno.Tx) error {
+	for _, module := range m.modules {
+		if module == nil {
+			continue
 		}
 
-		contracts = append(contracts, res.Contracts...)
-		nextKey = res.Pagination.NextKey
-		stop = nextKey == nil
+		err := module.HandleMsgExec(index, msgExec, authzMsgIndex, executedMsg, tx)
+		if err != nil {
+			return err
+		}
 	}
 
-	return contracts, nil
+	return nil
+}
+
+// RefreshData implements SmartContractModule
+func (m Module) RefreshData(height int64, subspaceID uint64) error {
+	for _, module := range m.modules {
+		if module == nil {
+			continue
+		}
+
+		log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msgf("refreshing %s", module.Name())
+		err := module.RefreshData(height, subspaceID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
