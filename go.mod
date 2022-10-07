@@ -3,7 +3,7 @@ module github.com/desmos-labs/djuno/v2
 go 1.18
 
 require (
-	firebase.google.com/go/v4 v4.8.0
+	firebase.google.com/go/v4 v4.9.0
 	github.com/CosmWasm/wasmd v0.23.1-0.20220303200417-f35a13fa1209
 	github.com/cosmos/cosmos-sdk v0.45.8
 	github.com/cosmos/ibc-go/v3 v3.2.0
@@ -20,7 +20,7 @@ require (
 	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.21
 	google.golang.org/api v0.98.0
-	google.golang.org/grpc v1.49.0
+	google.golang.org/grpc v1.50.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -264,7 +264,7 @@ require (
 	golang.org/x/exp/typeparams v0.0.0-20220827204233-334a2380cb91 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
-	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde // indirect
 	golang.org/x/sys v0.0.0-20220915200043-7b5979e65e41 // indirect
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035 // indirect
