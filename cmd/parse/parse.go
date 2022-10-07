@@ -8,6 +8,7 @@ import (
 	parsegenesis "github.com/forbole/juno/v3/cmd/parse/genesis"
 
 	parseauthz "github.com/desmos-labs/djuno/v2/cmd/parse/authz"
+	parsefeegrant "github.com/desmos-labs/djuno/v2/cmd/parse/feegrant"
 	parseposts "github.com/desmos-labs/djuno/v2/cmd/parse/posts"
 	parseprofiles "github.com/desmos-labs/djuno/v2/cmd/parse/profiles"
 	parsereactions "github.com/desmos-labs/djuno/v2/cmd/parse/reactions"
@@ -28,6 +29,7 @@ func NewParseCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 		parsegenesis.NewGenesisCmd(parseCfg),
 		parseblocks.NewBlocksCmd(parseCfg),
 		parseauthz.NewAuthzCmd(parseCfg),
+		parsefeegrant.NewFeeGrant(parseCfg),
 		parseprofiles.NewProfilesCmd(parseCfg),
 		parserelationships.NewRelationshipsCmd(parseCfg),
 		parsesubspaces.NewSubspacesCmd(parseCfg),
