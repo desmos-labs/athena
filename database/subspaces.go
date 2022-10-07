@@ -184,9 +184,9 @@ func (db *Db) RemoveUserFromGroup(member types.UserGroupMember) error {
 
 // SaveUserPermission stores the given permissions inside the database
 func (db *Db) SaveUserPermission(permission types.UserPermission) error {
-	// TODO: Investigate why this happened
 	if permission.Permissions == nil {
-		return nil
+		// Setting a null permissions means deleting those permissions all together
+		return db.DeleteUserPermission(permission)
 	}
 
 	sectionRowID, err := db.getSectionRowID(permission.SubspaceID, permission.SectionID)
@@ -211,4 +211,14 @@ WHERE subspace_user_permission.height <= excluded.height`
 	return err
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// DeleteUserPermission removes the given permission from the database
+func (db *Db) DeleteUserPermission(permission types.UserPermission) error {
+	sectionRowID, err := db.getSectionRowID(permission.SubspaceID, permission.SectionID)
+	if err != nil {
+		return err
+	}
+
+	stmt := `DELETE FROM subspace_user_permission WHERE section_row_id = $1 AND user_address = $2 AND height <= $3`
+	_, err = db.SQL.Exec(stmt, sectionRowID, permission.User, permission.Height)
+	return err
+}
