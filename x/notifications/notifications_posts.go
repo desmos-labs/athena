@@ -99,7 +99,7 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 		PostAuthorKey: reply.Author,
 	}
 
-	log.Info().Str("module", m.Name()).Str("recipient", originalPost.Author).
+	log.Debug().Str("module", m.Name()).Str("recipient", originalPost.Author).
 		Str("notification type", TypeReply).Msg("sending notification")
 	return m.sendNotification(originalPost.Author, notification, data)
 }
@@ -149,7 +149,7 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 		PostAuthorKey: reference.Author,
 	}
 
-	log.Info().Str("module", m.Name()).Str("recipient", originalPost.Author).
+	log.Debug().Str("module", m.Name()).Str("recipient", originalPost.Author).
 		Str("notification type", notificationType).Msg("sending notification")
 	return m.sendNotification(originalPost.Author, notification, data)
 }
@@ -179,7 +179,7 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 		PostAuthorKey: post.Author,
 	}
 
-	log.Info().Str("module", m.Name()).Str("recipient", mention.Tag).
+	log.Debug().Str("module", m.Name()).Str("recipient", mention.Tag).
 		Str("notification type", TypeMention).Msg("sending notification")
 	return m.sendNotification(mention.Tag, notification, data)
 }

@@ -35,7 +35,7 @@ func (m *Module) SendReactionNotifications(height int64, subspaceID uint64, post
 		ReactionAuthorKey: user,
 	}
 
-	log.Info().Str("module", m.Name()).Str("recipient", post.Author).
+	log.Debug().Str("module", m.Name()).Str("recipient", post.Author).
 		Str("notification type", TypeReaction).Msg("sending notification")
 	return m.sendNotification(post.Author, notification, data)
 }

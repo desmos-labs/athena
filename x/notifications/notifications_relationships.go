@@ -28,7 +28,7 @@ func (m *Module) SendRelationshipNotifications(subspaceID uint64, user, counterp
 		RelationshipCreatorKey: user,
 	}
 
-	log.Info().Str("module", m.Name()).Str("recipient", counterparty).
+	log.Debug().Str("module", m.Name()).Str("recipient", counterparty).
 		Str("notification type", TypeFollow).Msg("sending notification")
 	return m.sendNotification(counterparty, notification, data)
 }
