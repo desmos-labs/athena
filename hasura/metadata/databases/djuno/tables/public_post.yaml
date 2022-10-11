@@ -28,6 +28,13 @@ array_relationships:
         table:
           schema: public
           name: post_attachment
+  - name: comments
+    using:
+      foreign_key_constraint_on:
+        column: conversation_row_id
+        table:
+          schema: public
+          name: post
   - name: hashtags
     using:
       foreign_key_constraint_on:
@@ -42,13 +49,6 @@ array_relationships:
         table:
           schema: public
           name: post_mention
-  - name: posts
-    using:
-      foreign_key_constraint_on:
-        column: conversation_row_id
-        table:
-          schema: public
-          name: post
   - name: reactions
     using:
       foreign_key_constraint_on:
@@ -56,6 +56,13 @@ array_relationships:
         table:
           schema: public
           name: reaction
+  - name: referees
+    using:
+      foreign_key_constraint_on:
+        column: reference_row_id
+        table:
+          schema: public
+          name: post_reference
   - name: references
     using:
       foreign_key_constraint_on:
@@ -70,6 +77,13 @@ array_relationships:
         table:
           schema: public
           name: post_tag
+  - name: tips
+    using:
+      foreign_key_constraint_on:
+        column: post_row_id
+        table:
+          schema: public
+          name: tip_post
   - name: urls
     using:
       foreign_key_constraint_on:

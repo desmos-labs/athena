@@ -1,8 +1,8 @@
 table:
   schema: public
-  name: user_relationship
+  name: authz_grant
 object_relationships:
-  - name: counterparty
+  - name: grantee
     using:
       manual_configuration:
         remote_table:
@@ -10,8 +10,8 @@ object_relationships:
           name: profile
         insertion_order: null
         column_mapping:
-          counterparty_address: address
-  - name: creator
+          grantee_address: address
+  - name: granter
     using:
       manual_configuration:
         remote_table:
@@ -19,17 +19,16 @@ object_relationships:
           name: profile
         insertion_order: null
         column_mapping:
-          creator_address: address
-  - name: subspace
-    using:
-      foreign_key_constraint_on: subspace_id
+          granter_address: address
 select_permissions:
   - role: anonymous
     permission:
       columns:
-        - counterparty_address
-        - creator_address
-        - subspace_id
+        - authorization
+        - expiration
+        - grantee_address
+        - granter_address
+        - msg_type_url
       filter: {}
-      limit: 50
+      limit: 100
       allow_aggregations: true

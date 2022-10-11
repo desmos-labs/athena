@@ -1,8 +1,8 @@
 table:
   schema: public
-  name: user_relationship
+  name: tip_user
 object_relationships:
-  - name: counterparty
+  - name: receiver
     using:
       manual_configuration:
         remote_table:
@@ -10,8 +10,8 @@ object_relationships:
           name: profile
         insertion_order: null
         column_mapping:
-          counterparty_address: address
-  - name: creator
+          receiver_address: address
+  - name: sender
     using:
       manual_configuration:
         remote_table:
@@ -19,7 +19,7 @@ object_relationships:
           name: profile
         insertion_order: null
         column_mapping:
-          creator_address: address
+          sender_address: address
   - name: subspace
     using:
       foreign_key_constraint_on: subspace_id
@@ -27,9 +27,10 @@ select_permissions:
   - role: anonymous
     permission:
       columns:
-        - counterparty_address
-        - creator_address
+        - amount
+        - receiver_address
+        - sender_address
         - subspace_id
       filter: {}
-      limit: 50
+      limit: 100
       allow_aggregations: true
