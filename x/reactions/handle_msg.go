@@ -51,20 +51,17 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 // handleMsgAddReaction handles a MsgAddReaction
 func (m *Module) handleMsgAddReaction(tx *juno.Tx, index int, msg *reactionstypes.MsgAddReaction) error {
-	event, err := tx.FindEventByType(index, reactionstypes.EventTypeAddReaction)
-	if err != nil {
-		return err
-	}
-	reactionIDStr, err := tx.FindAttributeByKey(event, reactionstypes.AttributeKeyReactionID)
-	if err != nil {
-		return err
-	}
-	reactionID, err := reactionstypes.ParseReactionID(reactionIDStr)
+	reactionID, err := m.GetReactionID(tx, index)
 	if err != nil {
 		return err
 	}
 
-	return m.updateReaction(tx.Height, msg.SubspaceID, msg.PostID, reactionID)
+	reaction, err := m.GetReaction(tx.Height, msg.SubspaceID, msg.PostID, reactionID)
+	if err != nil {
+		return err
+	}
+
+	return m.db.SaveReaction(reaction)
 }
 
 // handleMsgRemoveReaction handles a MsgRemoveReaction

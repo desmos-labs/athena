@@ -7,6 +7,8 @@ import (
 	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 	juno "github.com/forbole/juno/v3/types"
+
+	"github.com/desmos-labs/djuno/v2/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule
@@ -22,26 +24,29 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 	switch desmosMsg := msg.(type) {
 	case *relationshipstypes.MsgCreateRelationship:
-		return m.handleMsgCreateRelationship(desmosMsg)
+		return m.handleMsgCreateRelationship(tx, desmosMsg)
 
 	case *poststypes.MsgCreatePost:
 		return m.handleMsgCreatePost(tx, index, desmosMsg)
 
 	case *reactionstypes.MsgAddReaction:
-		return m.handleMsgAddReaction(tx, desmosMsg)
+		return m.handleMsgAddReaction(tx, index, desmosMsg)
 	}
 
 	return nil
 }
 
 // handleMsgCreateRelationship handles a MsgCreateRelationship message and sends out the various related notifications
-func (m *Module) handleMsgCreateRelationship(msg *relationshipstypes.MsgCreateRelationship) error {
+func (m *Module) handleMsgCreateRelationship(tx *juno.Tx, msg *relationshipstypes.MsgCreateRelationship) error {
 	// Skip if the subspace is not the correct one
 	if msg.SubspaceID != m.cfg.SubspaceID {
 		return nil
 	}
 
-	return m.SendRelationshipNotifications(msg.SubspaceID, msg.Signer, msg.Counterparty)
+	return m.SendRelationshipNotifications(types.NewRelationship(
+		relationshipstypes.NewRelationship(msg.Signer, msg.Counterparty, msg.SubspaceID),
+		tx.Height,
+	))
 }
 
 // handleMsgCreatePost handles a MsgCreatePost message and sends out the various related notifications
@@ -70,12 +75,22 @@ func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.Msg
 }
 
 // handleMsgAddReaction handles a MsgAddReaction message and sends out the various related notifications
-func (m *Module) handleMsgAddReaction(tx *juno.Tx, msg *reactionstypes.MsgAddReaction) error {
+func (m *Module) handleMsgAddReaction(tx *juno.Tx, index int, msg *reactionstypes.MsgAddReaction) error {
 	// Skip if the subspace is not the correct one
 	if msg.SubspaceID != m.cfg.SubspaceID {
 		return nil
 	}
 
+	// Get the reaction value
+	reactionID, err := m.reactionsModule.GetReactionID(tx, index)
+	if err != nil {
+		return err
+	}
+	reaction, err := m.reactionsModule.GetReaction(tx.Height, msg.SubspaceID, msg.PostID, reactionID)
+	if err != nil {
+		return err
+	}
+
 	// Send the notifications
-	return m.SendReactionNotifications(tx.Height, msg.SubspaceID, msg.PostID, msg.User)
+	return m.SendReactionNotifications(reaction)
 }

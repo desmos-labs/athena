@@ -1,41 +1,55 @@
 package notifications
 
 import (
-	"fmt"
-
 	"github.com/rs/zerolog/log"
 
-	"firebase.google.com/go/v4/messaging"
+	"github.com/desmos-labs/djuno/v2/types"
+	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 )
 
+func (m *Module) getReactionsNotificationsBuilder() notificationsbuilder.ReactionsNotificationsBuilder {
+	if m.builder == nil {
+		return nil
+	}
+	return m.builder.Reactions()
+}
+
+func (m *Module) getReactionNotificationBuilder() notificationsbuilder.ReactionNotificationBuilder {
+	if builder := m.getReactionsNotificationsBuilder(); builder != nil {
+		return builder.Reaction()
+	}
+	return nil
+}
+
+func (m *Module) getReactionNotificationData(post types.Post, reaction types.Reaction, builder notificationsbuilder.ReactionNotificationBuilder) *notificationsbuilder.NotificationData {
+	if builder == nil {
+		return nil
+	}
+	return builder(post, reaction)
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+
 // SendReactionNotifications sends all the notifications to the author of the post that has been reacted to
-func (m *Module) SendReactionNotifications(height int64, subspaceID uint64, postID uint64, user string) error {
+func (m *Module) SendReactionNotifications(reaction types.Reaction) error {
 	// Get the post
-	post, err := m.postsModule.GetPost(height, subspaceID, postID)
+	post, err := m.postsModule.GetPost(reaction.Height, reaction.SubspaceID, reaction.PostID)
 	if err != nil {
 		return err
 	}
 
 	// Skip if the user reacting and the post author are the same
-	if post.Author == user {
+	if post.Author == reaction.Author {
 		return nil
 	}
 
-	notification := &messaging.Notification{
-		Title: "Someone reacted to your post! 🎉",
-		Body:  fmt.Sprintf("%s reacted to your post", m.getDisplayName(user)),
-	}
+	data := m.getReactionNotificationData(post, reaction, m.getReactionNotificationBuilder())
 
-	data := map[string]string{
-		NotificationTypeKey:   TypeReaction,
-		NotificationActionKey: ActionOpenPost,
-
-		SubspaceIDKey:     fmt.Sprintf("%d", post.SubspaceID),
-		PostIDKey:         fmt.Sprintf("%d", post.ID),
-		ReactionAuthorKey: user,
+	if data == nil {
+		return nil
 	}
 
 	log.Debug().Str("module", m.Name()).Str("recipient", post.Author).
-		Str("notification type", TypeReaction).Msg("sending notification")
-	return m.sendNotification(post.Author, notification, data)
+		Str("notification type", notificationsbuilder.TypeReaction).Msg("sending notification")
+	return m.sendNotification(post.Author, data.Notification, data.Data)
 }

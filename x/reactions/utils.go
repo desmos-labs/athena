@@ -3,6 +3,8 @@ package reactions
 import (
 	"context"
 
+	juno "github.com/forbole/juno/v3/types"
+
 	"github.com/forbole/juno/v3/node/remote"
 
 	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
@@ -10,8 +12,19 @@ import (
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
-// updateReaction updates the stored data about the given reaction at the specified height
-func (m *Module) updateReaction(height int64, subspaceID uint64, postID uint64, reactionID uint32) error {
+func (m *Module) GetReactionID(tx *juno.Tx, index int) (uint32, error) {
+	event, err := tx.FindEventByType(index, reactionstypes.EventTypeAddReaction)
+	if err != nil {
+		return 0, err
+	}
+	reactionIDStr, err := tx.FindAttributeByKey(event, reactionstypes.AttributeKeyReactionID)
+	if err != nil {
+		return 0, err
+	}
+	return reactionstypes.ParseReactionID(reactionIDStr)
+}
+
+func (m *Module) GetReaction(height int64, subspaceID uint64, postID uint64, reactionID uint32) (types.Reaction, error) {
 	res, err := m.client.Reaction(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&reactionstypes.QueryReactionRequest{
@@ -21,10 +34,10 @@ func (m *Module) updateReaction(height int64, subspaceID uint64, postID uint64, 
 		},
 	)
 	if err != nil {
-		return err
+		return types.Reaction{}, err
 	}
 
-	return m.db.SaveReaction(types.NewReaction(res.Reaction, height))
+	return types.NewReaction(res.Reaction, height), nil
 }
 
 // updateRegisteredReaction updates the stored data about the given registered reaction at the specified height
