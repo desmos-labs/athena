@@ -23,7 +23,7 @@ func (m *Module) SendReactionNotifications(height int64, subspaceID uint64, post
 
 	notification := &messaging.Notification{
 		Title: "Someone reacted to your post! 🎉",
-		Body:  fmt.Sprintf("%s reacted to your post", m.getDisplayName(post.Author)),
+		Body:  fmt.Sprintf("%s reacted to your post", m.getDisplayName(user)),
 	}
 
 	data := map[string]string{
