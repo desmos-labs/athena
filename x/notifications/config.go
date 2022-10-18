@@ -1,6 +1,8 @@
 package notifications
 
-import "gopkg.in/yaml.v3"
+import (
+	"gopkg.in/yaml.v3"
+)
 
 type Config struct {
 	FirebaseCredentialsFilePath string `yaml:"firebase_credentials_file_path"`
