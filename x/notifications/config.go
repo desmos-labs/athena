@@ -8,7 +8,6 @@ type Config struct {
 	FirebaseCredentialsFilePath string `yaml:"firebase_credentials_file_path"`
 	FirebaseProjectID           string `yaml:"firebase_project_id"`
 	AndroidChannelID            string `yaml:"android_channel_id"`
-	SubspaceID                  uint64 `yaml:"subspace_id"`
 }
 
 func ParseConfig(bz []byte) (*Config, error) {

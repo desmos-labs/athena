@@ -4,6 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/gogo/protobuf/proto"
 
+	"github.com/desmos-labs/djuno/v2/x/filters"
+
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +23,7 @@ func (m *Module) HandleMsgExec(index int, _ *authz.MsgExec, _ int, executedMsg s
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	if len(tx.Logs) == 0 {
+	if len(tx.Logs) == 0 || !filters.ShouldMsgBeParsed(msg) {
 		return nil
 	}
 
