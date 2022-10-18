@@ -1,16 +1,66 @@
 package notifications
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/rs/zerolog/log"
 
-	"firebase.google.com/go/v4/messaging"
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
+	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 )
+
+func (m *Module) getPostsNotificationsBuilder() notificationsbuilder.PostsNotificationsBuilder {
+	if m.builder == nil {
+		return nil
+	}
+	return m.builder.Posts()
+}
+
+func (m *Module) getConversationNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
+	if builder := m.getPostsNotificationsBuilder(); builder != nil {
+		return builder.ConversationReply()
+	}
+	return nil
+}
+
+func (m *Module) getCommentNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
+	if builder := m.getPostsNotificationsBuilder(); builder != nil {
+		return builder.Comment()
+	}
+	return nil
+}
+
+func (m *Module) getRepostNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
+	if builder := m.getPostsNotificationsBuilder(); builder != nil {
+		return builder.Repost()
+	}
+	return nil
+}
+
+func (m *Module) getQuoteNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
+	if builder := m.getPostsNotificationsBuilder(); builder != nil {
+		return builder.Quote()
+	}
+	return nil
+}
+
+func (m *Module) getMentionNotificationBuilder() notificationsbuilder.MentionNotificationBuilder {
+	if builder := m.getPostsNotificationsBuilder(); builder != nil {
+		return builder.Mention()
+	}
+	return nil
+}
+
+func (m *Module) getPostNotificationData(originalPost types.Post, reply types.Post, builder notificationsbuilder.PostNotificationBuilder) *notificationsbuilder.NotificationData {
+	if builder == nil {
+		return nil
+	}
+	return builder(originalPost, reply)
+}
+
+// -------------------------------------------------------------------------------------------------------------------
 
 // SendPostNotifications sends all the notifications to the users that are somehow involved with the given post.
 // These include:
@@ -74,6 +124,13 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 	return nil
 }
 
+func (m *Module) getMentionNotificationData(post types.Post, mention poststypes.TextTag, builder notificationsbuilder.MentionNotificationBuilder) *notificationsbuilder.NotificationData {
+	if builder == nil {
+		return nil
+	}
+	return builder(post, mention)
+}
+
 func (m *Module) sendConversationNotification(originalPost types.Post, reply types.Post, notifiedUsers []string) error {
 	// Skip if the post author and the original author are the same
 	if originalPost.Author == reply.Author {
@@ -85,23 +142,15 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 		return nil
 	}
 
-	notification := &messaging.Notification{
-		Title: "Someone replied to your post! 💬",
-		Body:  fmt.Sprintf("%s replied to your post", m.getDisplayName(reply.Author)),
-	}
-
-	data := map[string]string{
-		NotificationTypeKey:   TypeReply,
-		NotificationActionKey: ActionOpenPost,
-
-		SubspaceIDKey: fmt.Sprintf("%d", reply.SubspaceID),
-		PostIDKey:     fmt.Sprintf("%d", reply.ID),
-		PostAuthorKey: reply.Author,
+	// Get the notification data
+	data := m.getPostNotificationData(originalPost, reply, m.getConversationNotificationBuilder())
+	if data == nil {
+		return nil
 	}
 
 	log.Debug().Str("module", m.Name()).Str("recipient", originalPost.Author).
-		Str("notification type", TypeReply).Msg("sending notification")
-	return m.sendNotification(originalPost.Author, notification, data)
+		Str("notification type", notificationsbuilder.TypeReply).Msg("sending notification")
+	return m.sendNotification(originalPost.Author, data.Notification, data.Data)
 }
 
 func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenceType poststypes.PostReferenceType, reference types.Post, notifiedUsers []string) error {
@@ -115,43 +164,25 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 		return nil
 	}
 
-	var notificationType string
-	var notification *messaging.Notification
+	var data *notificationsbuilder.NotificationData
 	switch referenceType {
 	case poststypes.POST_REFERENCE_TYPE_REPLY:
-		notificationType = TypeReply
-		notification = &messaging.Notification{
-			Title: "Someone commented your post! 💬",
-			Body:  fmt.Sprintf("%s commented on your post", m.getDisplayName(reference.Author)),
-		}
+		data = m.getPostNotificationData(originalPost, reference, m.getCommentNotificationBuilder())
 
 	case poststypes.POST_REFERENCE_TYPE_REPOST:
-		notificationType = TypeRepost
-		notification = &messaging.Notification{
-			Title: "Someone reposted your post! 💬",
-			Body:  fmt.Sprintf("%s reposted your post", m.getDisplayName(reference.Author)),
-		}
+		data = m.getPostNotificationData(originalPost, reference, m.getRepostNotificationBuilder())
 
 	case poststypes.POST_REFERENCE_TYPE_QUOTE:
-		notificationType = TypeQuote
-		notification = &messaging.Notification{
-			Title: "Someone quoted your post! 💬",
-			Body:  fmt.Sprintf("%s quoted your post", m.getDisplayName(reference.Author)),
-		}
+		data = m.getPostNotificationData(originalPost, reference, m.getQuoteNotificationBuilder())
 	}
 
-	data := map[string]string{
-		NotificationTypeKey:   notificationType,
-		NotificationActionKey: ActionOpenPost,
-
-		SubspaceIDKey: fmt.Sprintf("%d", originalPost.SubspaceID),
-		PostIDKey:     fmt.Sprintf("%d", originalPost.ID),
-		PostAuthorKey: reference.Author,
+	if data == nil {
+		return nil
 	}
 
 	log.Debug().Str("module", m.Name()).Str("recipient", originalPost.Author).
-		Str("notification type", notificationType).Msg("sending notification")
-	return m.sendNotification(originalPost.Author, notification, data)
+		Str("notification type", data.Data[notificationsbuilder.NotificationTypeKey]).Msg("sending notification")
+	return m.sendNotification(originalPost.Author, data.Notification, data.Data)
 }
 
 func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes.TextTag, notifiedUsers []string) error {
@@ -165,23 +196,14 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 		return nil
 	}
 
-	notification := &messaging.Notification{
-		Title: "Someone mentioned you inside a post! 💬",
-		Body:  fmt.Sprintf("%s mentioned you post", m.getDisplayName(post.Author)),
-	}
-
-	data := map[string]string{
-		NotificationTypeKey:   TypeMention,
-		NotificationActionKey: ActionOpenPost,
-
-		SubspaceIDKey: fmt.Sprintf("%d", post.SubspaceID),
-		PostIDKey:     fmt.Sprintf("%d", post.ID),
-		PostAuthorKey: post.Author,
+	data := m.getMentionNotificationData(post, mention, m.getMentionNotificationBuilder())
+	if data == nil {
+		return nil
 	}
 
 	log.Debug().Str("module", m.Name()).Str("recipient", mention.Tag).
-		Str("notification type", TypeMention).Msg("sending notification")
-	return m.sendNotification(mention.Tag, notification, data)
+		Str("notification type", notificationsbuilder.TypeMention).Msg("sending notification")
+	return m.sendNotification(mention.Tag, data.Notification, data.Data)
 }
 
 func hasBeenNotified(user string, notifiedUsers []string) bool {

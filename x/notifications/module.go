@@ -11,6 +11,8 @@ import (
 	"github.com/forbole/juno/v3/modules"
 	"github.com/forbole/juno/v3/types/config"
 	"google.golang.org/api/option"
+
+	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 )
 
 var (
@@ -26,12 +28,14 @@ type Module struct {
 	app    *firebase.App
 	client *messaging.Client
 
-	profilesModule ProfilesModule
-	postsModule    PostsModule
+	postsModule     PostsModule
+	reactionsModule ReactionsModule
+
+	builder notificationsbuilder.NotificationsBuilder
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, profilesModule ProfilesModule, postsModule PostsModule, cdc codec.Codec) *Module {
+func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -61,12 +65,12 @@ func NewModule(junoCfg config.Config, profilesModule ProfilesModule, postsModule
 	}
 
 	return &Module{
-		cdc:            cdc,
-		cfg:            cfg,
-		app:            app,
-		client:         client,
-		profilesModule: profilesModule,
-		postsModule:    postsModule,
+		cdc:             cdc,
+		cfg:             cfg,
+		app:             app,
+		client:          client,
+		postsModule:     postsModule,
+		reactionsModule: reactionsModule,
 	}
 }
 
@@ -75,11 +79,17 @@ func (m *Module) Name() string {
 	return "notifications"
 }
 
+// WithNotificationsBuilder sets the given builder as the notifications builder
+func (m *Module) WithNotificationsBuilder(builder notificationsbuilder.NotificationsBuilder) *Module {
+	m.builder = builder
+	return m
+}
+
 // sendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
 func (m *Module) sendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
 	// Set the default Flutter click action
-	data[ClickActionKey] = ClickActionValue
+	data[notificationsbuilder.ClickActionKey] = notificationsbuilder.ClickActionValue
 
 	// Build the Android config
 	var androidConfig *messaging.AndroidConfig

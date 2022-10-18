@@ -3,6 +3,9 @@ package x
 import (
 	"fmt"
 
+	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
+	standardnotificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder/standard"
+
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x/authz"
 	"github.com/desmos-labs/djuno/v2/x/contracts"
@@ -26,11 +29,20 @@ import (
 
 // ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules
 type ModulesRegistrar struct {
+	creator notificationsbuilder.NotificationsBuilderCreator
 }
 
 // NewModulesRegistrar allows to build a new ModulesRegistrar instance
 func NewModulesRegistrar() *ModulesRegistrar {
-	return &ModulesRegistrar{}
+	return &ModulesRegistrar{
+		creator: standardnotificationsbuilder.Creator,
+	}
+}
+
+// WithNotificationsBuilderCreator allows to customize the NotificationsBuilderCreator instance used
+func (r *ModulesRegistrar) WithNotificationsBuilderCreator(creator notificationsbuilder.NotificationsBuilderCreator) *ModulesRegistrar {
+	r.creator = creator
+	return r
 }
 
 // BuildModules implements modules.Registrar
@@ -58,7 +70,8 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	reportsModule := reports.NewModule(node, grpcConnection, cdc, desmosDb)
 	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
 	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
-	notificationsModule := notifications.NewModule(ctx.JunoConfig, profilesModule, postsModule, cdc)
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc).
+		WithNotificationsBuilder(r.creator(profilesModule))
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 	contractsModule := contracts.NewModule([]contracts.SmartContractModule{
 		tips.NewModule(ctx.JunoConfig, node, grpcConnection, desmosDb),

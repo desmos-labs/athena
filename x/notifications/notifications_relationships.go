@@ -1,34 +1,49 @@
 package notifications
 
 import (
-	"fmt"
+	"github.com/desmos-labs/djuno/v2/types"
+	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 
 	"github.com/rs/zerolog/log"
-
-	"firebase.google.com/go/v4/messaging"
 )
 
+func (m *Module) getRelationshipsNotificationsBuilder() notificationsbuilder.RelationshipsNotificationsBuilder {
+	if m.builder == nil {
+		return nil
+	}
+	return m.builder.Relationships()
+}
+
+func (m *Module) getRelationshipNotificationBuilder() notificationsbuilder.RelationshipNotificationBuilder {
+	if builder := m.getRelationshipsNotificationsBuilder(); builder != nil {
+		return builder.Relationship()
+	}
+	return nil
+}
+
+func (m *Module) getRelationshipNotificationData(relationship types.Relationship, builder notificationsbuilder.RelationshipNotificationBuilder) *notificationsbuilder.NotificationData {
+	if builder == nil {
+		return nil
+	}
+	return builder(relationship)
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+
 // SendRelationshipNotifications sends the notification to the user towards which a relationship has just been created
-func (m *Module) SendRelationshipNotifications(subspaceID uint64, user, counterparty string) error {
+func (m *Module) SendRelationshipNotifications(relationship types.Relationship) error {
 	// Skip if the user and the counterparty are the same
-	if user == counterparty {
+	if relationship.Creator == relationship.Counterparty {
 		return nil
 	}
 
-	notification := &messaging.Notification{
-		Title: "You have a new follower! 👥",
-		Body:  fmt.Sprintf("%s has started following you", m.getDisplayName(user)),
+	data := m.getRelationshipNotificationData(relationship, m.getRelationshipNotificationBuilder())
+
+	if data == nil {
+		return nil
 	}
 
-	data := map[string]string{
-		NotificationTypeKey:   TypeFollow,
-		NotificationActionKey: ActionOpenProfile,
-
-		SubspaceIDKey:          fmt.Sprintf("%d", subspaceID),
-		RelationshipCreatorKey: user,
-	}
-
-	log.Debug().Str("module", m.Name()).Str("recipient", counterparty).
-		Str("notification type", TypeFollow).Msg("sending notification")
-	return m.sendNotification(counterparty, notification, data)
+	log.Debug().Str("module", m.Name()).Str("recipient", relationship.Counterparty).
+		Str("notification type", notificationsbuilder.TypeFollow).Msg("sending notification")
+	return m.sendNotification(relationship.Counterparty, data.Notification, data.Data)
 }
