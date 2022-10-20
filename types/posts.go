@@ -6,13 +6,15 @@ import (
 
 type Post struct {
 	poststypes.Post
-	Height int64
+	TxHashes []string
+	Height   int64
 }
 
-func NewPost(post poststypes.Post, height int64) Post {
+func NewPost(post poststypes.Post, txHashes []string, height int64) Post {
 	return Post{
-		Post:   post,
-		Height: height,
+		Post:     post,
+		TxHashes: txHashes,
+		Height:   height,
 	}
 }
 

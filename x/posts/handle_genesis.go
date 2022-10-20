@@ -1,6 +1,7 @@
 package posts
 
 import (
+	"encoding/hex"
 	"encoding/json"
 
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
@@ -17,7 +18,8 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 
 	// Save posts
 	for _, post := range genState.Posts {
-		err := m.db.SavePost(types.NewPost(post, doc.InitialHeight))
+		txHashes := []string{hex.EncodeToString(doc.AppHash)}
+		err := m.db.SavePost(types.NewPost(post, txHashes, doc.InitialHeight))
 		if err != nil {
 			return err
 		}
