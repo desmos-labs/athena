@@ -1,6 +1,8 @@
 package tips
 
-import "gopkg.in/yaml.v3"
+import (
+	"gopkg.in/yaml.v3"
+)
 
 type ContractsConfig struct {
 	Tips *Config `yaml:"tips"`

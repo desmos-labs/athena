@@ -8,6 +8,8 @@ import (
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 	juno "github.com/forbole/juno/v3/types"
 
+	"github.com/desmos-labs/djuno/v2/x/filters"
+
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
@@ -18,7 +20,7 @@ func (m *Module) HandleMsgExec(index int, _ *authz.MsgExec, _ int, executedMsg s
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
-	if len(tx.Logs) == 0 {
+	if len(tx.Logs) == 0 || !filters.ShouldMsgBeParsed(msg) {
 		return nil
 	}
 
@@ -38,11 +40,6 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 // handleMsgCreateRelationship handles a MsgCreateRelationship message and sends out the various related notifications
 func (m *Module) handleMsgCreateRelationship(tx *juno.Tx, msg *relationshipstypes.MsgCreateRelationship) error {
-	// Skip if the subspace is not the correct one
-	if msg.SubspaceID != m.cfg.SubspaceID {
-		return nil
-	}
-
 	return m.SendRelationshipNotifications(types.NewRelationship(
 		relationshipstypes.NewRelationship(msg.Signer, msg.Counterparty, msg.SubspaceID),
 		tx.Height,
@@ -51,11 +48,6 @@ func (m *Module) handleMsgCreateRelationship(tx *juno.Tx, msg *relationshipstype
 
 // handleMsgCreatePost handles a MsgCreatePost message and sends out the various related notifications
 func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
-	// Skip if the subspace is not the correct one
-	if msg.SubspaceID != m.cfg.SubspaceID {
-		return nil
-	}
-
 	// Get the post id
 	event, err := tx.FindEventByType(index, poststypes.EventTypeCreatePost)
 	if err != nil {
@@ -76,11 +68,6 @@ func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.Msg
 
 // handleMsgAddReaction handles a MsgAddReaction message and sends out the various related notifications
 func (m *Module) handleMsgAddReaction(tx *juno.Tx, index int, msg *reactionstypes.MsgAddReaction) error {
-	// Skip if the subspace is not the correct one
-	if msg.SubspaceID != m.cfg.SubspaceID {
-		return nil
-	}
-
 	// Get the reaction value
 	reactionID, err := m.reactionsModule.GetReactionID(tx, index)
 	if err != nil {
