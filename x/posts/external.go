@@ -2,7 +2,14 @@ package posts
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
+	"sort"
+
+	juno "github.com/forbole/juno/v3/types"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	"github.com/desmos-labs/djuno/v2/utils"
 
 	"github.com/rs/zerolog/log"
 
@@ -75,6 +82,11 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 // QuerySubspacePosts queries all the posts present inside the given subspace at the provided height
 func (m *Module) QuerySubspacePosts(height int64, subspaceID uint64) ([]types.Post, error) {
+	txs, err := m.queryPostsTxs(height, subspaceID)
+	if err != nil {
+		return nil, err
+	}
+
 	var posts []types.Post
 
 	var nextKey []byte
@@ -93,12 +105,9 @@ func (m *Module) QuerySubspacePosts(height int64, subspaceID uint64) ([]types.Po
 			return nil, err
 		}
 
-		for _, p := range res.Posts {
-			post, err := m.getFullPostDetails(height, p)
-			if err != nil {
-				return nil, err
-			}
-			posts = append(posts, post)
+		for _, post := range res.Posts {
+			txHashes := m.getPostTxHashes(txs, post)
+			posts = append(posts, types.NewPost(post, txHashes, height))
 		}
 
 		nextKey = res.Pagination.NextKey
@@ -106,6 +115,67 @@ func (m *Module) QuerySubspacePosts(height int64, subspaceID uint64) ([]types.Po
 	}
 
 	return posts, nil
+}
+
+func (m *Module) queryPostsTxs(height int64, subspaceID uint64) ([]*coretypes.ResultTx, error) {
+	var txs []*coretypes.ResultTx
+
+	msgCreatePostQuery := fmt.Sprintf("%s.%s='%d' AND tx.height <= %d",
+		poststypes.EventTypeCreatePost,
+		poststypes.AttributeKeySubspaceID,
+		subspaceID,
+		height,
+	)
+	msgCreatePostTxs, err := utils.QueryTxs(m.node, msgCreatePostQuery)
+	if err != nil {
+		return nil, err
+	}
+	txs = append(txs, msgCreatePostTxs...)
+
+	msgEditPostsQuery := fmt.Sprintf("%s.%s='%d' AND tx.height <= %d",
+		poststypes.EventTypeEditPost,
+		poststypes.AttributeKeySubspaceID,
+		subspaceID,
+		height,
+	)
+	msgEditPostsTxs, err := utils.QueryTxs(m.node, msgEditPostsQuery)
+	if err != nil {
+		return nil, err
+	}
+	txs = append(txs, msgEditPostsTxs...)
+
+	// Sort the txs based on their ascending height
+	sort.Slice(txs, func(i, j int) bool {
+		return txs[i].Height < txs[j].Height
+	})
+
+	return txs, nil
+}
+
+func (m *Module) getPostTxHashes(txs []*coretypes.ResultTx, post poststypes.Post) []string {
+	var txHashes []string
+	for _, tx := range txs {
+		if m.isCreatePostTx(tx, post.SubspaceID, post.ID) || m.isEditPostTx(tx, post.SubspaceID, post.ID) {
+			txHashes = append(txHashes, hex.EncodeToString(tx.Tx.Hash()))
+		}
+	}
+	return txHashes
+}
+
+func (m *Module) isCreatePostTx(tx *coretypes.ResultTx, subspaceID uint64, postID uint64) bool {
+	event, err := juno.FindEventByType(tx.TxResult.Events, poststypes.EventTypeCreatePost)
+	if err != nil {
+		return false
+	}
+	return utils.HasSubspaceIDAndPostIDAttributes(event, subspaceID, postID)
+}
+
+func (m *Module) isEditPostTx(tx *coretypes.ResultTx, subspaceID uint64, postID uint64) bool {
+	event, err := juno.FindEventByType(tx.TxResult.Events, poststypes.EventTypeEditPost)
+	if err != nil {
+		return false
+	}
+	return utils.HasSubspaceIDAndPostIDAttributes(event, subspaceID, postID)
 }
 
 // QuerySubspacePosts queries all the attachments for the given post at the provided height
