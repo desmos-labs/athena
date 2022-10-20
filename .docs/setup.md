@@ -1,11 +1,11 @@
 # Setup 
 Setting up DJuno is pretty straightforward. It requires three things to be done:
 1. Install DJuno.
-1. Initialize the configuration. 
-2. Start the parser. 
+2. Initialize the configuration. 
+3. Start the parser. 
 
 ## Installing DJuno
-In order to install DJuno you are required to have [Go 1.15+](https://golang.org/dl/) installed on your machine. Once you have it, the first thing to do is to clone the GitHub repository. To do this you can run
+In order to install DJuno you are required to have [Go 1.18+](https://golang.org/dl/) installed on your machine. Once you have it, the first thing to do is to clone the GitHub repository. To do this you can run
 
 ```shell
 $ git clone https://github.com/desmos-labs/djuno.git
@@ -61,7 +61,7 @@ $ djuno init --home /path/to/my/folder
 Once the file is created, you are required to edit it and change the different values. To do this you can run 
 
 ```shell
-$ nano ~/.djuno/config.toml
+$ nano ~/.djuno/config.yaml
 ```
 
 For a better understanding of what each section and field refers to, please read the [config reference](config.md). 

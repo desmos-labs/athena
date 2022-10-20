@@ -1,153 +1,135 @@
 ## Configuration
-The default `config.toml` file should look like the following: 
+The default `config.yaml` file should look like the following:
 
 <details>
 
-<summary>Default config.toml file</summary>
+<summary>Example config.yaml file</summary>
 
-```toml
-[cosmos]
-modules = []
-prefix = "cosmos"
+```yaml
+chain:
+  bech32_prefix: desmos
+  modules:
+    - authz
+    - fees
+    - profiles
+    - relationships
+    - subspaces
+    - posts
+    - reactions
+    - reports
+    - contracts
+    - notifications
 
-[rpc]
-address = "http://localhost:26657"
-client_name = "juno"
+node:
+  type: remote
+  config:
+    rpc:
+      client_name: djuno
+      address: https://rpc.morpheus.desmos.network:443
+      max_connections: 10
 
-[grpc]
-address = "localhost:9090"
-insecure = true
+    grpc:
+      address: https://grpc.morpheus.desmos.network:443
+      insecure: false
 
-[parsing]
-fast_sync = true
-listen_new_blocks = true
-parse_genesis = true
-parse_old_blocks = true
-start_height = 1
-workers = 1
+parsing:
+  workers: 1
+  listen_new_blocks: true
+  parse_old_blocks: true
+  start_height: 1
 
-[database]
-host = "localhost"
-max_idle_connections = 0
-max_open_connections = 0
-name = "database-name"
-password = "password"
-port = 5432
-schema = "public"
-ssl_mode = ""
-user = "user"
+database:
+  name: djuno
+  host: localhost
+  port: 5432
+  user: user
+  password: password
+  max_open_connections: 15
+  max_idle_connections: 10
 
-[pruning]
-interval = 10
-keep_every = 500
-keep_recent = 100
+logging:
+  level: debug
+  format: text
 
-[notifications]
-  firebase_credentials_file = ""
-  firebase_project_id = ""
+contracts:
+  tips:
+    code_id: 11
 
-[logging]
-format = "text"
-level = "debug"
+notifications:
+  firebase_credentials_file_path: /path/to/firebase-service-account.json
+  firebase_project_id: firebase-project-id
+  android_channel_id: general
+
+filters:
+  supported_subspace_ids: [ 5 ]
 ```
 
 </details>
 
-Let's see what each section refers to: 
+## `chain`
+This section contains the details of the chain configuration.
 
-- [`cosmos`](#cosmos)
-- [`rpc`](#rpc)
-- [`grpc`](#grpc)
-- [`parsing`](#parsing)
-- [`database`](#database)
-- [`pruning`](#pruning)
-- [`notifications`](#notifications)
-- [`logging`](#logging)
-
-## `cosmos`
-This section contains the details of the chain configuration regarding the Cosmos SDK.
-
-| Attribute |   Type   | Description                            | Example                              |
-|:---------:|:--------:|:---------------------------------------|:-------------------------------------|
-| `modules` | `array`  | List of modules that should be enabled | `[ "auth", "bank", "distribution" ]` |
-| `prefix`  | `string` | Bech 32 prefix of the addresses        | `cosmos`                             | 
+| Attribute        |   Type   | Description                            | 
+|:-----------------|:--------:|:---------------------------------------|
+| `modules`        | `array`  | List of modules that should be enabled |
+| `bech32_prefix`  | `string` | Bech32 prefix of the addresses         | 
 
 ### Supported modules
-Currently we support the followings Cosmos modules:
-- `auth` to parse the `x/auth` data
-- `bank` to parse the `x/bank` data
-- `consensus` to parse the consensus data 
-- `distribution` to parse the `x/distribution` data
-- `gov` to parse the `x/gox` data 
-- `mint` to parse the `x/mint` data
-- `modules` to get the list of enabled modules inside DJuno
-- `pricefeed` to get the token prices
-- `slashing` to parse the `x/slashing` data
-- `staking` to parse the `x/staking` data
+Currently we support the followings Desmos and Cosmos SDK modules:
 
-## `rpc`
-This section contains the details of the chain RPC to which DJuno will connect. 
+- `authz` to parse the data related to the Cosmos SDK `x/authz` module
+- `feegrant` to parse the data related to the Cosmos SDK `x/feegrants` module
+- `fees` to parse the data related to the Desmos `x/fees` module
+- `profiles` to parse the data related to the Desmos `x/profiles` module
+- `relationships` to parse the data related to the Desmos `x/relationships` module
+- `subspaces` to parse the data related to the Desmos `x/subspaces` module
+- `posts` to parse the data related to the Desmos `x/posts` module
+- `reactions` to parse the data related to the Desmos `x/reactions` module
+- `reports` to parse the data related to the Desmos `x/reports` module
+- `contracts` to parse the data related to smart contracts
 
-|   Attribute   |   Type   | Description                                                   | Example                  |
-|:-------------:|:--------:|:--------------------------------------------------------------|:-------------------------|
-|   `address`   | `string` | Address of the RPC endpoint                                   | `http://localhost:26657` |
-| `client_name` | `string` | Client name used when subscribing to the Tendermint websocket | `bdjuno`                 |
-
-## `grpc` 
-This section contains the details of the gRPC endpoint that DJuno will use to query the data.
-
-| Attribute  |   Type    | Description                                  | Example          |
-|:----------:|:---------:|:---------------------------------------------|:-----------------|
-| `address`  | `string`  | Address of the gRPC endpoint                 | `localhost:9090` |
-| `insecure` | `boolean` | Whether the gRPC endpoint is insecure or not | `false`          |
+## `node`
+This section contains the details of the chain node to be used in order to fetch the data.
+You can reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#node) for more
+details.
 
 ## `parsing`
+This section determines how the data will be parsed. You can
+reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#parsing) for more details.
 
-|      Attribute      |   Type    | Description                                                                          | Example  |
-|:-------------------:|:---------:|:-------------------------------------------------------------------------------------|:---------|
-|     `fast_sync`     | `boolean` | Whether DJuno should use the fast sync abilities of different modules when enabled   | `false`  |
-| `listen_new_blocks` | `boolean` | Whether DJuno should parse new blocks as soon as they get created                    | `true`   | 
-|   `parse_genesis`   | `boolean` | Whether DJuno needs to parse the genesis state or not                                | `true`   |
-| `parse_old_blocks`  | `boolean` | Whether DJuno should parse old chain blocks or not                                   | `true`   | 
-|   `start_height`    | `integer` | Height at which DJuno should start parsing old blocks                                | `250000` | 
-|      `workers`      | `integer` | Number of works that will be used to fetch the data and store it inside the database | `5`      |
+## `database`
+This section contains all the different configuration related to the PostgreSQL database where DJuno will write the
+data. You can reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#database) for
+more details.
 
-## `database` 
-This section contains all the different configuration related to the PostgreSQL database where DJuno will write the data. 
+## `logging`
+This section allows to configure the logging details of DJuno. You can
+reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#logging) for more details.
 
-|       Attribute        |   Type    | Description                                                                                                                                               | Example     |
-|:----------------------:|:---------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------|:------------|
-|         `host`         | `string`  | Host where the database is found                                                                                                                          | `localhost` | 
-|         `port`         | `integer` | Port to be used to connect to the PostgreSQL instance                                                                                                     | `5432`      |
-|         `name`         | `string`  | Name of the database to which connect to                                                                                                                  | `bdjuno`    | 
-|         `user`         | `string`  | Name of the user to use when connecting to the database. This user must have read/write access to all the database.                                       | `bdjuno`    | 
-|       `password`       | `string`  | Password to be used to connect to the database instance                                                                                                   | `password`  | 
-|        `schema`        | `string`  | Schema to be used inside the database (default: `public`)                                                                                                 | `public`    | 
-|       `ssl_mode`       | `string`  | [PostgreSQL SSL mode](https://www.postgresql.org/docs/9.1/libpq-ssl.html) to be used when connecting to the database. If not set, `disable` will be used. | `verify-ca` |
-| `max_idle_connections` | `integer` | Max number of idle connections that should be kept open (default: `1`)                                                                                    | `10`        |
-| `max_open_connections` | `integer` | Max number of open connections at any time (default: `1`)                                                                                                 | `15`        | 
+## `contracts`
+If the `contracts` module is enabled, you can use this section to customize some data about the smart contracts that
+will be parsed.
 
-## `pruning`
-This section contains the configuration about the pruning options of the database. Note that this will have effect only if you add the `"pruning"` entry to the `modules` field of the [`cosmos` config](#cosmos). 
+### `tips`
+This section defines the details about the tips smart contract that should be parsed
 
-|   Attribute   |   Type    | Description                                                                                            | Example |
-|:-------------:|:---------:|:-------------------------------------------------------------------------------------------------------|:--------|
-|  `interval`   | `integer` | Number of blocks that should pass between one pruning and the other (default: prune every `10` blocks) | `100`   | 
-| `keep_every`  | `integer` | Keep the state every `nth` block, even if it should have been pruned                                   | `500`   | 
-| `keep_recent` | `integer` | Do not prune this amount of recent states                                                              | `100`   |
+| Attribute       |   Type    | Description                                                    | 
+|:----------------|:---------:|:---------------------------------------------------------------|
+| `code_id`       | `integer` | On-chan code id referring the tips smart contract to be parsed |
 
 ## `notifications`
-This sections allows to configure the push notifications that will be sent to applications.
+If the `notifications` module is enabled, you can use this section to define some details about how notifications will
+be sent to clients.
 
-|          Attribute          |   Type   | Description                                                                                                            | Example                            |
-|:---------------------------:|:--------:|:-----------------------------------------------------------------------------------------------------------------------|:-----------------------------------|
-| `firebase_credentials_file` | `string` | Absolute path to the [Firebase credential file](https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app) | `/home/ubuntu/djuno/firebase.json` |
-|    `firebase_project_id`    | `string` | ID of your [Firebase project](https://firebase.google.com/docs/projects/learn-more#project-id)                         | `PROJECT_ID`                       |
+| Attribute                         |   Type   | Description                                                                                | 
+|:----------------------------------|:--------:|:-------------------------------------------------------------------------------------------|
+| `firebase_credentials_file_path`  | `string` | Path to the JSON file containing the Firebase credentials                                  |
+| `firebase_project_id`             | `string` | Id of the Firebase project that should be used to send the notifications                   | 
+| `android_channel_id`              | `string` | Id of the notifications channel that should be used when sending out Android notifications | 
 
-## `logging` 
-This section allows to configure the logging details of DJuno. 
+## `filters`
+If present, this section contains the details about how messages will be filtered before being parsed.
 
-| Attribute |   Type   | Description                                                             | Example |
-|:---------:|:--------:|:------------------------------------------------------------------------|:--------|
-| `format`  | `string` | Format in which the logs should be output (either `json` or `text`)     | `json`  | 
-|  `level`  | `string` | Level of the log (either `verbose`, `debug`, `info`, `warn` or `error`) | `error` | 
+| Attribute                      |   Type   | Description                                         | 
+|:-------------------------------|:--------:|:----------------------------------------------------|
+| `supported_subspace_ids`       | `array`  | List of subspace id for which to parse the messages |
