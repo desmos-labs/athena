@@ -26,7 +26,7 @@ func (m *Module) RefreshRegisteredReactionsData(height int64, subspaceID uint64)
 	}
 
 	for _, reaction := range reactions {
-		log.Info().Uint64("subspace", reaction.SubspaceID).Uint32("reaction", reaction.ID).Msg("refreshing registered reaction")
+		log.Debug().Uint64("subspace", reaction.SubspaceID).Uint32("reaction", reaction.ID).Msg("refreshing registered reaction")
 
 		err = m.db.SaveRegisteredReaction(reaction)
 		if err != nil {
@@ -83,7 +83,7 @@ func (m *Module) RefreshReactionsData(height int64, subspaceID uint64, postID ui
 	}
 
 	for _, reaction := range reactions {
-		log.Info().Uint64("subspace", reaction.SubspaceID).Uint32("reaction", reaction.ID).Msg("refreshing reaction")
+		log.Debug().Uint64("subspace", reaction.SubspaceID).Uint32("reaction", reaction.ID).Msg("refreshing reaction")
 
 		err = m.db.SaveReaction(reaction)
 		if err != nil {

@@ -16,6 +16,20 @@ func NewPost(post poststypes.Post, height int64) Post {
 	}
 }
 
+type PostTransaction struct {
+	SubspaceID uint64
+	PostID     uint64
+	Hash       string
+}
+
+func NewPostTransaction(subspaceID uint64, postID uint64, txHash string) PostTransaction {
+	return PostTransaction{
+		SubspaceID: subspaceID,
+		PostID:     postID,
+		Hash:       txHash,
+	}
+}
+
 type PostAttachment struct {
 	poststypes.Attachment
 	Height int64

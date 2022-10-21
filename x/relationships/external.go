@@ -25,7 +25,7 @@ func (m *Module) RefreshRelationshipsData(height int64, subspaceID uint64) error
 	}
 
 	for _, relationship := range relationships {
-		log.Info().Uint64("subspace", relationship.SubspaceID).Str("creator", relationship.Creator).
+		log.Debug().Uint64("subspace", relationship.SubspaceID).Str("creator", relationship.Creator).
 			Str("counterparty", relationship.Counterparty).Msg("refreshing relationship")
 
 		err = m.db.SaveRelationship(relationship)
@@ -84,7 +84,7 @@ func (m *Module) RefreshUserBlocksData(height int64, subspaceID uint64) error {
 	}
 
 	for _, block := range userBlocks {
-		log.Info().Uint64("subspace", block.SubspaceID).Str("blocker", block.Blocker).
+		log.Debug().Uint64("subspace", block.SubspaceID).Str("blocker", block.Blocker).
 			Str("blocked", block.Blocked).Msg("refreshing block")
 
 		err = m.db.SaveUserBlock(block)

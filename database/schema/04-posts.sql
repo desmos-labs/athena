@@ -17,6 +17,16 @@ CREATE TABLE post
     CONSTRAINT unique_subspace_post UNIQUE (subspace_id, id)
 );
 
+CREATE TABLE post_tx_hash
+(
+    /* Required for Hasura links */
+    row_id      SERIAL NOT NULL PRIMARY KEY,
+
+    post_row_id BIGINT NOT NULL REFERENCES post (row_id) ON DELETE CASCADE,
+    hash        TEXT   NOT NULL,
+    CONSTRAINT unique_post_hash UNIQUE (post_row_id, hash)
+);
+
 CREATE TABLE post_hashtag
 (
     /* Required for Hasura links */

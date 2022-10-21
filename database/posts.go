@@ -280,6 +280,20 @@ func (db *Db) DeleteAllPosts(height int64, subspaceID uint64) error {
 
 // --------------------------------------------------------------------------------------------------------------------
 
+// SavePostTx stores the given transaction into the database
+func (db *Db) SavePostTx(tx types.PostTransaction) error {
+	postRowID, err := db.getPostRowID(tx.SubspaceID, tx.PostID)
+	if err != nil {
+		return err
+	}
+
+	stmt := `INSERT INTO post_tx_hash (post_row_id, hash) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	_, err = db.SQL.Exec(stmt, postRowID, tx.Hash)
+	return err
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 func (db *Db) getAttachmentRowID(subspaceID uint64, postID uint64, attachmentID uint32) (int64, error) {
 	stmt := `
 SELECT row_id FROM post_attachment WHERE post_row_id = (
