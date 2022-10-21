@@ -144,7 +144,14 @@ WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
 
 // SaveChainLink allows to store inside the db the provided chain link
 func (db *Db) SaveChainLink(link types.ChainLink) error {
-	log.Info().Str("user", link.User).Str("address", link.GetAddressData().String()).Msg("saving chain link")
+	// Unpack the address data
+	var address profilestypes.AddressData
+	err := db.EncodingConfig.Marshaler.UnpackAny(link.Address, &address)
+	if err != nil {
+		return fmt.Errorf("error while reading link address as AddressData: %s", err)
+	}
+
+	log.Info().Str("user", link.User).Str("address", address.String()).Msg("saving chain link")
 
 	// Insert the chain config
 	chainConfigID, err := db.saveChainLinkChainConfig(link.ChainConfig)
@@ -163,12 +170,6 @@ ON CONFLICT ON CONSTRAINT unique_chain_link DO UPDATE
         height = excluded.height
 WHERE chain_link.height <= excluded.height
 RETURNING id`
-
-	var address profilestypes.AddressData
-	err = db.EncodingConfig.Marshaler.UnpackAny(link.Address, &address)
-	if err != nil {
-		return fmt.Errorf("error while reading link address as AddressData: %s", err)
-	}
 
 	var chainLinkID int64
 	err = db.SQL.
