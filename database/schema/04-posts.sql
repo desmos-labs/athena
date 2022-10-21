@@ -17,7 +17,7 @@ CREATE TABLE post
     CONSTRAINT unique_subspace_post UNIQUE (subspace_id, id)
 );
 
-CREATE TABLE post_tx_hash
+CREATE TABLE post_transaction
 (
     /* Required for Hasura links */
     row_id      SERIAL NOT NULL PRIMARY KEY,

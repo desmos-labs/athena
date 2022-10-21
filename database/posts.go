@@ -287,7 +287,7 @@ func (db *Db) SavePostTx(tx types.PostTransaction) error {
 		return err
 	}
 
-	stmt := `INSERT INTO post_tx_hash (post_row_id, hash) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	stmt := `INSERT INTO post_transaction (post_row_id, hash) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 	_, err = db.SQL.Exec(stmt, postRowID, tx.Hash)
 	return err
 }
