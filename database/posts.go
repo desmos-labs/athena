@@ -73,12 +73,6 @@ RETURNING row_id`
 		return err
 	}
 
-	// Insert the transaction hash
-	err = db.savePostTxHashes(rowID, post.TxHashes)
-	if err != nil {
-		return err
-	}
-
 	// Insert the entities
 	err = db.savePostEntities(rowID, post.Entities)
 	if err != nil {
@@ -98,27 +92,6 @@ RETURNING row_id`
 	}
 
 	return nil
-}
-
-func (db *Db) savePostTxHashes(postRowID uint64, txHashes []string) error {
-	if txHashes == nil {
-		return nil
-	}
-
-	stmt := `INSERT INTO post_tx_hash (post_row_id, hash) VALUES `
-
-	var vars []interface{}
-	for i, txHash := range txHashes {
-		ei := i * 2
-		stmt += fmt.Sprintf(`($%d, $%d),`, ei+1, ei+2)
-		vars = append(vars, postRowID, txHash)
-	}
-
-	stmt = stmt[:len(stmt)-1] // Trim trailing ,
-	stmt += `ON CONFLICT DO NOTHING`
-
-	_, err := db.SQL.Exec(stmt, vars...)
-	return err
 }
 
 func (db *Db) savePostEntities(postRowID uint64, entities *poststypes.Entities) error {
@@ -302,6 +275,20 @@ func (db *Db) DeletePost(height int64, subspaceID uint64, postID uint64) error {
 func (db *Db) DeleteAllPosts(height int64, subspaceID uint64) error {
 	stmt := `DELETE FROM post WHERE height <= $1 AND subspace_id = $2`
 	_, err := db.SQL.Exec(stmt, height, subspaceID)
+	return err
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// SavePostTx stores the given transaction into the database
+func (db *Db) SavePostTx(tx types.PostTransaction) error {
+	postRowID, err := db.getPostRowID(tx.SubspaceID, tx.PostID)
+	if err != nil {
+		return err
+	}
+
+	stmt := `INSERT INTO post_tx_hash (post_row_id, hash) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	_, err = db.SQL.Exec(stmt, postRowID, tx.Hash)
 	return err
 }
 

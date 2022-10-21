@@ -73,12 +73,25 @@ func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.Msg
 	}
 
 	// Update the post attachments
-	return m.updatePostAttachments(tx.Height, msg.SubspaceID, postID)
+	err = m.updatePostAttachments(tx.Height, msg.SubspaceID, postID)
+	if err != nil {
+		return err
+	}
+
+	// Save the related transaction
+	return m.db.SavePostTx(types.NewPostTransaction(msg.SubspaceID, postID, tx.TxHash))
 }
 
 // handleMsgEditPost handles a MsgEditPost
 func (m *Module) handleMsgEditPost(tx *juno.Tx, msg *poststypes.MsgEditPost) error {
-	return m.updatePost(tx.Height, msg.SubspaceID, msg.PostID)
+	// Update the post
+	err := m.updatePost(tx.Height, msg.SubspaceID, msg.PostID)
+	if err != nil {
+		return err
+	}
+
+	// Save the related transaction
+	return m.db.SavePostTx(types.NewPostTransaction(msg.SubspaceID, msg.PostID, tx.TxHash))
 }
 
 // handleMsgDeletePost handles a MsgDeletePost
@@ -88,12 +101,26 @@ func (m *Module) handleMsgDeletePost(tx *juno.Tx, msg *poststypes.MsgDeletePost)
 
 // handleMsgAddPostAttachment handles a MsgAddPostAttachment
 func (m *Module) handleMsgAddPostAttachment(tx *juno.Tx, msg *poststypes.MsgAddPostAttachment) error {
-	return m.updatePostAttachments(tx.Height, msg.SubspaceID, msg.PostID)
+	// Update the attachments
+	err := m.updatePostAttachments(tx.Height, msg.SubspaceID, msg.PostID)
+	if err != nil {
+		return err
+	}
+
+	// Store the related post transaction
+	return m.db.SavePostTx(types.NewPostTransaction(msg.SubspaceID, msg.PostID, tx.TxHash))
 }
 
 // handleMsgRemovePostAttachment handles a MsgRemovePostAttachment
 func (m *Module) handleMsgRemovePostAttachment(tx *juno.Tx, msg *poststypes.MsgRemovePostAttachment) error {
-	return m.db.DeletePostAttachment(tx.Height, msg.SubspaceID, msg.PostID, msg.AttachmentID)
+	// Delete the attachment
+	err := m.db.DeletePostAttachment(tx.Height, msg.SubspaceID, msg.PostID, msg.AttachmentID)
+	if err != nil {
+		return err
+	}
+
+	// Store the related post transaction
+	return m.db.SavePostTx(types.NewPostTransaction(msg.SubspaceID, msg.PostID, tx.TxHash))
 }
 
 // handleMsgAnswerPoll handles a MsgAnswerPoll

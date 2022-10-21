@@ -6,15 +6,27 @@ import (
 
 type Post struct {
 	poststypes.Post
-	TxHashes []string
-	Height   int64
+	Height int64
 }
 
-func NewPost(post poststypes.Post, txHashes []string, height int64) Post {
+func NewPost(post poststypes.Post, height int64) Post {
 	return Post{
-		Post:     post,
-		TxHashes: txHashes,
-		Height:   height,
+		Post:   post,
+		Height: height,
+	}
+}
+
+type PostTransaction struct {
+	SubspaceID uint64
+	PostID     uint64
+	Hash       string
+}
+
+func NewPostTransaction(subspaceID uint64, postID uint64, txHash string) PostTransaction {
+	return PostTransaction{
+		SubspaceID: subspaceID,
+		PostID:     postID,
+		Hash:       txHash,
 	}
 }
 

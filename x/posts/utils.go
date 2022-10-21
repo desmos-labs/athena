@@ -2,13 +2,7 @@ package posts
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
-	"sort"
-
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
-
-	"github.com/desmos-labs/djuno/v2/utils"
 
 	"github.com/forbole/juno/v3/node/remote"
 
@@ -36,52 +30,7 @@ func (m *Module) GetPost(height int64, subspaceID uint64, postID uint64) (types.
 		return types.Post{}, err
 	}
 
-	return m.getFullPostDetails(height, res.Post)
-}
-
-func (m *Module) getFullPostDetails(height int64, post poststypes.Post) (types.Post, error) {
-	var txs []*coretypes.ResultTx
-
-	msgCreatePostQuery := fmt.Sprintf("%s.%s='%d' AND %s.%s=%d AND tx.height <= %d",
-		poststypes.EventTypeCreatePost,
-		poststypes.AttributeKeySubspaceID,
-		post.SubspaceID,
-		poststypes.EventTypeCreatePost,
-		poststypes.AttributeKeyPostID,
-		post.ID,
-		height,
-	)
-	msgCreatePostTxs, err := utils.QueryTxs(m.node, msgCreatePostQuery)
-	if err != nil {
-		return types.Post{}, err
-	}
-	txs = append(txs, msgCreatePostTxs...)
-
-	msgEditPostsQuery := fmt.Sprintf("%s.%s='%d' AND %s.%s=%d AND tx.height <= %d",
-		poststypes.EventTypeEditPost,
-		poststypes.AttributeKeySubspaceID,
-		post.SubspaceID,
-		poststypes.EventTypeEditPost,
-		poststypes.AttributeKeyPostID,
-		post.ID,
-		height,
-	)
-	msgEditPostsTxs, err := utils.QueryTxs(m.node, msgEditPostsQuery)
-	if err != nil {
-		return types.Post{}, err
-	}
-	txs = append(txs, msgEditPostsTxs...)
-
-	// Sort the txs based on their ascending height
-	sort.Slice(txs, func(i, j int) bool {
-		return txs[i].Height < txs[j].Height
-	})
-
-	txHashes := make([]string, len(txs))
-	for i, tx := range txs {
-		txHashes[i] = hex.EncodeToString(tx.Tx.Hash())
-	}
-	return types.NewPost(post, txHashes, height), nil
+	return types.NewPost(res.Post, height), nil
 }
 
 // updatePostAttachments updates the stored attachments for the post having the given id
