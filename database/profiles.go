@@ -151,7 +151,7 @@ func (db *Db) SaveChainLink(link types.ChainLink) error {
 		return fmt.Errorf("error while reading link address as AddressData: %s", err)
 	}
 
-	log.Info().Str("user", link.User).Str("address", address.String()).Msg("saving chain link")
+	log.Info().Str("user", link.User).Str("address", address.GetValue()).Msg("saving chain link")
 
 	// Insert the chain config
 	chainConfigID, err := db.saveChainLinkChainConfig(link.ChainConfig)
