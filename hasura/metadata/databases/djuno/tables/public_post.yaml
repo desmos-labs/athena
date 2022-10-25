@@ -84,6 +84,13 @@ array_relationships:
         table:
           schema: public
           name: tip_post
+  - name: transactions
+    using:
+      foreign_key_constraint_on:
+        column: post_row_id
+        table:
+          schema: public
+          name: post_transaction
   - name: urls
     using:
       foreign_key_constraint_on:

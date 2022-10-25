@@ -15,6 +15,7 @@
 - "!include public_post_mention.yaml"
 - "!include public_post_reference.yaml"
 - "!include public_post_tag.yaml"
+- "!include public_post_transaction.yaml"
 - "!include public_post_url.yaml"
 - "!include public_posts_params.yaml"
 - "!include public_profile.yaml"
