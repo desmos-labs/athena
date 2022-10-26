@@ -304,10 +304,6 @@ replace (
 	// TODO: Remove it once a tagged version is out
 	github.com/forbole/juno/v3 => github.com/forbole/juno/v3 v3.4.1-0.20220920065218-fbae6b39fe0e
 
-	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
-	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
-	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
-
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	// We need to replace Tendermint to make sure that the Websocket client is built properly

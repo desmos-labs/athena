@@ -1,14 +1,19 @@
 package tips
 
 import (
+	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"sort"
+
+	"github.com/cosmos/cosmos-sdk/types/query"
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+	"github.com/forbole/juno/v3/node/remote"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	"github.com/desmos-labs/djuno/v2/utils"
@@ -32,51 +37,75 @@ func (m *Module) RefreshData(height int64, subspaceID uint64) error {
 		return err
 	}
 
+	// Refresh the config
+	err = m.refreshContractConfig(height, contractAddress)
+	if err != nil {
+		return err
+	}
+
 	// Refresh the tips data
 	return m.refreshTips(height, contractAddress)
 }
 
 // getContractAddress returns the tips contract address for the given subspace at the provided height
 func (m *Module) getContractAddress(height int64, subspaceID uint64) (string, error) {
-	// Query all the transactions
-	permissionsQuery := fmt.Sprintf("%s.%s=%d AND %s.%s='%d' AND tx.height <= %d",
-		wasmtypes.EventTypeInstantiate,
-		wasmtypes.AttributeKeyCodeID,
-		m.cfg.CodeID,
-		wasmtypes.WasmModuleEventType,
-		subspacestypes.AttributeKeySubspaceID,
-		subspaceID,
-		height,
-	)
-	txs, err := utils.QueryTxs(m.node, permissionsQuery)
-	if err != nil {
-		return "", err
+	// Get all the contracts that match the given code
+	var stop = false
+	var nextKey []byte
+	var contractAddresses []string
+	for !stop {
+		res, err := m.wasmClient.ContractsByCode(
+			remote.GetHeightRequestContext(context.Background(), height),
+			&wasmtypes.QueryContractsByCodeRequest{
+				CodeId: m.cfg.CodeID,
+				Pagination: &query.PageRequest{
+					Limit: 100,
+					Key:   nextKey,
+				},
+			},
+		)
+		if err != nil {
+			return "", err
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+		contractAddresses = append(contractAddresses, res.Contracts...)
 	}
 
-	// If there are not transactions, just return
-	if len(txs) == 0 {
-		return "", nil
-	}
+	// Search among the contracts addresses, the one for the given subspace
+	for _, address := range contractAddresses {
+		config, err := m.getContractConfig(height, address)
+		if err != nil {
+			return "", err
+		}
 
-	// Sort the txs based on their descending height
-	sort.Slice(txs, func(i, j int) bool {
-		return txs[i].Height > txs[j].Height
-	})
+		contractSubspaceID, err := subspacestypes.ParseSubspaceID(config.SubspaceID)
+		if err != nil {
+			return "", err
+		}
 
-	// Get the transaction details
-	transaction, err := m.node.Tx(hex.EncodeToString(txs[0].Tx.Hash()))
-	if err != nil {
-		return "", err
-	}
-
-	// Handle only the MsgInstantiateContract
-	for index, msg := range transaction.GetMsgs() {
-		if _, ok := msg.(*wasmtypes.MsgInstantiateContract); ok {
-			return m.base.ParseContractAddress(transaction, index)
+		if contractSubspaceID == subspaceID {
+			return address, nil
 		}
 	}
 
-	return "", fmt.Errorf("no MsgInstantiateContract found")
+	return "", nil
+}
+
+// refreshContractConfig refreshes the configuration for the contract having the given address at the provided height
+func (m *Module) refreshContractConfig(height int64, address string) error {
+	config, err := m.getContractConfig(height, address)
+	if err != nil {
+		return err
+	}
+
+	configBz, err := json.Marshal(&config)
+	if err != nil {
+		return err
+	}
+
+	return m.db.SaveContractConfig(types.NewContractConfig(address, configBz, height))
 }
 
 // refreshTips fetches and stores all the tips sent using the contract having the given address
