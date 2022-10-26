@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type ContractQuery struct {
+type tipsContractQuery struct {
 	Config *configQuery `json:"config,omitempty"`
 }
 

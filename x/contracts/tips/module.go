@@ -1,10 +1,6 @@
 package tips
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-
 	"github.com/forbole/juno/v3/node"
 
 	"github.com/desmos-labs/djuno/v2/x/contracts"
@@ -59,30 +55,4 @@ func NewModule(junoCfg config.Config, node node.Node, grpcConnection *grpc.Clien
 // Name implements modules.Module
 func (m *Module) Name() string {
 	return "tips"
-}
-
-// getContractConfig returns the configuration for the contract having the given address
-func (m *Module) getContractConfig(address string) (*configResponse, error) {
-	queryDataBz, err := json.Marshal(&ContractQuery{
-		Config: &configQuery{},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error while marshalling contract query: %s", err)
-	}
-
-	res, err := m.wasmClient.SmartContractState(context.Background(), &wasmtypes.QuerySmartContractStateRequest{
-		Address:   address,
-		QueryData: queryDataBz,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error while querying contract state: %s", err)
-	}
-
-	var configRes configResponse
-	err = json.Unmarshal(res.Data, &configRes)
-	if err != nil {
-		return nil, fmt.Errorf("error while unmarshalling contract config response: %s", err)
-	}
-
-	return &configRes, nil
 }
