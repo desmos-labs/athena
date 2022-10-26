@@ -17,3 +17,17 @@ func NewContract(address string, contractType string, height int64) Contract {
 		Height:  height,
 	}
 }
+
+type ContractConfig struct {
+	Address      string
+	ConfigJSONBz []byte
+	Height       int64
+}
+
+func NewContractConfig(address string, configJSONBz []byte, height int64) ContractConfig {
+	return ContractConfig{
+		Address:      address,
+		ConfigJSONBz: configJSONBz,
+		Height:       height,
+	}
+}

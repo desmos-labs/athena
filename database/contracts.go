@@ -17,3 +17,17 @@ WHERE contract.height <= excluded.height`
 	_, err := db.SQL.Exec(stmt, contract.Address, contract.Type, contract.Height)
 	return err
 }
+
+// SaveContractConfig stores the given contract config inside the database
+func (db *Db) SaveContractConfig(config types.ContractConfig) error {
+	stmt := `
+INSERT INTO contract_config (contract_address, config, height)
+VALUES ($1, $2, $3)
+ON CONFLICT (contract_address) DO UPDATE
+	SET contract_address = excluded.contract_address,
+	    config = excluded.config,
+	    height = excluded.height
+WHERE contract_config.height <= excluded.height`
+	_, err := db.SQL.Exec(stmt, config.Address, string(config.ConfigJSONBz), config.Height)
+	return err
+}

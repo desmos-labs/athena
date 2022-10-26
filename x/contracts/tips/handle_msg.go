@@ -37,6 +37,8 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 	return nil
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+
 // handleMsgInstantiateContract handles a MsgInstantiateContract instance by refreshing the stored tips contracts
 func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmtypes.MsgInstantiateContract) error {
 	// Skip the contracts that have a different code id
@@ -44,9 +46,21 @@ func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmt
 		return nil
 	}
 
-	// Refresh all the contracts for the code id of the tips contract
-	return m.base.HandleMsgInstantiateContract(tx, index, msg, types.ContractTypeTips)
+	// Store the contract base data
+	err := m.base.HandleMsgInstantiateContract(tx, index, msg, types.ContractTypeTips)
+	if err != nil {
+		return err
+	}
+
+	// Refresh the configuration
+	address, err := m.base.ParseContractAddress(tx, index)
+	if err != nil {
+		return err
+	}
+	return m.refreshContractConfig(tx.Height, address)
 }
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // handleMsgExecuteContract handles a MsgExecuteContract that contains a send_tip message by storing the tip details
 func (m *Module) handleMsgExecuteContract(tx *juno.Tx, msg *wasmtypes.MsgExecuteContract) error {
@@ -70,7 +84,7 @@ func (m *Module) handleMsgExecuteContract(tx *juno.Tx, msg *wasmtypes.MsgExecute
 	combinedMsg := m.combineMsgSendTips(msgSendTips)
 
 	// Get the contract configuration
-	config, err := m.getContractConfig(msg.Contract)
+	config, err := m.getContractConfig(tx.Height, msg.Contract)
 	if err != nil {
 		return fmt.Errorf("error while getting contract config: %s", err)
 	}
