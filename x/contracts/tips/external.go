@@ -31,14 +31,19 @@ func (m *Module) RefreshData(height int64, subspaceID uint64) error {
 		return nil
 	}
 
-	// Store the contract
-	err = m.db.SaveContract(types.NewContract(contractAddress, types.ContractTypeTips, height))
+	// Get the contract config
+	config, err := m.getContractConfig(height, contractAddress)
 	if err != nil {
 		return err
 	}
 
-	// Refresh the config
-	err = m.refreshContractConfig(height, contractAddress)
+	configBz, err := json.Marshal(&config)
+	if err != nil {
+		return err
+	}
+
+	// Store the contract
+	err = m.db.SaveContract(types.NewContract(contractAddress, types.ContractTypeTips, configBz, height))
 	if err != nil {
 		return err
 	}
@@ -105,7 +110,7 @@ func (m *Module) refreshContractConfig(height int64, address string) error {
 		return err
 	}
 
-	return m.db.SaveContractConfig(types.NewContractConfig(address, configBz, height))
+	return m.db.SaveContract(types.NewContract(address, types.ContractTypeTips, configBz, height))
 }
 
 // refreshTips fetches and stores all the tips sent using the contract having the given address

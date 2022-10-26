@@ -5,29 +5,17 @@ const (
 )
 
 type Contract struct {
-	Address string
-	Type    string
-	Height  int64
+	Address  string
+	Type     string
+	ConfigBz []byte
+	Height   int64
 }
 
-func NewContract(address string, contractType string, height int64) Contract {
+func NewContract(address string, contractType string, contactConfigBz []byte, height int64) Contract {
 	return Contract{
-		Address: address,
-		Type:    contractType,
-		Height:  height,
-	}
-}
-
-type ContractConfig struct {
-	Address      string
-	ConfigJSONBz []byte
-	Height       int64
-}
-
-func NewContractConfig(address string, configJSONBz []byte, height int64) ContractConfig {
-	return ContractConfig{
-		Address:      address,
-		ConfigJSONBz: configJSONBz,
-		Height:       height,
+		Address:  address,
+		Type:     contractType,
+		ConfigBz: contactConfigBz,
+		Height:   height,
 	}
 }

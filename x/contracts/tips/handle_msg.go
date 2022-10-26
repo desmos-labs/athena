@@ -47,7 +47,7 @@ func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmt
 	}
 
 	// Store the contract base data
-	err := m.base.HandleMsgInstantiateContract(tx, index, msg, types.ContractTypeTips)
+	err := m.base.HandleMsgInstantiateContract(tx, index, types.ContractTypeTips)
 	if err != nil {
 		return err
 	}
