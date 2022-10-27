@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/rs/zerolog/log"
@@ -303,6 +304,20 @@ func (db *Db) DeleteProfileChainLinks(user string) error {
 
 // ---------------------------------------------------------------------------------------------------
 
+// getApplicationLinkRowID returns the row id of the application link for
+// the provided application, username and Desmos address
+func (db *Db) getApplicationLinkRowID(address string, application string, username string) (sql.NullInt64, error) {
+	stmt := `SELECT id FROM application_link WHERE user_address = $1 AND application ILIKE $2 AND username ILIKE $3`
+
+	var rowID int64
+	err := db.SQL.QueryRow(stmt, address, application, username).Scan(&rowID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return sql.NullInt64{Int64: 0, Valid: false}, nil
+	}
+
+	return sql.NullInt64{Int64: rowID, Valid: true}, err
+}
+
 // SaveApplicationLink stores the given application link inside the database
 func (db *Db) SaveApplicationLink(link types.ApplicationLink) error {
 	log.Info().Str("user", link.User).Str("app", link.Data.Application).
@@ -374,6 +389,29 @@ WHERE application_link_oracle_request.height <= excluded.height`
 		height,
 	)
 	return err
+}
+
+type applicationLinkInfo struct {
+	User        string `db:"user_address"`
+	Application string `db:"application"`
+	Username    string `db:"username"`
+}
+
+// GetApplicationLinkInfos returns the information of all the stored application links
+func (db *Db) GetApplicationLinkInfos() ([]types.ApplicationLinkInfo, error) {
+	stmt := `SELECT user_address, application, username FROM application_link`
+
+	var rows []applicationLinkInfo
+	err := db.SQL.Select(&rows, stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	applicationLinkInfos := make([]types.ApplicationLinkInfo, len(rows))
+	for i, row := range rows {
+		applicationLinkInfos[i] = types.NewApplicationInfo(row.User, row.Application, row.Username)
+	}
+	return applicationLinkInfos, nil
 }
 
 // DeleteApplicationLink allows to delete the application link associated to the given user,

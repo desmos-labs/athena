@@ -3,14 +3,21 @@ package twitter
 import (
 	"context"
 	"fmt"
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/rs/zerolog/log"
+
 	"github.com/forbole/juno/v3/types/config"
 	"github.com/g8rswimmer/go-twitter/v2"
-	"net/http"
+
+	"github.com/desmos-labs/djuno/v2/types"
+	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
 )
 
 var (
-	_ scorers.Scorer = &Scorer{}
+	_ profilesscore.Scorer = &Scorer{}
 )
 
 // Scorer represents a scorers.Scorer instance to score profiles based on their Twitter statistics
@@ -19,7 +26,7 @@ type Scorer struct {
 }
 
 // NewScorer returns a new Scorer instance
-func NewScorer(junoCfg *config.Config) *Scorer {
+func NewScorer(junoCfg config.Config) *Scorer {
 	cfgBz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -27,6 +34,11 @@ func NewScorer(junoCfg *config.Config) *Scorer {
 	cfg, err := ParseConfig(cfgBz)
 	if err != nil {
 		panic(err)
+	}
+
+	if cfg == nil {
+		log.Info().Str("scorer", "twitter").Msg("no config set, skipping creation")
+		return nil
 	}
 
 	return &Scorer{
@@ -38,15 +50,34 @@ func NewScorer(junoCfg *config.Config) *Scorer {
 	}
 }
 
-// SupportedApplications implements scorers.Scorer
-func (s *Scorer) SupportedApplications() []string {
-	return []string{"twitter"}
+// GetRateLimit implements Scorer
+func (s *Scorer) GetRateLimit() *profilesscore.ScoreRateLimit {
+	return profilesscore.NewScoreRateLimit(time.Minute*15, 900)
 }
 
-// RefreshScore implements scorers.Scorer
-func (s *Scorer) RefreshScore(address string, username string, application string) error {
-	//TODO implement me
-	panic("implement me")
+// GetScoreDetails implements Scorer
+func (s *Scorer) GetScoreDetails(_ string, application string, username string) (types.ProfileScoreDetails, error) {
+	if !strings.EqualFold(application, "twitter") {
+		return nil, nil
+	}
+
+	user, err := s.GetUser(username)
+	if err != nil {
+		return nil, err
+	}
+
+	createdAt, err := time.Parse(time.RFC3339, user.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewScoreDetails(
+		createdAt,
+		uint64(user.PublicMetrics.Followers),
+		uint64(user.PublicMetrics.Following),
+		uint64(user.PublicMetrics.Tweets),
+		user.Verified,
+	), nil
 }
 
 // GetUser returns the Twitter id of the user having the given username

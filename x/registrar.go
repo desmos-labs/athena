@@ -8,13 +8,13 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x/authz"
-	"github.com/desmos-labs/djuno/v2/x/contracts"
-	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
+	contractsbuilder "github.com/desmos-labs/djuno/v2/x/contracts/builder"
 	"github.com/desmos-labs/djuno/v2/x/feegrant"
 	"github.com/desmos-labs/djuno/v2/x/fees"
 	"github.com/desmos-labs/djuno/v2/x/notifications"
 	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
+	profilesscorebuilder "github.com/desmos-labs/djuno/v2/x/profiles-score/builder"
 	"github.com/desmos-labs/djuno/v2/x/reactions"
 	"github.com/desmos-labs/djuno/v2/x/relationships"
 	"github.com/desmos-labs/djuno/v2/x/reports"
@@ -73,9 +73,8 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, desmosDb).
 		WithNotificationsBuilder(r.creator(profilesModule))
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
-	contractsModule := contracts.NewModule([]contracts.SmartContractModule{
-		tips.NewModule(ctx.JunoConfig, node, grpcConnection, desmosDb),
-	})
+	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, node, grpcConnection, desmosDb)
+	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, desmosDb)
 
 	return []modules.Module{
 		authzModule,
@@ -90,5 +89,6 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		notificationsModule,
 		telemetryModule,
 		contractsModule,
+		profilesScoreModule,
 	}
 }

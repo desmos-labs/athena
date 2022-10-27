@@ -1,8 +1,9 @@
 package profilesscore
 
 import (
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers"
 	"github.com/forbole/juno/v3/modules"
+
+	"github.com/desmos-labs/djuno/v2/database"
 )
 
 var (
@@ -11,14 +12,29 @@ var (
 )
 
 type Module struct {
-	scorers []scorers.Scorer
+	scorers Scorers
+	db      *database.Db
 }
 
-func NewModule() *Module {
-	return &Module{}
+// NewModule returns a new Module instance
+func NewModule(scorers Scorers, db *database.Db) *Module {
+	return &Module{
+		scorers: scorers,
+		db:      db,
+	}
 }
 
 // Name implements modules.Module
 func (m *Module) Name() string {
 	return "profiles:score"
+}
+
+func (m *Module) GetScorers() Scorers {
+	var scorers Scorers
+	for _, scorer := range m.scorers {
+		if scorer != nil {
+			scorers = append(scorers, scorer)
+		}
+	}
+	return scorers
 }

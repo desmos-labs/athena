@@ -3,6 +3,8 @@ package profiles
 import (
 	"fmt"
 
+	profilesscorebuilder "github.com/desmos-labs/djuno/v2/x/profiles-score/builder"
+
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
 	"github.com/forbole/juno/v3/types/config"
@@ -42,9 +44,16 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
+			profilesScoreModule := profilesscorebuilder.BuildModule(config.Cfg, db)
 
 			// Refresh the application links
-			return profilesModule.RefreshApplicationLinks(height)
+			err = profilesModule.RefreshApplicationLinks(height)
+			if err != nil {
+				return err
+			}
+
+			// Refresh the application link scores
+			return profilesScoreModule.RefreshApplicationLinksScores()
 		},
 	}
 }
