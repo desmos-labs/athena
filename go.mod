@@ -24,6 +24,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
+require github.com/g8rswimmer/go-twitter/v2 v2.1.2
+
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
 	github.com/g8rswimmer/go-twitter/v2 v2.1.2

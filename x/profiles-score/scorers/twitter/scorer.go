@@ -66,11 +66,6 @@ func (s *Scorer) GetScoreDetails(_ string, application string, username string) 
 		return nil, err
 	}
 
-	// Make sure the user exists
-	if user == nil {
-		return nil, nil
-	}
-
 	createdAt, err := time.Parse(time.RFC3339, user.CreatedAt)
 	if err != nil {
 		return nil, err
@@ -85,7 +80,7 @@ func (s *Scorer) GetScoreDetails(_ string, application string, username string) 
 	), nil
 }
 
-// GetUser returns the Twitter data of the user having the given username
+// GetUser returns the Twitter id of the user having the given username
 func (s *Scorer) GetUser(username string) (*twitter.UserObj, error) {
 	// Get the user details from the username
 	res, err := s.client.UserNameLookup(context.Background(), []string{username}, twitter.UserLookupOpts{
