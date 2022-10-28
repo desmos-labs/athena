@@ -24,7 +24,11 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/g8rswimmer/go-twitter/v2 v2.1.2
+require (
+	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
+	github.com/g8rswimmer/go-twitter/v2 v2.1.2
+	github.com/google/go-github/v48 v48.0.0
+)
 
 require (
 	4d63.com/gochecknoglobals v0.1.0 // indirect
@@ -58,7 +62,6 @@ require (
 	github.com/bkielbasa/cyclop v1.2.0 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
 	github.com/bombsimon/wsl/v3 v3.3.0 // indirect
-	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0 // indirect
 	github.com/breml/bidichk v0.2.3 // indirect
 	github.com/breml/errchkjson v0.3.0 // indirect
 	github.com/btcsuite/btcd v0.22.2 // indirect
@@ -134,7 +137,6 @@ require (
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/go-github/v45 v45.2.0 // indirect
-	github.com/google/go-github/v48 v48.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
