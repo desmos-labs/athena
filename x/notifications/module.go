@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	firebase "firebase.google.com/go/v4"
@@ -23,6 +26,7 @@ var (
 
 type Module struct {
 	cdc codec.Codec
+	db  *database.Db
 
 	cfg    *Config
 	app    *firebase.App
@@ -35,7 +39,7 @@ type Module struct {
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec) *Module {
+func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec, db *database.Db) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -66,6 +70,7 @@ func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule R
 
 	return &Module{
 		cdc:             cdc,
+		db:              db,
 		cfg:             cfg,
 		app:             app,
 		client:          client,
@@ -112,5 +117,14 @@ func (m *Module) sendNotification(recipient string, notification *messaging.Noti
 
 	// Send the message
 	_, err := m.client.Send(ctx, &message)
-	return err
+	if err != nil {
+		return err
+	}
+
+	// Store the notification (if enabled)
+	if m.cfg.StoreHistory {
+		return m.db.SaveNotification(types.NewNotification(recipient, data, time.Now()))
+	}
+
+	return nil
 }
