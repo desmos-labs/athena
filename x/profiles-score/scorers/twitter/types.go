@@ -37,10 +37,6 @@ var (
 	_ types.ProfileScoreDetails = &ScoreDetails{}
 )
 
-const (
-	Year = time.Hour * 24 * 365
-)
-
 type ScoreDetails struct {
 	CreatedAt      time.Time `json:"created_at"`
 	FollowersCount uint64    `json:"followers_count"`
@@ -66,13 +62,13 @@ func (d *ScoreDetails) GetScore() (score uint64) {
 	}
 
 	accountAge := time.Since(d.CreatedAt)
-	accountAgeYrs := uint64(accountAge.Nanoseconds() / Year.Nanoseconds())
+	accountAgeYrs := uint64(accountAge.Nanoseconds() / types.Year.Nanoseconds())
 
 	// Base of 25 points
 	score += 25
 
 	// 25 points for accounts older than 1 year
-	if accountAge > 1*Year {
+	if accountAgeYrs > 1 {
 		score += 25
 	}
 
