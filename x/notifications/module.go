@@ -122,7 +122,7 @@ func (m *Module) sendNotification(recipient string, notification *messaging.Noti
 	}
 
 	// Store the notification (if enabled)
-	if m.cfg.StoreHistory {
+	if m.cfg.PersistHistory {
 		return m.db.SaveNotification(types.NewNotification(recipient, data, time.Now()))
 	}
 
