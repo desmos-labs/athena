@@ -36,6 +36,7 @@ func (d DefaultReactionsNotificationsBuilder) Reaction() notificationsbuilder.Re
 
 				notificationsbuilder.SubspaceIDKey:     fmt.Sprintf("%d", post.SubspaceID),
 				notificationsbuilder.PostIDKey:         fmt.Sprintf("%d", post.ID),
+				notificationsbuilder.ReactionIDKey:     fmt.Sprintf("%d", reaction.ID),
 				notificationsbuilder.ReactionAuthorKey: reaction.Author,
 			},
 		}

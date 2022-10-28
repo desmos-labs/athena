@@ -65,19 +65,20 @@ func (d DefaultPostsNotificationsBuilder) Comment() notificationsbuilder.PostNot
 }
 
 func (d DefaultPostsNotificationsBuilder) Repost() notificationsbuilder.PostNotificationBuilder {
-	return func(originalPost types.Post, reference types.Post) *notificationsbuilder.NotificationData {
+	return func(originalPost types.Post, repost types.Post) *notificationsbuilder.NotificationData {
 		return &notificationsbuilder.NotificationData{
 			Notification: &messaging.Notification{
 				Title: "Someone reposted your post! 💬",
-				Body:  fmt.Sprintf("%s reposted your post", d.m.GetDisplayName(reference.Author)),
+				Body:  fmt.Sprintf("%s reposted your post", d.m.GetDisplayName(repost.Author)),
 			},
 			Data: map[string]string{
 				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeRepost,
 				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey: fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:     fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.PostAuthorKey: reference.Author,
+				notificationsbuilder.SubspaceIDKey:   fmt.Sprintf("%d", originalPost.SubspaceID),
+				notificationsbuilder.PostIDKey:       fmt.Sprintf("%d", originalPost.ID),
+				notificationsbuilder.RepostIDKey:     fmt.Sprintf("%d", repost.ID),
+				notificationsbuilder.RepostAuthorKey: repost.Author,
 			},
 		}
 	}
