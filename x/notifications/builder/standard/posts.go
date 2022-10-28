@@ -35,28 +35,30 @@ func (d DefaultPostsNotificationsBuilder) ConversationReply() notificationsbuild
 				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeReply,
 				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey: fmt.Sprintf("%d", reply.SubspaceID),
-				notificationsbuilder.PostIDKey:     fmt.Sprintf("%d", reply.ID),
-				notificationsbuilder.PostAuthorKey: reply.Author,
+				notificationsbuilder.SubspaceIDKey:  fmt.Sprintf("%d", originalPost.SubspaceID),
+				notificationsbuilder.PostIDKey:      fmt.Sprintf("%d", originalPost.ID),
+				notificationsbuilder.ReplyIDKey:     fmt.Sprintf("%d", reply.ID),
+				notificationsbuilder.ReplyAuthorKey: reply.Author,
 			},
 		}
 	}
 }
 
 func (d DefaultPostsNotificationsBuilder) Comment() notificationsbuilder.PostNotificationBuilder {
-	return func(originalPost types.Post, reference types.Post) *notificationsbuilder.NotificationData {
+	return func(originalPost types.Post, comment types.Post) *notificationsbuilder.NotificationData {
 		return &notificationsbuilder.NotificationData{
 			Notification: &messaging.Notification{
 				Title: "Someone commented your post! 💬",
-				Body:  fmt.Sprintf("%s commented on your post", d.m.GetDisplayName(reference.Author)),
+				Body:  fmt.Sprintf("%s commented on your post", d.m.GetDisplayName(comment.Author)),
 			},
 			Data: map[string]string{
 				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeReply,
 				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey: fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:     fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.PostAuthorKey: reference.Author,
+				notificationsbuilder.SubspaceIDKey:    fmt.Sprintf("%d", originalPost.SubspaceID),
+				notificationsbuilder.PostIDKey:        fmt.Sprintf("%d", originalPost.ID),
+				notificationsbuilder.CommentIDKey:     fmt.Sprintf("%d", comment.ID),
+				notificationsbuilder.CommentAuthorKey: comment.Author,
 			},
 		}
 	}
@@ -82,19 +84,20 @@ func (d DefaultPostsNotificationsBuilder) Repost() notificationsbuilder.PostNoti
 }
 
 func (d DefaultPostsNotificationsBuilder) Quote() notificationsbuilder.PostNotificationBuilder {
-	return func(originalPost types.Post, reference types.Post) *notificationsbuilder.NotificationData {
+	return func(originalPost types.Post, quote types.Post) *notificationsbuilder.NotificationData {
 		return &notificationsbuilder.NotificationData{
 			Notification: &messaging.Notification{
 				Title: "Someone quoted your post! 💬",
-				Body:  fmt.Sprintf("%s quoted your post", d.m.GetDisplayName(reference.Author)),
+				Body:  fmt.Sprintf("%s quoted your post", d.m.GetDisplayName(quote.Author)),
 			},
 			Data: map[string]string{
 				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeQuote,
 				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey: fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:     fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.PostAuthorKey: reference.Author,
+				notificationsbuilder.SubspaceIDKey:  fmt.Sprintf("%d", originalPost.SubspaceID),
+				notificationsbuilder.PostIDKey:      fmt.Sprintf("%d", originalPost.ID),
+				notificationsbuilder.QuoteIDKey:     fmt.Sprintf("%d", quote.ID),
+				notificationsbuilder.QuoteAuthorKey: quote.Author,
 			},
 		}
 	}

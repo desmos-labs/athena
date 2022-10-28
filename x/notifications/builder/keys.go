@@ -9,6 +9,12 @@ const (
 	PostIDKey              = "post_id"
 	PostAuthorKey          = "post_author"
 	ReactionAuthorKey      = "reaction_author"
+	CommentIDKey           = "comment_id"
+	CommentAuthorKey       = "comment_author"
+	ReplyIDKey             = "reply_id"
+	ReplyAuthorKey         = "reply_author"
+	QuoteIDKey             = "quote_id"
+	QuoteAuthorKey         = "quote_author"
 
 	// Actions
 
