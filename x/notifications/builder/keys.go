@@ -18,6 +18,12 @@ const (
 	QuoteAuthorKey         = "quote_author"
 	ReactionIDKey          = "reaction_id"
 	ReactionAuthorKey      = "reaction_author"
+	CommentIDKey           = "comment_id"
+	CommentAuthorKey       = "comment_author"
+	ReplyIDKey             = "reply_id"
+	ReplyAuthorKey         = "reply_author"
+	QuoteIDKey             = "quote_id"
+	QuoteAuthorKey         = "quote_author"
 
 	// Actions
 
