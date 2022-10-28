@@ -70,7 +70,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	reportsModule := reports.NewModule(node, grpcConnection, cdc, desmosDb)
 	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
 	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
-	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc).
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, desmosDb).
 		WithNotificationsBuilder(r.creator(profilesModule))
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 	contractsModule := contracts.NewModule([]contracts.SmartContractModule{

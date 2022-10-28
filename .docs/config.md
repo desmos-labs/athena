@@ -121,11 +121,12 @@ This section defines the details about the tips smart contract that should be pa
 If the `notifications` module is enabled, you can use this section to define some details about how notifications will
 be sent to clients.
 
-| Attribute                         |   Type   | Description                                                                                | 
-|:----------------------------------|:--------:|:-------------------------------------------------------------------------------------------|
-| `firebase_credentials_file_path`  | `string` | Path to the JSON file containing the Firebase credentials                                  |
-| `firebase_project_id`             | `string` | Id of the Firebase project that should be used to send the notifications                   | 
-| `android_channel_id`              | `string` | Id of the notifications channel that should be used when sending out Android notifications | 
+| Attribute                        |   Type    | Description                                                                                | 
+|:---------------------------------|:---------:|:-------------------------------------------------------------------------------------------|
+| `firebase_credentials_file_path` | `string`  | Path to the JSON file containing the Firebase credentials                                  |
+| `firebase_project_id`            | `string`  | Id of the Firebase project that should be used to send the notifications                   | 
+| `android_channel_id`             | `string`  | Id of the notifications channel that should be used when sending out Android notifications | 
+| `persist_history`                | `boolean` | Whether or not to persist notifications history                                            | 
 
 ## `filters`
 If present, this section contains the details about how messages will be filtered before being parsed.
