@@ -1,29 +1,23 @@
 package twitter
 
-import "gopkg.in/yaml.v3"
-
-type ScorersConfig struct {
-	Scorer *Config `yaml:"twitter"`
-}
+import (
+	scorersutils "github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/utils"
+)
 
 type Config struct {
 	Token string `yaml:"token"`
 }
 
 func ParseConfig(bz []byte) (*Config, error) {
-	type T struct {
-		Scorers *ScorersConfig `yaml:"scorers"`
-	}
-
-	var cfg T
-	err := yaml.Unmarshal(bz, &cfg)
+	var cfg Config
+	found, err := scorersutils.UnmarshalConfig(bz, "twitter", &cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	if cfg.Scorers == nil {
+	if !found {
 		return nil, nil
 	}
 
-	return cfg.Scorers.Scorer, err
+	return &cfg, err
 }
