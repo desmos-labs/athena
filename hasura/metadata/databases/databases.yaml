@@ -4,6 +4,6 @@
     connection_info:
       use_prepared_statements: false
       database_url:
-        from_env: HASURA_GRAPHQL_DJUNO_DATABASE_URL
+        from_env: HASURA_GRAPHQL_DATABASE_URL
       isolation_level: read-committed
   tables: "!include djuno/tables/tables.yaml"

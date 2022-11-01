@@ -1,0 +1,9 @@
+table:
+  schema: public
+  name: post_transaction
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - hash
+      filter: {}

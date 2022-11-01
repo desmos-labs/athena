@@ -23,6 +23,15 @@ array_relationships:
         table:
           schema: public
           name: chain_link
+  - name: default_chain_links
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: default_chain_link
+        insertion_order: null
+        column_mapping:
+          address: user_address
   - name: followage
     using:
       manual_configuration:
