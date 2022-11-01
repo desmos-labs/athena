@@ -1,14 +1,16 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/likexian/whois"
 	whoisparser "github.com/likexian/whois-parser"
-	"time"
+
+	"net/http"
+	"strings"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
-	"net/http"
-	"strings"
 )
 
 var (
