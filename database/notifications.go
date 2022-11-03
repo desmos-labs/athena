@@ -14,13 +14,13 @@ func (db *Db) SaveNotification(notification types.Notification) error {
 	}
 
 	stmt := `
-INSERT INTO notification (user_address, data, timestamp) 
-VALUES ($1, $2, $3) 
+INSERT INTO notification (user_address, type, data, timestamp) 
+VALUES ($1, $2, $3, $4) 
 ON CONFLICT ON CONSTRAINT unique_user_notification DO UPDATE 
     SET user_address = excluded.user_address,
         data = excluded.data,
         timestamp = excluded.timestamp
 WHERE notification.timestamp <= excluded.timestamp`
-	_, err = db.SQL.Exec(stmt, notification.RecipientAddress, string(dataBz), notification.Timestamp)
+	_, err = db.SQL.Exec(stmt, notification.RecipientAddress, notification.Type, string(dataBz), notification.Timestamp)
 	return err
 }

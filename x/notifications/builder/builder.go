@@ -37,8 +37,8 @@ type MentionNotificationBuilder = func(post types.Post, mention poststypes.TextT
 
 // PostsNotificationsBuilder contains all the notifications builders for the posts module
 type PostsNotificationsBuilder interface {
-	ConversationReply() PostNotificationBuilder
 	Comment() PostNotificationBuilder
+	Reply() PostNotificationBuilder
 	Repost() PostNotificationBuilder
 	Quote() PostNotificationBuilder
 	Mention() MentionNotificationBuilder
