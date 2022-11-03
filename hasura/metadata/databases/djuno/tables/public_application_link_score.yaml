@@ -1,0 +1,12 @@
+table:
+  schema: public
+  name: application_link_score
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - details
+        - score
+        - timestamp
+      filter: {}
+      limit: 100

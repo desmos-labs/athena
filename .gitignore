@@ -1,10 +1,6 @@
 .idea/
 build/
 
-# configuration
-*.json
-config.yaml
-
 # coverage
 coverage.out
 coverage.txt

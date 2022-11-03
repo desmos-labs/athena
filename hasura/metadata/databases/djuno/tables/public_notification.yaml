@@ -1,0 +1,14 @@
+table:
+  schema: public
+  name: notification
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - data
+        - timestamp
+        - type
+        - user_address
+      filter: {}
+      limit: 100
+      allow_aggregations: true

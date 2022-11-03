@@ -58,6 +58,20 @@ func NewApplicationLink(link profilestypes.ApplicationLink, height int64) Applic
 	}
 }
 
+type ApplicationLinkInfo struct {
+	User        string
+	Application string
+	Username    string
+}
+
+func NewApplicationInfo(user, application, username string) ApplicationLinkInfo {
+	return ApplicationLinkInfo{
+		User:        user,
+		Application: application,
+		Username:    username,
+	}
+}
+
 // -------------------------------------------------------------------------------------------------------------------
 
 type ProfilesParams struct {

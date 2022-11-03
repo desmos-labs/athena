@@ -3,6 +3,8 @@ package profiles
 import (
 	"fmt"
 
+	contractsbuilder "github.com/desmos-labs/djuno/v2/x/contracts/builder"
+
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
 	"github.com/forbole/juno/v3/node/remote"
@@ -11,8 +13,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/contracts"
-	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
 )
 
 // contractsCmd returns a Cobra command that allows to refresh the smart contracts data for a single subspace
@@ -41,9 +41,7 @@ func contractsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			db := database.Cast(parseCtx.Database)
 
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-			contractsModule := contracts.NewModule([]contracts.SmartContractModule{
-				tips.NewModule(config.Cfg, parseCtx.Node, grpcConnection, db),
-			})
+			contractsModule := contractsbuilder.BuildModule(config.Cfg, parseCtx.Node, grpcConnection, db)
 
 			// Get the latest height
 			height, err := parseCtx.Node.LatestHeight()
