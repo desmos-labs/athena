@@ -18,9 +18,9 @@ func (m *Module) getPostsNotificationsBuilder() notificationsbuilder.PostsNotifi
 	return m.builder.Posts()
 }
 
-func (m *Module) getConversationNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
+func (m *Module) getReplyNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
 	if builder := m.getPostsNotificationsBuilder(); builder != nil {
-		return builder.ConversationReply()
+		return builder.Reply()
 	}
 	return nil
 }
@@ -76,21 +76,6 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 	// List of users already notified
 	var notifiedUsers []string
 
-	// Send conversation notification
-	if post.ConversationID != 0 {
-		conversationPost, err := m.postsModule.GetPost(height, subspaceID, post.ConversationID)
-		if err != nil {
-			return err
-		}
-
-		err = m.sendConversationNotification(conversationPost, post, notifiedUsers)
-		if err != nil {
-			return err
-		}
-
-		notifiedUsers = append(notifiedUsers, conversationPost.Author)
-	}
-
 	// Send post references notifications
 	for _, reference := range post.ReferencedPosts {
 		// Do nothing if the post with the same id is both the original post and the post to which has been replied
@@ -109,6 +94,21 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 		}
 
 		notifiedUsers = append(notifiedUsers, originalPost.Author)
+	}
+
+	// Send conversation notification
+	if post.ConversationID != 0 {
+		conversationPost, err := m.postsModule.GetPost(height, subspaceID, post.ConversationID)
+		if err != nil {
+			return err
+		}
+
+		err = m.sendConversationNotification(conversationPost, post, notifiedUsers)
+		if err != nil {
+			return err
+		}
+
+		notifiedUsers = append(notifiedUsers, conversationPost.Author)
 	}
 
 	// Send mentions notification
@@ -143,7 +143,7 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 	}
 
 	// Get the notification data
-	data := m.getPostNotificationData(originalPost, reply, m.getConversationNotificationBuilder())
+	data := m.getPostNotificationData(originalPost, reply, m.getCommentNotificationBuilder())
 	if data == nil {
 		return nil
 	}
@@ -167,7 +167,7 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 	var data *notificationsbuilder.NotificationData
 	switch referenceType {
 	case poststypes.POST_REFERENCE_TYPE_REPLY:
-		data = m.getPostNotificationData(originalPost, reference, m.getCommentNotificationBuilder())
+		data = m.getPostNotificationData(originalPost, reference, m.getReplyNotificationBuilder())
 
 	case poststypes.POST_REFERENCE_TYPE_REPOST:
 		data = m.getPostNotificationData(originalPost, reference, m.getRepostNotificationBuilder())
