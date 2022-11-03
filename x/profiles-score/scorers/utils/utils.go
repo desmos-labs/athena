@@ -1,7 +1,11 @@
 package utils
 
 import (
+	"time"
+
 	"gopkg.in/yaml.v3"
+
+	"github.com/desmos-labs/djuno/v2/types"
 )
 
 func UnmarshalConfig(cfgBz []byte, nodeName string, value interface{}) (bool, error) {
@@ -29,4 +33,8 @@ func UnmarshalConfig(cfgBz []byte, nodeName string, value interface{}) (bool, er
 		return false, err
 	}
 	return true, yaml.Unmarshal(nodeValueBz, value)
+}
+
+func GetTimeSinceInYears(date time.Time) uint64 {
+	return uint64(time.Since(date).Nanoseconds() / types.Year.Nanoseconds())
 }

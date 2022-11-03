@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/utils"
+
 	"github.com/g8rswimmer/go-twitter/v2"
 
 	"github.com/desmos-labs/djuno/v2/types"
@@ -37,10 +39,6 @@ var (
 	_ types.ProfileScoreDetails = &ScoreDetails{}
 )
 
-const (
-	Year = time.Hour * 24 * 365
-)
-
 type ScoreDetails struct {
 	CreatedAt      time.Time `json:"created_at"`
 	FollowersCount uint64    `json:"followers_count"`
@@ -65,14 +63,12 @@ func (d *ScoreDetails) GetScore() (score uint64) {
 		return 100
 	}
 
-	accountAge := time.Since(d.CreatedAt)
-	accountAgeYrs := uint64(accountAge.Nanoseconds() / Year.Nanoseconds())
-
 	// Base of 25 points
 	score += 25
 
 	// 25 points for accounts older than 1 year
-	if accountAge > 1*Year {
+	accountAgeYrs := utils.GetTimeSinceInYears(d.CreatedAt)
+	if accountAgeYrs > 1 {
 		score += 25
 	}
 

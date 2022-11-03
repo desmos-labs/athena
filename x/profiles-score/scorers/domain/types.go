@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/utils"
+
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
@@ -32,11 +34,8 @@ func (d *ScoreDetails) GetScore() (score uint64) {
 	// Base of 25 points
 	score += 25
 
-	domainAge := time.Since(d.CreatedAt)
-	domainAgeYrs := domainAge.Nanoseconds() / types.Year.Nanoseconds()
-
 	// 25 points for accounts older than 1 year
-	if domainAgeYrs > 1 {
+	if utils.GetTimeSinceInYears(d.CreatedAt) > 1 {
 		score = 100
 	}
 

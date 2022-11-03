@@ -3,6 +3,8 @@ package twitch
 import (
 	"time"
 
+	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/utils"
+
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
@@ -27,11 +29,8 @@ func (d *ScoreDetails) GetScore() (score uint64) {
 	// Base of 25 points
 	score += 25
 
-	accountAge := time.Since(d.CreatedAt)
-	accountAgeYrs := accountAge.Nanoseconds() / types.Year.Nanoseconds()
-
 	// 25 points for accounts older than 1 year
-	if accountAgeYrs > 1 {
+	if utils.GetTimeSinceInYears(d.CreatedAt) > 1 {
 		score += 25
 	}
 
