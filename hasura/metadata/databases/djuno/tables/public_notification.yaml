@@ -7,6 +7,7 @@ select_permissions:
       columns:
         - data
         - timestamp
+        - type
         - user_address
       filter: {}
       limit: 100
