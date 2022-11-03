@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+
+	"github.com/desmos-labs/djuno/v2/database"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
@@ -123,7 +124,12 @@ func (m *Module) sendNotification(recipient string, notification *messaging.Noti
 
 	// Store the notification (if enabled)
 	if m.cfg.PersistHistory {
-		return m.db.SaveNotification(types.NewNotification(recipient, data, time.Now()))
+		return m.db.SaveNotification(types.NewNotification(
+			recipient,
+			data[notificationsbuilder.NotificationTypeKey],
+			data,
+			time.Now(),
+		))
 	}
 
 	return nil
