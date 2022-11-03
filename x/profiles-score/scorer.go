@@ -31,26 +31,34 @@ type Scorer interface {
 type Scorers []Scorer
 
 func (s Scorers) GetRateLimit() *ScoreRateLimit {
-	var rateLimit *ScoreRateLimit
+	// Get the highest duration
+	var highestDuration time.Duration
 	for _, scorer := range s {
 		scorerRateLimit := scorer.GetRateLimit()
-		if rateLimit == nil {
-			rateLimit = scorerRateLimit
-			continue
-		}
 		if scorerRateLimit == nil {
 			continue
 		}
 
-		// Get the minimum amount of request per time frame
-		if rateLimit.RateLimit > scorerRateLimit.RateLimit {
-			rateLimit.RateLimit = scorerRateLimit.RateLimit
-		}
-
 		// Get the maximum time frame size
-		if rateLimit.Duration < scorerRateLimit.Duration {
-			rateLimit.Duration = scorerRateLimit.Duration
+		if highestDuration == 0 || scorerRateLimit.Duration > highestDuration {
+			highestDuration = scorerRateLimit.Duration
 		}
 	}
-	return rateLimit
+
+	// Get the lowest rate limit
+	var lowestRateLimit uint64
+	for _, scorer := range s {
+		scorerRateLimit := scorer.GetRateLimit()
+		if scorerRateLimit == nil {
+			continue
+		}
+
+		// Convert the scorer rate to the highest duration
+		scorerConvertedRate := scorerRateLimit.RateLimit * uint64(highestDuration.Nanoseconds()/scorerRateLimit.Duration.Nanoseconds())
+		if lowestRateLimit == 0 || scorerConvertedRate < lowestRateLimit {
+			lowestRateLimit = scorerConvertedRate
+		}
+	}
+
+	return NewScoreRateLimit(highestDuration, lowestRateLimit)
 }

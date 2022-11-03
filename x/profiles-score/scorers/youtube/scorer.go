@@ -53,7 +53,7 @@ func NewScorer(junoCfg config.Config) *Scorer {
 
 // GetRateLimit implements Scorer
 func (s *Scorer) GetRateLimit() *profilesscore.ScoreRateLimit {
-	return profilesscore.NewScoreRateLimit(time.Minute*15, 900)
+	return profilesscore.NewScoreRateLimit(time.Hour*24, 10000)
 }
 
 // GetScoreDetails implements Scorer

@@ -30,7 +30,7 @@ func NewScorer() *Scorer {
 
 // GetRateLimit implements Scorer
 func (s *Scorer) GetRateLimit() *profilesscore.ScoreRateLimit {
-	return profilesscore.NewScoreRateLimit(time.Second, 10)
+	return profilesscore.NewScoreRateLimit(time.Minute, 10)
 }
 
 // GetScoreDetails implements Scorer
