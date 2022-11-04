@@ -24,11 +24,14 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/g8rswimmer/go-twitter/v2 v2.1.2
+require github.com/g8rswimmer/go-twitter/v2 v2.1.3
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
 	github.com/google/go-github/v48 v48.0.0
+	github.com/likexian/whois v1.14.2
+	github.com/likexian/whois-parser v1.24.1
+	github.com/nicklaw5/helix v1.25.0
 )
 
 require (
@@ -185,8 +188,6 @@ require (
 	github.com/leonklingele/grouper v1.1.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/likexian/gokit v0.25.9 // indirect
-	github.com/likexian/whois v1.14.2 // indirect
-	github.com/likexian/whois-parser v1.24.1 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/maratori/testableexamples v1.0.0 // indirect
@@ -207,7 +208,6 @@ require (
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
 	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354 // indirect
-	github.com/nicklaw5/helix v1.25.0 // indirect
 	github.com/nishanths/exhaustive v0.8.3 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
