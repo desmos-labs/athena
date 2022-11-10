@@ -29,7 +29,7 @@ require github.com/g8rswimmer/go-twitter/v2 v2.1.4
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
 	github.com/google/go-github/v48 v48.0.0
-	github.com/likexian/whois v1.14.2
+	github.com/likexian/whois v1.14.3
 	github.com/likexian/whois-parser v1.24.1
 	github.com/nicklaw5/helix v1.25.0
 )
