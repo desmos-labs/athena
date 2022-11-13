@@ -3,7 +3,7 @@ module github.com/desmos-labs/djuno/v2
 go 1.18
 
 require (
-	firebase.google.com/go/v4 v4.9.0
+	firebase.google.com/go/v4 v4.10.0
 	github.com/CosmWasm/wasmd v0.23.1-0.20220303200417-f35a13fa1209
 	github.com/cosmos/cosmos-sdk v0.45.8
 	github.com/cosmos/ibc-go/v3 v3.3.0
@@ -54,6 +54,7 @@ require (
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
+	github.com/MicahParks/keyfunc v1.5.1 // indirect
 	github.com/OpenPeeDeeP/depguard v1.1.1 // indirect
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
