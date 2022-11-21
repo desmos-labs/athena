@@ -5,8 +5,10 @@ import (
 )
 
 // Creator returns the default NotificationsBuilderCreator implementation
-func Creator(module notificationsbuilder.UtilityModule) notificationsbuilder.NotificationsBuilder {
-	return NewDefaultBuilder(module)
+func Creator() notificationsbuilder.NotificationsBuilderCreator {
+	return func(module notificationsbuilder.UtilityModule) notificationsbuilder.NotificationsBuilder {
+		return NewDefaultBuilder(module)
+	}
 }
 
 // -------------------------------------------------------------------------------------------------------------------

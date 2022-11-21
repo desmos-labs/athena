@@ -7,6 +7,7 @@ import (
 	standardnotificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder/standard"
 
 	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/djuno/v2/x/apis"
 	"github.com/desmos-labs/djuno/v2/x/authz"
 	contractsbuilder "github.com/desmos-labs/djuno/v2/x/contracts/builder"
 	"github.com/desmos-labs/djuno/v2/x/feegrant"
@@ -29,11 +30,13 @@ import (
 
 type RegistrarOptions struct {
 	NotificationsCreator notificationsbuilder.NotificationsBuilderCreator
+	APIsRegistrar        apis.Registrar
 }
 
 func DefaultRegistrarOptions() RegistrarOptions {
 	return RegistrarOptions{
-		NotificationsCreator: standardnotificationsbuilder.Creator,
+		NotificationsCreator: standardnotificationsbuilder.Creator(),
+		APIsRegistrar:        apis.DefaultRegistrar(),
 	}
 }
 
@@ -65,6 +68,8 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	}
 
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
+
+	apisModule := apis.NewModule(ctx.JunoConfig, r.options.APIsRegistrar)
 	authzModule := authz.NewModule(node, cdc, desmosDb)
 	feegrantModule := feegrant.NewModule(node, cdc, desmosDb)
 	feesModule := fees.NewModule(node, grpcConnection, cdc, desmosDb)
@@ -81,6 +86,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, desmosDb)
 
 	return []modules.Module{
+		apisModule,
 		authzModule,
 		feegrantModule,
 		feesModule,
