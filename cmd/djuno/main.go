@@ -17,7 +17,7 @@ import (
 func main() {
 	// Setup the config
 	parseCfg := parsecmdtypes.NewConfig().
-		WithRegistrar(x.NewModulesRegistrar()).
+		WithRegistrar(x.NewModulesRegistrar(x.DefaultRegistrarOptions())).
 		WithEncodingConfigBuilder(desmosapp.MakeTestEncodingConfig).
 		WithDBBuilder(desmosdb.Builder)
 

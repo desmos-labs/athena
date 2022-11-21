@@ -27,22 +27,26 @@ import (
 	"github.com/forbole/juno/v3/node/remote"
 )
 
-// ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules
-type ModulesRegistrar struct {
-	creator notificationsbuilder.NotificationsBuilderCreator
+type RegistrarOptions struct {
+	NotificationsCreator notificationsbuilder.NotificationsBuilderCreator
 }
 
-// NewModulesRegistrar allows to build a new ModulesRegistrar instance
-func NewModulesRegistrar() *ModulesRegistrar {
-	return &ModulesRegistrar{
-		creator: standardnotificationsbuilder.Creator,
+func DefaultRegistrarOptions() RegistrarOptions {
+	return RegistrarOptions{
+		NotificationsCreator: standardnotificationsbuilder.Creator,
 	}
 }
 
-// WithNotificationsBuilderCreator allows to customize the NotificationsBuilderCreator instance used
-func (r *ModulesRegistrar) WithNotificationsBuilderCreator(creator notificationsbuilder.NotificationsBuilderCreator) *ModulesRegistrar {
-	r.creator = creator
-	return r
+// ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules
+type ModulesRegistrar struct {
+	options RegistrarOptions
+}
+
+// NewModulesRegistrar allows to build a new ModulesRegistrar instance
+func NewModulesRegistrar(options RegistrarOptions) *ModulesRegistrar {
+	return &ModulesRegistrar{
+		options: options,
+	}
 }
 
 // BuildModules implements modules.Registrar
@@ -71,7 +75,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	postsModule := posts.NewModule(node, grpcConnection, cdc, desmosDb)
 	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, desmosDb)
 	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, desmosDb).
-		WithNotificationsBuilder(r.creator(profilesModule))
+		WithNotificationsBuilder(r.options.NotificationsCreator(profilesModule))
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, node, grpcConnection, desmosDb)
 	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, desmosDb)
