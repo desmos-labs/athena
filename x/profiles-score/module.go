@@ -2,8 +2,6 @@ package profilesscore
 
 import (
 	"github.com/forbole/juno/v3/modules"
-
-	"github.com/desmos-labs/djuno/v2/database"
 )
 
 var (
@@ -13,11 +11,11 @@ var (
 
 type Module struct {
 	scorers Scorers
-	db      *database.Db
+	db      Database
 }
 
 // NewModule returns a new Module instance
-func NewModule(scorers Scorers, db *database.Db) *Module {
+func NewModule(scorers Scorers, db Database) *Module {
 	return &Module{
 		scorers: scorers,
 		db:      db,

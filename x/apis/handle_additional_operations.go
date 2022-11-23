@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )
@@ -18,10 +19,10 @@ import (
 func (m Module) RunAdditionalOperations() error {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.Use(m.Logger(), gin.Recovery())
+	router.Use(m.Logger(), gin.Recovery(), cors.Default())
 
 	// Register the endpoints
-	err := m.registrar(router)
+	err := m.registrar(m.ctx, router)
 	if err != nil {
 		panic(err)
 	}
@@ -40,10 +41,11 @@ func (m Module) RunAdditionalOperations() error {
 	go m.startServer(httpServer)
 
 	// Block main process (signal capture will call WaitGroup's Done)
-	log.Info().Str("module", "apis").Msg("started API server")
+	log.Info().Str("module", "apis").Str("address", httpServer.Addr).Msg("started API server")
 	return nil
 }
 
+// Logger returns a Gin Handler function that logs endpoint calls using ZeroLog
 func (m Module) Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
@@ -51,6 +53,7 @@ func (m Module) Logger() gin.HandlerFunc {
 	}
 }
 
+// trapSignal traps the stops signals to gracefully shut down the server
 func (m Module) trapSignal(httpServer *http.Server) {
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
@@ -75,6 +78,7 @@ func (m Module) trapSignal(httpServer *http.Server) {
 	log.Debug().Str("module", "apis").Msg("API server shutdown")
 }
 
+// startServer starts the API server
 func (m Module) startServer(httpServer *http.Server) {
 	err := httpServer.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {

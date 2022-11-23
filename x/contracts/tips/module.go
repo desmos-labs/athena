@@ -9,7 +9,6 @@ import (
 	"github.com/forbole/juno/v3/types/config"
 	"google.golang.org/grpc"
 
-	"github.com/desmos-labs/djuno/v2/database"
 	contractsbase "github.com/desmos-labs/djuno/v2/x/contracts/base"
 )
 
@@ -21,13 +20,13 @@ type Module struct {
 	base *contractsbase.Module
 
 	cfg        *Config
-	db         *database.Db
+	db         Database
 	node       node.Node
 	wasmClient wasmtypes.QueryClient
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, node node.Node, grpcConnection *grpc.ClientConn, db *database.Db) *Module {
+func NewModule(junoCfg config.Config, node node.Node, grpcConnection *grpc.ClientConn, db Database) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)

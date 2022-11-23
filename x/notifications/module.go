@@ -8,8 +8,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/desmos-labs/djuno/v2/database"
-
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/forbole/juno/v3/modules"
@@ -27,7 +25,7 @@ var (
 
 type Module struct {
 	cdc codec.Codec
-	db  *database.Db
+	db  Database
 
 	cfg    *Config
 	app    *firebase.App
@@ -40,7 +38,7 @@ type Module struct {
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec, db *database.Db) *Module {
+func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec, db Database) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)

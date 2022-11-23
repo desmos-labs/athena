@@ -69,7 +69,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 
-	apisModule := apis.NewModule(ctx.JunoConfig, r.options.APIsRegistrar)
+	apisModule := apis.NewModule(ctx, r.options.APIsRegistrar)
 	authzModule := authz.NewModule(node, cdc, desmosDb)
 	feegrantModule := feegrant.NewModule(node, cdc, desmosDb)
 	feesModule := fees.NewModule(node, grpcConnection, cdc, desmosDb)

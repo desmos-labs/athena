@@ -2,7 +2,7 @@ package apis
 
 import (
 	"github.com/forbole/juno/v3/modules"
-	"github.com/forbole/juno/v3/types/config"
+	"github.com/forbole/juno/v3/modules/registrar"
 )
 
 var (
@@ -10,13 +10,15 @@ var (
 	_ modules.AdditionalOperationsModule = &Module{}
 )
 
+// Module represnets the module allowing to register custom API endpoints
 type Module struct {
+	ctx       registrar.Context
 	cfg       *Config
 	registrar Registrar
 }
 
-func NewModule(junoCfg config.Config, registrar Registrar) *Module {
-	cfgBz, err := junoCfg.GetBytes()
+func NewModule(ctx registrar.Context, registrar Registrar) *Module {
+	cfgBz, err := ctx.JunoConfig.GetBytes()
 	if err != nil {
 		panic(err)
 	}
@@ -26,6 +28,7 @@ func NewModule(junoCfg config.Config, registrar Registrar) *Module {
 	}
 
 	return &Module{
+		ctx:       ctx,
 		cfg:       cfg,
 		registrar: registrar,
 	}

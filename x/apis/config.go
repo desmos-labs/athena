@@ -1,6 +1,8 @@
 package apis
 
-import "gopkg.in/yaml.v3"
+import (
+	"gopkg.in/yaml.v3"
+)
 
 type Config struct {
 	Address string `yaml:"address,omitempty"`
