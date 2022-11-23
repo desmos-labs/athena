@@ -24,9 +24,7 @@ func CombinedRegistrar(registrars ...Registrar) Registrar {
 }
 
 // DefaultRegistrar returns the default API registrar
-func DefaultRegistrar() Registrar {
-	return func(ctx registrar.Context, router *gin.Engine) error {
-		endpoints.RegisterRoutesList(router)
-		return nil
-	}
+func DefaultRegistrar(_ registrar.Context, router *gin.Engine) error {
+	endpoints.RegisterRoutesList(router)
+	return nil
 }

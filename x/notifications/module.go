@@ -2,7 +2,10 @@ package notifications
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	messagebuilder "github.com/desmos-labs/djuno/v2/x/notifications/message-builder"
 
 	"github.com/desmos-labs/djuno/v2/types"
 
@@ -34,11 +37,16 @@ type Module struct {
 	postsModule     PostsModule
 	reactionsModule ReactionsModule
 
-	builder notificationsbuilder.NotificationsBuilder
+	notificationBuilder notificationsbuilder.NotificationsBuilder
+	messageBuilder      messagebuilder.FirebaseMessageBuilder
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec, db Database) *Module {
+func NewModule(
+	junoCfg config.Config,
+	postsModule PostsModule, reactionsModule ReactionsModule,
+	cdc codec.Codec, db Database,
+) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -85,7 +93,17 @@ func (m *Module) Name() string {
 
 // WithNotificationsBuilder sets the given builder as the notifications builder
 func (m *Module) WithNotificationsBuilder(builder notificationsbuilder.NotificationsBuilder) *Module {
-	m.builder = builder
+	if builder != nil {
+		m.notificationBuilder = builder
+	}
+	return m
+}
+
+// WithFirebaseMessageBuilder sets the given builder as the Firebase message builder
+func (m *Module) WithFirebaseMessageBuilder(builder messagebuilder.FirebaseMessageBuilder) *Module {
+	if builder != nil {
+		m.messageBuilder = builder
+	}
 	return m
 }
 
@@ -104,18 +122,26 @@ func (m *Module) sendNotification(recipient string, notification *messaging.Noti
 	}
 
 	// Build the message
-	message := messaging.Message{
+	message, err := m.messageBuilder.BuildMessage(recipient, &messagebuilder.MessageConfig{
 		Data:         data,
 		Notification: notification,
 		Android:      androidConfig,
-		Topic:        recipient,
+	})
+	if err != nil {
+		return fmt.Errorf("error while building notification message: %s", err)
 	}
 
+	// Context with 5 seconds to send the notification
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Send the message
-	_, err := m.client.Send(ctx, &message)
+	switch notificationMessage := message.(type) {
+	case *types.SingleNotificationMessage:
+		_, err = m.client.Send(ctx, notificationMessage.Message)
+	case *types.MultiNotificationMessage:
+		_, err = m.client.SendMulticast(ctx, notificationMessage.MulticastMessage)
+	}
 	if err != nil {
 		return err
 	}

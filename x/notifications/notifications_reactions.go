@@ -7,20 +7,6 @@ import (
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 )
 
-func (m *Module) getReactionsNotificationsBuilder() notificationsbuilder.ReactionsNotificationsBuilder {
-	if m.builder == nil {
-		return nil
-	}
-	return m.builder.Reactions()
-}
-
-func (m *Module) getReactionNotificationBuilder() notificationsbuilder.ReactionNotificationBuilder {
-	if builder := m.getReactionsNotificationsBuilder(); builder != nil {
-		return builder.Reaction()
-	}
-	return nil
-}
-
 func (m *Module) getReactionNotificationData(post types.Post, reaction types.Reaction, builder notificationsbuilder.ReactionNotificationBuilder) *notificationsbuilder.NotificationData {
 	if builder == nil {
 		return nil
@@ -43,8 +29,7 @@ func (m *Module) SendReactionNotifications(reaction types.Reaction) error {
 		return nil
 	}
 
-	data := m.getReactionNotificationData(post, reaction, m.getReactionNotificationBuilder())
-
+	data := m.getReactionNotificationData(post, reaction, m.notificationBuilder.Reactions().Reaction())
 	if data == nil {
 		return nil
 	}

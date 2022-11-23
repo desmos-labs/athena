@@ -15,10 +15,10 @@ var (
 )
 
 type DefaultPostsNotificationsBuilder struct {
-	m notificationsbuilder.UtilityModule
+	m UtilityModule
 }
 
-func NewDefaultPostsNotificationsBuilder(utilityModule notificationsbuilder.UtilityModule) *DefaultPostsNotificationsBuilder {
+func NewDefaultPostsNotificationsBuilder(utilityModule UtilityModule) *DefaultPostsNotificationsBuilder {
 	return &DefaultPostsNotificationsBuilder{
 		m: utilityModule,
 	}

@@ -11,48 +11,6 @@ import (
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 )
 
-func (m *Module) getPostsNotificationsBuilder() notificationsbuilder.PostsNotificationsBuilder {
-	if m.builder == nil {
-		return nil
-	}
-	return m.builder.Posts()
-}
-
-func (m *Module) getReplyNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
-	if builder := m.getPostsNotificationsBuilder(); builder != nil {
-		return builder.Reply()
-	}
-	return nil
-}
-
-func (m *Module) getCommentNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
-	if builder := m.getPostsNotificationsBuilder(); builder != nil {
-		return builder.Comment()
-	}
-	return nil
-}
-
-func (m *Module) getRepostNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
-	if builder := m.getPostsNotificationsBuilder(); builder != nil {
-		return builder.Repost()
-	}
-	return nil
-}
-
-func (m *Module) getQuoteNotificationBuilder() notificationsbuilder.PostNotificationBuilder {
-	if builder := m.getPostsNotificationsBuilder(); builder != nil {
-		return builder.Quote()
-	}
-	return nil
-}
-
-func (m *Module) getMentionNotificationBuilder() notificationsbuilder.MentionNotificationBuilder {
-	if builder := m.getPostsNotificationsBuilder(); builder != nil {
-		return builder.Mention()
-	}
-	return nil
-}
-
 func (m *Module) getPostNotificationData(originalPost types.Post, reply types.Post, builder notificationsbuilder.PostNotificationBuilder) *notificationsbuilder.NotificationData {
 	if builder == nil {
 		return nil
@@ -143,7 +101,7 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 	}
 
 	// Get the notification data
-	data := m.getPostNotificationData(originalPost, reply, m.getCommentNotificationBuilder())
+	data := m.getPostNotificationData(originalPost, reply, m.notificationBuilder.Posts().Comment())
 	if data == nil {
 		return nil
 	}
@@ -167,13 +125,13 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 	var data *notificationsbuilder.NotificationData
 	switch referenceType {
 	case poststypes.POST_REFERENCE_TYPE_REPLY:
-		data = m.getPostNotificationData(originalPost, reference, m.getReplyNotificationBuilder())
+		data = m.getPostNotificationData(originalPost, reference, m.notificationBuilder.Posts().Reply())
 
 	case poststypes.POST_REFERENCE_TYPE_REPOST:
-		data = m.getPostNotificationData(originalPost, reference, m.getRepostNotificationBuilder())
+		data = m.getPostNotificationData(originalPost, reference, m.notificationBuilder.Posts().Repost())
 
 	case poststypes.POST_REFERENCE_TYPE_QUOTE:
-		data = m.getPostNotificationData(originalPost, reference, m.getQuoteNotificationBuilder())
+		data = m.getPostNotificationData(originalPost, reference, m.notificationBuilder.Posts().Quote())
 	}
 
 	if data == nil {
@@ -196,7 +154,7 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 		return nil
 	}
 
-	data := m.getMentionNotificationData(post, mention, m.getMentionNotificationBuilder())
+	data := m.getMentionNotificationData(post, mention, m.notificationBuilder.Posts().Mention())
 	if data == nil {
 		return nil
 	}

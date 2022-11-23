@@ -7,20 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (m *Module) getRelationshipsNotificationsBuilder() notificationsbuilder.RelationshipsNotificationsBuilder {
-	if m.builder == nil {
-		return nil
-	}
-	return m.builder.Relationships()
-}
-
-func (m *Module) getRelationshipNotificationBuilder() notificationsbuilder.RelationshipNotificationBuilder {
-	if builder := m.getRelationshipsNotificationsBuilder(); builder != nil {
-		return builder.Relationship()
-	}
-	return nil
-}
-
 func (m *Module) getRelationshipNotificationData(relationship types.Relationship, builder notificationsbuilder.RelationshipNotificationBuilder) *notificationsbuilder.NotificationData {
 	if builder == nil {
 		return nil
@@ -37,8 +23,7 @@ func (m *Module) SendRelationshipNotifications(relationship types.Relationship) 
 		return nil
 	}
 
-	data := m.getRelationshipNotificationData(relationship, m.getRelationshipNotificationBuilder())
-
+	data := m.getRelationshipNotificationData(relationship, m.notificationBuilder.Relationships().Relationship())
 	if data == nil {
 		return nil
 	}
