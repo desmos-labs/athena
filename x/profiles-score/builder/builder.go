@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/youtube"
 	"github.com/forbole/juno/v4/types/config"
 
 	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
@@ -16,5 +17,6 @@ func BuildModule(junoCfg config.Config, db profilesscore.Database) *profilesscor
 		github.NewScorer(junoCfg),
 		twitch.NewScorer(junoCfg),
 		twitter.NewScorer(junoCfg),
+		youtube.NewScorer(junoCfg),
 	}, db)
 }
