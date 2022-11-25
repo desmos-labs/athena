@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/desmos-labs/djuno/v2/types"
-	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
 	"github.com/forbole/juno/v4/types/config"
 	"github.com/google/go-github/v48/github"
+
+	"github.com/desmos-labs/djuno/v2/types"
+	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
 
 	"net/http"
 	"strings"

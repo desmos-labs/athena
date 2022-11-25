@@ -3,6 +3,8 @@ package profiles
 import (
 	"fmt"
 
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+
 	"github.com/rs/zerolog/log"
 
 	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
@@ -19,8 +21,9 @@ import (
 // reactionsCmd returns a Cobra command that allows to refresh all the reactions
 func reactionsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 	return &cobra.Command{
-		Use:   "reactions",
-		Short: "Fetch all the posts reactions from the node and save them properly",
+		Use:   "reactions [[subspace-id]]",
+		Args:  cobra.RangeArgs(0, 1),
+		Short: "Refresh all the reactions data",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
 			if err != nil {
@@ -47,15 +50,30 @@ func reactionsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Get the subspaces
-			subspaces, err := subspacesModule.QueryAllSubspaces(height)
-			if err != nil {
-				return err
+			log.Info().Int64("height", height).Msg("refreshing reactions")
+
+			var subspaceIDs []uint64
+			if len(args) > 0 {
+				subspaceID, err := subspacestypes.ParseSubspaceID(args[0])
+				if err != nil {
+					return err
+				}
+				subspaceIDs = []uint64{subspaceID}
+			} else {
+				subs, err := subspacesModule.QueryAllSubspaces(height)
+				if err != nil {
+					return err
+				}
+
+				subspaceIDs = make([]uint64, len(subs))
+				for i, subspace := range subs {
+					subspaceIDs[i] = subspace.ID
+				}
 			}
 
-			log.Info().Int64("height", height).Msg("refreshing reactions")
-			for _, subspace := range subspaces {
+			for _, subspaceID := range subspaceIDs {
 				// Get the posts
-				posts, err := postsModule.QuerySubspacePosts(height, subspace.ID)
+				posts, err := postsModule.QuerySubspacePosts(height, subspaceID)
 				if err != nil {
 					return err
 				}
