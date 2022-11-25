@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/forbole/juno/v4/types/config"
 	"github.com/g8rswimmer/go-twitter/v2"
 
@@ -37,7 +35,6 @@ func NewScorer(junoCfg config.Config) *Scorer {
 	}
 
 	if cfg == nil {
-		log.Info().Str("scorer", "twitter").Msg("no config set, skipping creation")
 		return nil
 	}
 
