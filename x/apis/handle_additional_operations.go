@@ -22,9 +22,11 @@ func (m Module) RunAdditionalOperations() error {
 	router.Use(m.Logger(), gin.Recovery(), cors.Default())
 
 	// Register the endpoints
-	err := m.registrar(m.ctx, router)
-	if err != nil {
-		panic(err)
+	if m.registrar != nil {
+		err := m.registrar(m.ctx, router)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// Build the HTTP server to be able to shut it down if needed
