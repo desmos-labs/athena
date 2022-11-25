@@ -1,4 +1,4 @@
-package profiles
+package posts
 
 import (
 	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"

@@ -1,7 +1,8 @@
-package profiles
+package reactions
 
 import (
 	"fmt"
+
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
