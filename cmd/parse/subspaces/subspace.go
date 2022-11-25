@@ -1,4 +1,4 @@
-package profiles
+package subspaces
 
 import (
 	"fmt"
@@ -61,48 +61,46 @@ func subspaceCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			// Refresh the subspace data
+			// Refresh x/subspace data
 			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing subspace")
 			err = subspacesModule.RefreshSubspaceData(height, subspaceID)
 			if err != nil {
 				return err
 			}
 
-			// Refresh the relationships data
+			// Refresh x/relationships data
 			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing relationships")
 			err = relationshipsModule.RefreshRelationshipsData(height, subspaceID)
 			if err != nil {
 				return err
 			}
 
-			// Refresh the registered reactions data
-			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing registered reactions")
-			err = reactionsModule.RefreshRegisteredReactionsData(height, subspaceID)
-			if err != nil {
-				return nil
-			}
-
-			// Refresh the reports data
-			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing reports reasons")
-			err = reportsModule.RefreshReasonsData(height, subspaceID)
+			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing user blocks")
+			err = relationshipsModule.RefreshUserBlocksData(height, subspaceID)
 			if err != nil {
 				return err
 			}
 
-			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing reports")
-			err = reportsModule.RefreshReportsData(height, subspaceID)
-			if err != nil {
-				return err
-			}
-
-			// Refresh posts related data
+			// Refresh x/posts data
 			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing posts")
 			err = postsModule.RefreshPostsData(height, subspaceID)
 			if err != nil {
 				return nil
 			}
 
-			// Refresh the reactions
+			// Refresh x/reactions data
+			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing reactions params")
+			err = reactionsModule.RefreshParamsData(height, subspaceID)
+			if err != nil {
+				return err
+			}
+
+			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing registered reactions")
+			err = reactionsModule.RefreshRegisteredReactionsData(height, subspaceID)
+			if err != nil {
+				return nil
+			}
+
 			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing reactions")
 			posts, err := postsModule.QuerySubspacePosts(height, subspaceID)
 			if err != nil {
@@ -116,7 +114,20 @@ func subspaceCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				}
 			}
 
-			// Refresh the smart contracts details
+			// Refresh x/reports data
+			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing reports reasons")
+			err = reportsModule.RefreshReasonsData(height, subspaceID)
+			if err != nil {
+				return err
+			}
+
+			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing reports")
+			err = reportsModule.RefreshReportsData(height, subspaceID)
+			if err != nil {
+				return err
+			}
+
+			// Refresh smart contracts details
 			log.Info().Int64("height", height).Uint64("subspace id", subspaceID).Msg("refreshing contracts")
 			err = contractsModule.RefreshData(height, subspaceID)
 			if err != nil {

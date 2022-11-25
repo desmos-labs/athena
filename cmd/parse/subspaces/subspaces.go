@@ -1,4 +1,4 @@
-package profiles
+package subspaces
 
 import (
 	"fmt"
