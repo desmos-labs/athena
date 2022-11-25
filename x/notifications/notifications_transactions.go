@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	juno "github.com/forbole/juno/v3/types"
+	juno "github.com/forbole/juno/v4/types"
 	"github.com/rs/zerolog/log"
 
 	"github.com/desmos-labs/djuno/v2/x/notifications/builder"

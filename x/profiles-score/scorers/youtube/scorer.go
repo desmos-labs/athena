@@ -8,7 +8,9 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
 
-	"github.com/forbole/juno/v3/types/config"
+	"github.com/rs/zerolog/log"
+
+	"github.com/forbole/juno/v4/types/config"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
@@ -35,6 +37,7 @@ func NewScorer(junoCfg config.Config) *Scorer {
 	}
 
 	if cfg == nil {
+		log.Info().Str("scorer", "youtube").Msg("no config set, skipping creation")
 		return nil
 	}
 

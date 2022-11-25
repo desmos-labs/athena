@@ -3,9 +3,9 @@ package database
 import (
 	"fmt"
 
-	junodb "github.com/forbole/juno/v3/database"
-	"github.com/forbole/juno/v3/database/postgresql"
-	juno "github.com/forbole/juno/v3/types"
+	junodb "github.com/forbole/juno/v4/database"
+	"github.com/forbole/juno/v4/database/postgresql"
+	juno "github.com/forbole/juno/v4/types"
 
 	"github.com/desmos-labs/djuno/v2/x/authz"
 	contracts "github.com/desmos-labs/djuno/v2/x/contracts/base"

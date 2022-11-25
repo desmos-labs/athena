@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/forbole/juno/v3/node/remote"
+	"github.com/forbole/juno/v4/node/remote"
 
 	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 

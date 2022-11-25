@@ -1,7 +1,7 @@
 package builder
 
 import (
-	"github.com/forbole/juno/v3/types/config"
+	"github.com/forbole/juno/v4/types/config"
 
 	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
 	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/domain"

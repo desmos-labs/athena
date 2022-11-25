@@ -1,8 +1,8 @@
 package apis
 
 import (
-	"github.com/forbole/juno/v3/modules"
-	"github.com/forbole/juno/v3/modules/registrar"
+	"github.com/forbole/juno/v4/modules"
+	"github.com/forbole/juno/v4/modules/registrar"
 )
 
 var (

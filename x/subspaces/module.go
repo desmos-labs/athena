@@ -2,8 +2,8 @@ package subspaces
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/forbole/juno/v3/modules"
-	"github.com/forbole/juno/v3/node"
+	"github.com/forbole/juno/v4/modules"
+	"github.com/forbole/juno/v4/node"
 	"google.golang.org/grpc"
 
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"

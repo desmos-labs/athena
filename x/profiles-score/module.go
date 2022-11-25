@@ -1,7 +1,7 @@
 package profilesscore
 
 import (
-	"github.com/forbole/juno/v3/modules"
+	"github.com/forbole/juno/v4/modules"
 )
 
 var (

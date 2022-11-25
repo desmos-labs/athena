@@ -3,9 +3,9 @@ package profiles
 import (
 	"fmt"
 
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
-	"github.com/forbole/juno/v3/node/remote"
-	"github.com/forbole/juno/v3/types/config"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
+	"github.com/forbole/juno/v4/node/remote"
+	"github.com/forbole/juno/v4/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 

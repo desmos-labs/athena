@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
-	juno "github.com/forbole/juno/v3/types"
+	juno "github.com/forbole/juno/v4/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

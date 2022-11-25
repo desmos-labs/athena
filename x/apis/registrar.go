@@ -1,7 +1,7 @@
 package apis
 
 import (
-	"github.com/forbole/juno/v3/modules/registrar"
+	"github.com/forbole/juno/v4/modules/registrar"
 	"github.com/gin-gonic/gin"
 
 	"github.com/desmos-labs/djuno/v2/x/apis/endpoints"

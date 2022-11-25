@@ -1,11 +1,11 @@
 package parse
 
 import (
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
 	"github.com/spf13/cobra"
 
-	parseblocks "github.com/forbole/juno/v3/cmd/parse/blocks"
-	parsegenesis "github.com/forbole/juno/v3/cmd/parse/genesis"
+	parseblocks "github.com/forbole/juno/v4/cmd/parse/blocks"
+	parsegenesis "github.com/forbole/juno/v4/cmd/parse/genesis"
 
 	parseauthz "github.com/desmos-labs/djuno/v2/cmd/parse/authz"
 	parsecontracts "github.com/desmos-labs/djuno/v2/cmd/parse/contracts"

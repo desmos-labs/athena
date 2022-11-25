@@ -2,12 +2,12 @@ package profiles
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/forbole/juno/v3/node"
+	"github.com/forbole/juno/v4/node"
 	"google.golang.org/grpc"
 
 	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
-	"github.com/forbole/juno/v3/modules"
+	"github.com/forbole/juno/v4/modules"
 )
 
 var (

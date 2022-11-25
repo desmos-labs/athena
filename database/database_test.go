@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	junodb "github.com/forbole/juno/v3/database"
-	junodbcfg "github.com/forbole/juno/v3/database/config"
-	"github.com/forbole/juno/v3/logging"
+	junodb "github.com/forbole/juno/v4/database"
+	junodbcfg "github.com/forbole/juno/v4/database/config"
+	"github.com/forbole/juno/v4/logging"
 
 	"github.com/stretchr/testify/suite"
 
