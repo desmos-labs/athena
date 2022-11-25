@@ -2,6 +2,7 @@ package profiles
 
 import (
 	"fmt"
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
 	"github.com/forbole/juno/v4/node/remote"
@@ -17,7 +18,8 @@ import (
 // paramsCmd returns a Cobra command that allows to refresh all the reactions params
 func paramsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 	return &cobra.Command{
-		Use:   "params",
+		Use:   "params [[subspace-id]]",
+		Args:  cobra.RangeArgs(0, 1),
 		Short: "Fetch all the reactions from the node and save them properly",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
@@ -44,15 +46,29 @@ func paramsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Get the subspaces
-			subspaces, err := subspacesModule.QueryAllSubspaces(height)
-			if err != nil {
-				return err
+			log.Debug().Int64("height", height).Msg("refreshing reactions params")
+
+			var subspaceIDs []uint64
+			if len(args) > 0 {
+				subspaceID, err := subspacestypes.ParseSubspaceID(args[0])
+				if err != nil {
+					return err
+				}
+				subspaceIDs = []uint64{subspaceID}
+			} else {
+				subs, err := subspacesModule.QueryAllSubspaces(height)
+				if err != nil {
+					return err
+				}
+
+				subspaceIDs = make([]uint64, len(subs))
+				for i, subspace := range subs {
+					subspaceIDs[i] = subspace.ID
+				}
 			}
 
-			for _, subspace := range subspaces {
-				log.Debug().Int64("height", height).Uint64("subspace", subspace.ID).Msg("refreshing params")
-
-				err = reactionsModule.RefreshParamsData(height, subspace.ID)
+			for _, subspaceID := range subspaceIDs {
+				err = reactionsModule.RefreshParamsData(height, subspaceID)
 				if err != nil {
 					return err
 				}
