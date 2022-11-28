@@ -2,6 +2,15 @@ table:
   schema: public
   name: application_link
 object_relationships:
+  - name: oracle_request
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: application_link_oracle_request
+        insertion_order: null
+        column_mapping:
+          id: application_link_id
   - name: profile
     using:
       foreign_key_constraint_on: user_address
@@ -12,14 +21,6 @@ object_relationships:
         table:
           schema: public
           name: application_link_score
-array_relationships:
-  - name: application_link_oracle_requests
-    using:
-      foreign_key_constraint_on:
-        column: application_link_id
-        table:
-          schema: public
-          name: application_link_oracle_request
 select_permissions:
   - role: anonymous
     permission:
