@@ -321,7 +321,7 @@ replace (
 
 	// The used branch is github.com/forbole/juno riccardom/prepare-v4
 	// TODO: Remove it once a tagged version is out
-	github.com/forbole/juno/v4 => github.com/forbole/juno/v4 v4.0.0-20221125171119-728e2aea9e45
+	github.com/forbole/juno/v4 => github.com/forbole/juno/v4 v4.0.0-20221129163335-f3d31c916e1b
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 )
