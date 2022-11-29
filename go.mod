@@ -5,14 +5,21 @@ go 1.18
 require (
 	firebase.google.com/go/v4 v4.10.0
 	github.com/CosmWasm/wasmd v0.23.1-0.20220303200417-f35a13fa1209
+	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
+	github.com/cosmos/cosmos-sdk v0.45.8
 	github.com/cosmos/ibc-go/v3 v3.3.0
 	github.com/desmos-labs/desmos/v4 v4.6.1
 	github.com/forbole/juno/v3 v3.4.0
+	github.com/g8rswimmer/go-twitter/v2 v2.1.4
 	github.com/go-co-op/gocron v1.18.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golangci/golangci-lint v1.50.1
+	github.com/google/go-github/v48 v48.1.0
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/lib/pq v1.10.7
+	github.com/likexian/whois v1.14.4
+	github.com/likexian/whois-parser v1.24.2
+	github.com/nicklaw5/helix v1.25.0
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cobra v1.6.1
@@ -21,17 +28,6 @@ require (
 	google.golang.org/api v0.103.0
 	google.golang.org/grpc v1.51.0
 	gopkg.in/yaml.v3 v3.0.1
-)
-
-require github.com/g8rswimmer/go-twitter/v2 v2.1.4
-
-require (
-	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
-	github.com/cosmos/cosmos-sdk v0.45.8
-	github.com/google/go-github/v48 v48.1.0
-	github.com/likexian/whois v1.14.4
-	github.com/likexian/whois-parser v1.24.2
-	github.com/nicklaw5/helix v1.25.0
 )
 
 require (
