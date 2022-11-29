@@ -7,7 +7,6 @@ import (
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/forbole/juno/v3/types/config"
 	"github.com/google/go-github/v48/github"
-	"github.com/rs/zerolog/log"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
@@ -36,7 +35,6 @@ func NewScorer(junoCfg config.Config) *Scorer {
 	}
 
 	if cfg == nil {
-		log.Info().Str("scorer", "github").Msg("no config set, skipping creation")
 		return nil
 	}
 
