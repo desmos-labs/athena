@@ -40,7 +40,7 @@ INSERT INTO fee_grant (granter_address, grantee_address, spend_limit, expiration
 VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT ON CONSTRAINT unique_fee_grant DO UPDATE 
     SET granter_address = excluded.granter_address,
-        grantee_address = excluded.granter_address,
+        grantee_address = excluded.grantee_address,
         spend_limit = excluded.spend_limit,
         expiration_date = excluded.expiration_date,
         allowance = excluded.allowance,
