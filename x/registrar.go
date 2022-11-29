@@ -27,7 +27,6 @@ import (
 	"github.com/forbole/juno/v4/modules"
 	"github.com/forbole/juno/v4/modules/registrar"
 	"github.com/forbole/juno/v4/modules/telemetry"
-	"github.com/forbole/juno/v4/node/builder"
 	"github.com/forbole/juno/v4/node/remote"
 )
 
@@ -86,31 +85,26 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		panic(fmt.Errorf("cannot run DJuno on local node"))
 	}
 
-	node, err := builder.BuildNode(ctx.JunoConfig.Node, ctx.EncodingConfig)
-	if err != nil {
-		panic(fmt.Errorf("cannot build node: %s", err))
-	}
-
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 
 	// Juno modules
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
 	// DJuno modules
-	apisModule := apis.NewModule(ctx, r.options.GetAPIsRegistrar())
-	authzModule := authz.NewModule(node, cdc, djunoDb)
-	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, node, grpcConnection, djunoDb)
-	feegrantModule := feegrant.NewModule(node, cdc, djunoDb)
-	feesModule := fees.NewModule(node, grpcConnection, cdc, djunoDb)
-	postsModule := posts.NewModule(node, grpcConnection, cdc, djunoDb)
-	profilesModule := profiles.NewModule(node, grpcConnection, cdc, djunoDb)
+	apisModule := apis.NewModule(apis.NewContext(ctx, grpcConnection), r.options.GetAPIsRegistrar())
+	authzModule := authz.NewModule(ctx.Proxy, cdc, djunoDb)
+	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, djunoDb)
+	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, djunoDb)
+	feesModule := fees.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
+	postsModule := posts.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
+	profilesModule := profiles.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, djunoDb)
-	reactionsModule := reactions.NewModule(node, grpcConnection, cdc, djunoDb)
+	reactionsModule := reactions.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, djunoDb)
-	reportsModule := reports.NewModule(node, grpcConnection, cdc, djunoDb)
-	subspacesModule := subspaces.NewModule(node, grpcConnection, cdc, djunoDb)
+	reportsModule := reports.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
+	subspacesModule := subspaces.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 
-	context := notificationscontext.NewContext(ctx, node, grpcConnection)
+	context := notificationscontext.NewContext(ctx, ctx.Proxy, grpcConnection)
 	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb).
 		WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context)).
 		WithFirebaseMessageBuilder(r.options.CreateFirebaseMessageBuilder(context))
