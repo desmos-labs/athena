@@ -29,7 +29,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 	switch desmosMsg := msg.(type) {
 	case *wasmtypes.MsgInstantiateContract:
-		return m.handleMsgInstantiateContract(tx, index, desmosMsg)
+		return m.handleMsgInstantiateContract(tx, index)
 	case *wasmtypes.MsgExecuteContract:
 		return m.handleMsgExecuteContract(tx, desmosMsg)
 	}
@@ -40,23 +40,23 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 // --------------------------------------------------------------------------------------------------------------------
 
 // handleMsgInstantiateContract handles a MsgInstantiateContract instance by refreshing the stored tips contracts
-func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmtypes.MsgInstantiateContract) error {
-	// Skip the contracts that have a different code id
-	if msg.CodeID != m.cfg.CodeID {
-		return nil
-	}
-
-	// Store the contract base data
-	err := m.base.HandleMsgInstantiateContract(tx, index, types.ContractTypeTips)
-	if err != nil {
-		return err
-	}
-
+func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int) error {
 	// Refresh the configuration
 	address, err := m.base.ParseContractAddress(tx, index)
 	if err != nil {
 		return err
 	}
+
+	if !m.cfg.IsContractSupported(address) {
+		return nil
+	}
+
+	// Store the contract base data
+	err = m.base.HandleMsgInstantiateContract(tx, index, types.ContractTypeTips)
+	if err != nil {
+		return err
+	}
+
 	return m.refreshContractConfig(tx.Height, address)
 }
 
@@ -64,6 +64,10 @@ func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmt
 
 // handleMsgExecuteContract handles a MsgExecuteContract that contains a send_tip message by storing the tip details
 func (m *Module) handleMsgExecuteContract(tx *juno.Tx, msg *wasmtypes.MsgExecuteContract) error {
+	if !m.cfg.IsContractSupported(msg.Contract) {
+		return nil
+	}
+
 	msgSendTip, ok := utils.IsMsgSendTip(msg)
 	if !ok {
 		return nil

@@ -1,19 +1,15 @@
 package tips
 
 import (
-	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sort"
 
-	"github.com/cosmos/cosmos-sdk/types/query"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
-	"github.com/forbole/juno/v4/node/remote"
-
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	"github.com/desmos-labs/djuno/v2/utils"
@@ -21,81 +17,56 @@ import (
 
 // RefreshData refreshes the data related to the tips contract for the given subspace, if any
 func (m *Module) RefreshData(height int64, subspaceID uint64) error {
-	contractAddress, err := m.getContractAddress(height, subspaceID)
-	if err != nil {
-		return err
+	for _, contractAddress := range m.cfg.Addresses {
+		isSubspaceContract, err := m.isSubspaceContract(height, subspaceID, contractAddress)
+		if err != nil {
+			return err
+		}
+
+		if !isSubspaceContract {
+			continue
+		}
+
+		// Get the contract config
+		config, err := m.getContractConfig(height, contractAddress)
+		if err != nil {
+			return err
+		}
+
+		configBz, err := json.Marshal(&config)
+		if err != nil {
+			return err
+		}
+
+		// Store the contract
+		err = m.db.SaveContract(types.NewContract(contractAddress, types.ContractTypeTips, configBz, height))
+		if err != nil {
+			return err
+		}
+
+		// Refresh the tips data
+		err = m.refreshTips(height, contractAddress)
+		if err != nil {
+			return err
+		}
 	}
 
-	// Make sure there is a contract for this subspace
-	if contractAddress == "" {
-		return nil
-	}
-
-	// Get the contract config
-	config, err := m.getContractConfig(height, contractAddress)
-	if err != nil {
-		return err
-	}
-
-	configBz, err := json.Marshal(&config)
-	if err != nil {
-		return err
-	}
-
-	// Store the contract
-	err = m.db.SaveContract(types.NewContract(contractAddress, types.ContractTypeTips, configBz, height))
-	if err != nil {
-		return err
-	}
-
-	// Refresh the tips data
-	return m.refreshTips(height, contractAddress)
+	return nil
 }
 
-// getContractAddress returns the tips contract address for the given subspace at the provided height
-func (m *Module) getContractAddress(height int64, subspaceID uint64) (string, error) {
-	// Get all the contracts that match the given code
-	var stop = false
-	var nextKey []byte
-	var contractAddresses []string
-	for !stop {
-		res, err := m.wasmClient.ContractsByCode(
-			remote.GetHeightRequestContext(context.Background(), height),
-			&wasmtypes.QueryContractsByCodeRequest{
-				CodeId: m.cfg.CodeID,
-				Pagination: &query.PageRequest{
-					Limit: 100,
-					Key:   nextKey,
-				},
-			},
-		)
-		if err != nil {
-			return "", err
-		}
-
-		nextKey = res.Pagination.NextKey
-		stop = nextKey == nil
-		contractAddresses = append(contractAddresses, res.Contracts...)
+// isSubspaceContract tells whether the contract having the given address is related to the provided subspace
+func (m *Module) isSubspaceContract(height int64, subspaceID uint64, contractAddress string) (bool, error) {
+	config, err := m.getContractConfig(height, contractAddress)
+	if err != nil {
+		return false, err
 	}
 
-	// Search among the contracts addresses, the one for the given subspace
-	for _, address := range contractAddresses {
-		config, err := m.getContractConfig(height, address)
-		if err != nil {
-			return "", err
-		}
-
-		contractSubspaceID, err := subspacestypes.ParseSubspaceID(config.SubspaceID)
-		if err != nil {
-			return "", err
-		}
-
-		if contractSubspaceID == subspaceID {
-			return address, nil
-		}
+	contractSubspaceID, err := subspacestypes.ParseSubspaceID(config.SubspaceID)
+	if err != nil {
+		return false, err
 	}
 
-	return "", nil
+	return contractSubspaceID == subspaceID, nil
 }
 
 // refreshContractConfig refreshes the configuration for the contract having the given address at the provided height
