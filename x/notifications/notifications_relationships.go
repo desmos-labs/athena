@@ -30,5 +30,5 @@ func (m *Module) SendRelationshipNotifications(relationship types.Relationship) 
 
 	log.Debug().Str("module", m.Name()).Str("recipient", relationship.Counterparty).
 		Str("notification type", notificationsbuilder.TypeFollow).Msg("sending notification")
-	return m.sendNotification(relationship.Counterparty, data.Notification, data.Data)
+	return m.SendNotification(relationship.Counterparty, data.Notification, data.Data)
 }

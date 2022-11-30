@@ -107,9 +107,9 @@ func (m *Module) WithFirebaseMessageBuilder(builder messagebuilder.FirebaseMessa
 	return m
 }
 
-// sendNotification allows to send to the devices subscribing to the specific topic a message
+// SendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
-func (m *Module) sendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
+func (m *Module) SendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
 	// Set the default Flutter click action
 	data[notificationsbuilder.ClickActionKey] = notificationsbuilder.ClickActionValue
 
