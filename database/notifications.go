@@ -30,12 +30,7 @@ WHERE notification.timestamp <= excluded.timestamp`
 func (db *Db) SaveToken(token types.NotificationToken) error {
 	stmt := `
 INSERT INTO notification_token (user_address, device_token, timestamp)
-VALUES ($1, $2, $3)
-ON CONFLICT (device_token) DO UPDATE 
-    SET user_address = excluded.user_address,
-        device_token = excluded.device_token,
-        timestamp = excluded.timestamp
-WHERE notification_token.timestamp <= excluded.timestamp`
+VALUES ($1, $2, $3)`
 	_, err := db.SQL.Exec(stmt, token.UserAddress, token.Token, token.Timestamp)
 	return err
 }

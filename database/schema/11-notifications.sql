@@ -10,6 +10,6 @@ CREATE TABLE notification
 CREATE TABLE notification_token
 (
     user_address TEXT                        NOT NULL,
-    device_token TEXT                        NOT NULL PRIMARY KEY,
+    device_token TEXT                        NOT NULL,
     timestamp    TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
