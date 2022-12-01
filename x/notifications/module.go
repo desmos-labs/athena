@@ -112,6 +112,7 @@ func (m *Module) WithFirebaseMessageBuilder(builder messagebuilder.FirebaseMessa
 func (m *Module) SendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
 	// Set the default Flutter click action
 	data[notificationsbuilder.ClickActionKey] = notificationsbuilder.ClickActionValue
+	data[notificationsbuilder.RecipientKey] = recipient
 
 	// Build the Android config
 	var androidConfig *messaging.AndroidConfig
