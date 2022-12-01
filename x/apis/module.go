@@ -9,14 +9,15 @@ var (
 	_ modules.AdditionalOperationsModule = &Module{}
 )
 
-// Module represnets the module allowing to register custom API endpoints
+// Module represents the module allowing to register custom API endpoints
 type Module struct {
-	ctx       Context
-	cfg       *Config
-	registrar Registrar
+	ctx          Context
+	cfg          *Config
+	registrar    Registrar
+	configurator Configurator
 }
 
-func NewModule(ctx Context, registrar Registrar) *Module {
+func NewModule(ctx Context) *Module {
 	cfgBz, err := ctx.JunoConfig.GetBytes()
 	if err != nil {
 		panic(err)
@@ -27,12 +28,23 @@ func NewModule(ctx Context, registrar Registrar) *Module {
 	}
 
 	return &Module{
-		ctx:       ctx,
-		cfg:       cfg,
-		registrar: registrar,
+		ctx: ctx,
+		cfg: cfg,
 	}
 }
 
-func (m Module) Name() string {
+// WithRegistrar allows setting the APIs registrar to be used
+func (m *Module) WithRegistrar(registrar Registrar) *Module {
+	m.registrar = registrar
+	return m
+}
+
+// WithConfigurator allows setting the configurator to be used
+func (m *Module) WithConfigurator(configurator Configurator) *Module {
+	m.configurator = configurator
+	return m
+}
+
+func (m *Module) Name() string {
 	return "apis"
 }

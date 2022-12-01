@@ -16,7 +16,7 @@ import (
 )
 
 // RunAdditionalOperations implements modules.AdditionalOperationsModule
-func (m Module) RunAdditionalOperations() error {
+func (m *Module) RunAdditionalOperations() error {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(m.Logger(), gin.Recovery(), cors.Default())
@@ -34,6 +34,13 @@ func (m Module) RunAdditionalOperations() error {
 		Addr:              fmt.Sprintf("%s:%d", m.cfg.Address, m.cfg.Port),
 		Handler:           router,
 		ReadHeaderTimeout: time.Minute,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+	}
+
+	// Run the configurator, if set
+	if m.configurator != nil {
+		m.configurator(router, httpServer)
 	}
 
 	// Listen for and trap any OS signal to gracefully shutdown and exit
@@ -48,7 +55,7 @@ func (m Module) RunAdditionalOperations() error {
 }
 
 // Logger returns a Gin Handler function that logs endpoint calls using ZeroLog
-func (m Module) Logger() gin.HandlerFunc {
+func (m *Module) Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 		log.Debug().Str("module", "apis").Str("path", c.Request.URL.Path).Msg("received request")
@@ -56,7 +63,7 @@ func (m Module) Logger() gin.HandlerFunc {
 }
 
 // trapSignal traps the stops signals to gracefully shut down the server
-func (m Module) trapSignal(httpServer *http.Server) {
+func (m *Module) trapSignal(httpServer *http.Server) {
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)
@@ -81,7 +88,7 @@ func (m Module) trapSignal(httpServer *http.Server) {
 }
 
 // startServer starts the API server
-func (m Module) startServer(httpServer *http.Server) {
+func (m *Module) startServer(httpServer *http.Server) {
 	err := httpServer.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		panic(err)

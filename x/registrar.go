@@ -34,6 +34,7 @@ type RegistrarOptions struct {
 	NotificationsBuilderCreator   notificationsbuilder.NotificationsBuilderCreator
 	FirebaseMessageBuilderCreator messagebuilder.FirebaseMessageBuilderCreator
 	APIsRegistrar                 apis.Registrar
+	APIsConfigurator              apis.Configurator
 }
 
 func (o RegistrarOptions) CreateNotificationsBuilder(context notificationscontext.Context) notificationsbuilder.NotificationsBuilder {
@@ -55,6 +56,10 @@ func (o RegistrarOptions) GetAPIsRegistrar() apis.Registrar {
 		return o.APIsRegistrar
 	}
 	return apis.DefaultRegistrar
+}
+
+func (o RegistrarOptions) GetAPIsConfigurator() apis.Configurator {
+	return o.APIsConfigurator
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -91,7 +96,10 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
 	// DJuno modules
-	apisModule := apis.NewModule(apis.NewContext(ctx, grpcConnection), r.options.GetAPIsRegistrar())
+	apisModule := apis.NewModule(apis.NewContext(ctx, grpcConnection)).
+		WithRegistrar(r.options.GetAPIsRegistrar()).
+		WithConfigurator(r.options.GetAPIsConfigurator())
+
 	authzModule := authz.NewModule(ctx.Proxy, cdc, djunoDb)
 	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, djunoDb)
 	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, djunoDb)
