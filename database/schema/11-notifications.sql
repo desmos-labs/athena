@@ -11,5 +11,6 @@ CREATE TABLE notification_token
 (
     user_address TEXT                        NOT NULL,
     device_token TEXT                        NOT NULL,
-    timestamp    TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    timestamp    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    CONSTRAINT unique_notification_token UNIQUE (user_address, device_token)
 );
