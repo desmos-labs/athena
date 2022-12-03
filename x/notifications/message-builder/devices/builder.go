@@ -38,6 +38,10 @@ func (b *MessageBuilder) BuildMessage(recipient string, config *messagebuilder.M
 		tokensValues[i] = token.Token
 	}
 
+	if len(tokensValues) == 0 {
+		return nil, nil
+	}
+
 	return types.NewMultiNotificationMessage(&messaging.MulticastMessage{
 		Tokens:       tokensValues,
 		Data:         config.Data,
