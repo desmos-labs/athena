@@ -144,7 +144,7 @@ func (m *Module) SendNotification(recipient string, notification *messaging.Noti
 		_, err = m.client.SendMulticast(ctx, notificationMessage.MulticastMessage)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("error while sending notification: %s", err)
 	}
 
 	// Store the notification (if enabled)
