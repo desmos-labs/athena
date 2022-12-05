@@ -12,7 +12,8 @@ VALUES ($1, $2, $3, $4)
 ON CONFLICT ON CONSTRAINT unique_relationship DO UPDATE 
     SET creator_address = excluded.creator_address,
 		counterparty_address = excluded.counterparty_address,
-		subspace_id = excluded.subspace_id
+		subspace_id = excluded.subspace_id,
+		height = excluded.height
 WHERE user_relationship.height <= excluded.height`
 	_, err := db.SQL.Exec(stmt, relationship.Creator, relationship.Counterparty, relationship.SubspaceID, relationship.Height)
 	return err
