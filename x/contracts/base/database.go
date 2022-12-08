@@ -6,4 +6,5 @@ import (
 
 type Database interface {
 	SaveContract(contract types.Contract) error
+	GetContract(address string) (*types.Contract, error)
 }
