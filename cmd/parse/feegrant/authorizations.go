@@ -35,7 +35,7 @@ func allowancesCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Refresh the authorizations
-			log.Info().Int64("height", height).Msg("refreshing allowances")
+			log.Info().Int64("height", height).Msg("refreshing fee grant allowances")
 			return feegrantModule.RefreshFeeGrants(height)
 		},
 	}

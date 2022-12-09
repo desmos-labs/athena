@@ -2,6 +2,7 @@ package profiles
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/forbole/juno/v4/node"
 	"google.golang.org/grpc"
 
@@ -20,19 +21,21 @@ var (
 
 // Module represents the x/profiles module handler
 type Module struct {
-	cdc    codec.Codec
-	db     Database
-	node   node.Node
-	client profilestypes.QueryClient
+	cdc            codec.Codec
+	db             Database
+	node           node.Node
+	authClient     authtypes.QueryClient
+	profilesClient profilestypes.QueryClient
 }
 
 // NewModule allows to build a new Module instance
 func NewModule(node node.Node, grpcConnection *grpc.ClientConn, cdc codec.Codec, db Database) *Module {
 	return &Module{
-		cdc:    cdc,
-		db:     db,
-		node:   node,
-		client: profilestypes.NewQueryClient(grpcConnection),
+		cdc:            cdc,
+		db:             db,
+		node:           node,
+		authClient:     authtypes.NewQueryClient(grpcConnection),
+		profilesClient: profilestypes.NewQueryClient(grpcConnection),
 	}
 }
 

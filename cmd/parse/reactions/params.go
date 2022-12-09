@@ -47,7 +47,7 @@ func paramsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Get the subspaces
-			log.Debug().Int64("height", height).Msg("refreshing reactions params")
+			log.Info().Int64("height", height).Msg("refreshing reactions params")
 
 			var subspaceIDs []uint64
 			if len(args) > 0 {

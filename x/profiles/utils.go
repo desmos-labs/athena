@@ -54,7 +54,7 @@ func (m *Module) queryAllUserChainLinks(height int64, address string) ([]types.C
 	var nextKey []byte
 	var stop = false
 	for !stop {
-		res, err := m.client.ChainLinks(
+		res, err := m.profilesClient.ChainLinks(
 			remote.GetHeightRequestContext(context.Background(), height),
 			&profilestypes.QueryChainLinksRequest{
 				User: address,
@@ -104,7 +104,7 @@ func (m *Module) queryAllUserDefaultChainLinks(height int64, address string) ([]
 	var nextKey []byte
 	var stop = false
 	for !stop {
-		res, err := m.client.DefaultExternalAddresses(
+		res, err := m.profilesClient.DefaultExternalAddresses(
 			remote.GetHeightRequestContext(context.Background(), height),
 			&profilestypes.QueryDefaultExternalAddressesRequest{
 				Owner: address,
@@ -154,7 +154,7 @@ func (m *Module) queryAllUserApplicationLinks(height int64, address string) ([]t
 	var nextKey []byte
 	var stop = false
 	for !stop {
-		res, err := m.client.ApplicationLinks(
+		res, err := m.profilesClient.ApplicationLinks(
 			remote.GetHeightRequestContext(context.Background(), height),
 			&profilestypes.QueryApplicationLinksRequest{
 				User: address,
@@ -187,7 +187,7 @@ func (m *Module) updateParams() error {
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}
 
-	res, err := m.client.Params(
+	res, err := m.profilesClient.Params(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&profilestypes.QueryParamsRequest{},
 	)
