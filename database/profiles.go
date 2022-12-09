@@ -7,8 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/rs/zerolog/log"
-
 	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
@@ -72,8 +70,6 @@ func (db *Db) GetUserByAddress(address string) (*profilestypes.Profile, error) {
 // SaveProfile saves the given profile into the database, replacing any existing info.
 // Returns the inserted row or an error if something goes wrong.
 func (db *Db) SaveProfile(profile *types.Profile) error {
-	log.Info().Str("dtag", profile.DTag).Msg("saving profile")
-
 	stmt := `
 INSERT INTO profile (address, nickname, dtag, bio, profile_pic, cover_pic, creation_time, height) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
@@ -99,8 +95,6 @@ WHERE profile.height <= excluded.height`
 
 // DeleteProfile allows to delete the profile of the user having the given address
 func (db *Db) DeleteProfile(address string, height int64) error {
-	log.Info().Str("address", address).Msg("deleting profile")
-
 	stmt := `DELETE FROM profile WHERE address = $1 AND height <= $2`
 	_, err := db.SQL.Exec(stmt, address, height)
 	return err
@@ -151,8 +145,6 @@ func (db *Db) SaveChainLink(link types.ChainLink) error {
 	if err != nil {
 		return fmt.Errorf("error while reading link address as AddressData: %s", err)
 	}
-
-	log.Info().Str("user", link.User).Str("address", address.GetValue()).Msg("saving chain link")
 
 	// Insert the chain config
 	chainConfigID, err := db.saveChainLinkChainConfig(link.ChainConfig)
@@ -284,8 +276,6 @@ WHERE default_chain_link.height <= excluded.height`
 // DeleteChainLink removes from the database the chain link made for the given user and having the provided
 // external address and linked to the chain with the given name
 func (db *Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
-	log.Info().Str("user", user).Str("address", externalAddress).Msg("deleting chain link")
-
 	stmt := `
 DELETE FROM chain_link 
 WHERE user_address = $1 
@@ -320,9 +310,6 @@ func (db *Db) getApplicationLinkRowID(address string, application string, userna
 
 // SaveApplicationLink stores the given application link inside the database
 func (db *Db) SaveApplicationLink(link types.ApplicationLink) error {
-	log.Info().Str("user", link.User).Str("app", link.Data.Application).
-		Str("username", link.Data.Username).Msg("saving app link")
-
 	// Save the link
 	stmt := `
 INSERT INTO application_link (user_address, application, username, state, result, creation_time, expiration_time, height) 
@@ -417,8 +404,6 @@ func (db *Db) GetApplicationLinkInfos() ([]types.ApplicationLinkInfo, error) {
 // DeleteApplicationLink allows to delete the application link associated to the given user,
 // having the given application and username values
 func (db *Db) DeleteApplicationLink(user, application, username string, height int64) error {
-	log.Info().Str("user", user).Str("app", application).Str("username", username).Msg("deleting app link")
-
 	stmt := `
 DELETE FROM application_link 
 WHERE user_address = $1 
