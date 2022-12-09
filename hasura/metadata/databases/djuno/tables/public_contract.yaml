@@ -1,11 +1,12 @@
 table:
-  schema: public
   name: contract
+  schema: public
 select_permissions:
   - role: anonymous
     permission:
       columns:
         - address
+        - config
         - type
       filter: {}
       limit: 50

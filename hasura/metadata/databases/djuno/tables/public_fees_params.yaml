@@ -1,0 +1,10 @@
+table:
+  name: fees_params
+  schema: public
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - params
+      filter: {}
+      limit: 1

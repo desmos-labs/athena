@@ -10,6 +10,7 @@
 - "!include public_default_chain_link.yaml"
 - "!include public_dtag_transfer_requests.yaml"
 - "!include public_fee_grant.yaml"
+- "!include public_fees_params.yaml"
 - "!include public_notification.yaml"
 - "!include public_poll_answer.yaml"
 - "!include public_post.yaml"

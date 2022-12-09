@@ -14,10 +14,10 @@ var (
 )
 
 type DefaultReactionsNotificationsBuilder struct {
-	m notificationsbuilder.UtilityModule
+	m UtilityModule
 }
 
-func NewDefaultReactionsNotificationsBuilder(utilityModule notificationsbuilder.UtilityModule) *DefaultReactionsNotificationsBuilder {
+func NewDefaultReactionsNotificationsBuilder(utilityModule UtilityModule) *DefaultReactionsNotificationsBuilder {
 	return &DefaultReactionsNotificationsBuilder{
 		m: utilityModule,
 	}

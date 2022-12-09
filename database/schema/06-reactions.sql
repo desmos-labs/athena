@@ -8,7 +8,7 @@ CREATE TABLE reaction
     value          JSONB  NOT NULL,
     author_address TEXT   NOT NULL,
     height         BIGINT NOT NULL,
-    CONSTRAINT unique_post_reaction UNIQUE (post_row_id, id)
+    CONSTRAINT unique_post_reaction UNIQUE (post_row_id, value, author_address)
 );
 
 CREATE TABLE subspace_registered_reaction

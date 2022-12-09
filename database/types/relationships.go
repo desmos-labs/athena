@@ -2,6 +2,7 @@ package types
 
 // RelationshipRow represents a database row containing the data of a relationship between two users
 type RelationshipRow struct {
+	RowID        uint64 `db:"row_id"`
 	Creator      string `db:"creator_address"`
 	Counterparty string `db:"counterparty_address"`
 	Subspace     uint64 `db:"subspace_id"`

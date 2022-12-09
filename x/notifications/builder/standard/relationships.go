@@ -14,10 +14,10 @@ var (
 )
 
 type DefaultRelationshipsNotificationsBuilder struct {
-	m notificationsbuilder.UtilityModule
+	m UtilityModule
 }
 
-func NewDefaultRelationshipsNotificationsBuilder(utilityModule notificationsbuilder.UtilityModule) *DefaultRelationshipsNotificationsBuilder {
+func NewDefaultRelationshipsNotificationsBuilder(utilityModule UtilityModule) *DefaultRelationshipsNotificationsBuilder {
 	return &DefaultRelationshipsNotificationsBuilder{
 		m: utilityModule,
 	}

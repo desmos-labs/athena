@@ -1,8 +1,8 @@
 package authz
 
 import (
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
-	"github.com/forbole/juno/v3/types/config"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
+	"github.com/forbole/juno/v4/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
@@ -34,7 +34,7 @@ func authorizationsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Refresh the authorizations
-			log.Info().Int64("height", height).Msg("refreshing authorizations")
+			log.Info().Int64("height", height).Msg("refreshing authz authorizations")
 			return authzModule.RefreshAuthorizations(height)
 		},
 	}

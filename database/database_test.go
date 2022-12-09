@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	junodb "github.com/forbole/juno/v3/database"
-	junodbcfg "github.com/forbole/juno/v3/database/config"
-	"github.com/forbole/juno/v3/logging"
+	junodb "github.com/forbole/juno/v4/database"
+	junodbcfg "github.com/forbole/juno/v4/database/config"
+	"github.com/forbole/juno/v4/logging"
 
 	"github.com/stretchr/testify/suite"
 
@@ -31,13 +31,7 @@ func (suite *DbTestSuite) SetupTest() {
 	// Build the database
 	encodingConfig := desmosapp.MakeTestEncodingConfig()
 	databaseConfig := junodbcfg.NewDatabaseConfig(
-		"djuno",
-		"localhost",
-		6432,
-		"djuno",
-		"password",
-		"",
-		"public",
+		"postgres://djuno:password@localhost:6432/djuno?sslmode=disable&search_path=public",
 		10,
 		10,
 		0,
@@ -51,11 +45,11 @@ func (suite *DbTestSuite) SetupTest() {
 	suite.Require().True(ok)
 
 	// Delete the public schema
-	_, err = desmosDb.SQL.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.Schema))
+	_, err = desmosDb.SQL.Exec(fmt.Sprintf(`DROP SCHEMA %s CASCADE;`, databaseConfig.GetSchema()))
 	suite.Require().NoError(err)
 
 	// Re-create the schema
-	_, err = desmosDb.SQL.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.Schema))
+	_, err = desmosDb.SQL.Exec(fmt.Sprintf(`CREATE SCHEMA %s;`, databaseConfig.GetSchema()))
 	suite.Require().NoError(err)
 
 	dirPath := "schema"

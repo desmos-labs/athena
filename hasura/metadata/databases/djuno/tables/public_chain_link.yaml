@@ -1,30 +1,36 @@
 table:
-  schema: public
   name: chain_link
+  schema: public
 object_relationships:
   - name: chain_config
     using:
       foreign_key_constraint_on: chain_config_id
   - name: profile
     using:
-      foreign_key_constraint_on: user_address
+      manual_configuration:
+        column_mapping:
+          user_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
   - name: proof
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: chain_link_proof
-        insertion_order: null
         column_mapping:
           id: chain_link_id
+        insertion_order: null
+        remote_table:
+          name: chain_link_proof
+          schema: public
 array_relationships:
   - name: chain_link_proofs
     using:
       foreign_key_constraint_on:
         column: chain_link_id
         table:
-          schema: public
           name: chain_link_proof
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

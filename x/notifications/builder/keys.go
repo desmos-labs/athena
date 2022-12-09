@@ -4,6 +4,7 @@ const (
 	NotificationTypeKey    = "type"
 	TransactionHashKey     = "tx_hash"
 	TransactionErrorKey    = "tx_error"
+	RecipientKey           = "recipient"
 	SubspaceIDKey          = "subspace_id"
 	RelationshipCreatorKey = "relationship_creator"
 	PostIDKey              = "post_id"

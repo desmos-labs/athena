@@ -2,18 +2,19 @@ package notifications
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	messagebuilder "github.com/desmos-labs/djuno/v2/x/notifications/message-builder"
 
 	"github.com/desmos-labs/djuno/v2/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/desmos-labs/djuno/v2/database"
-
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
-	"github.com/forbole/juno/v3/modules"
-	"github.com/forbole/juno/v3/types/config"
+	"github.com/forbole/juno/v4/modules"
+	"github.com/forbole/juno/v4/types/config"
 	"google.golang.org/api/option"
 
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
@@ -27,7 +28,7 @@ var (
 
 type Module struct {
 	cdc codec.Codec
-	db  *database.Db
+	db  Database
 
 	cfg    *Config
 	app    *firebase.App
@@ -36,11 +37,16 @@ type Module struct {
 	postsModule     PostsModule
 	reactionsModule ReactionsModule
 
-	builder notificationsbuilder.NotificationsBuilder
+	notificationBuilder notificationsbuilder.NotificationsBuilder
+	messageBuilder      messagebuilder.FirebaseMessageBuilder
 }
 
 // NewModule returns a new Module instance
-func NewModule(junoCfg config.Config, postsModule PostsModule, reactionsModule ReactionsModule, cdc codec.Codec, db *database.Db) *Module {
+func NewModule(
+	junoCfg config.Config,
+	postsModule PostsModule, reactionsModule ReactionsModule,
+	cdc codec.Codec, db Database,
+) *Module {
 	bz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -87,15 +93,26 @@ func (m *Module) Name() string {
 
 // WithNotificationsBuilder sets the given builder as the notifications builder
 func (m *Module) WithNotificationsBuilder(builder notificationsbuilder.NotificationsBuilder) *Module {
-	m.builder = builder
+	if builder != nil {
+		m.notificationBuilder = builder
+	}
 	return m
 }
 
-// sendNotification allows to send to the devices subscribing to the specific topic a message
+// WithFirebaseMessageBuilder sets the given builder as the Firebase message builder
+func (m *Module) WithFirebaseMessageBuilder(builder messagebuilder.FirebaseMessageBuilder) *Module {
+	if builder != nil {
+		m.messageBuilder = builder
+	}
+	return m
+}
+
+// SendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
-func (m *Module) sendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
+func (m *Module) SendNotification(recipient string, notification *messaging.Notification, data map[string]string) error {
 	// Set the default Flutter click action
 	data[notificationsbuilder.ClickActionKey] = notificationsbuilder.ClickActionValue
+	data[notificationsbuilder.RecipientKey] = recipient
 
 	// Build the Android config
 	var androidConfig *messaging.AndroidConfig
@@ -106,20 +123,28 @@ func (m *Module) sendNotification(recipient string, notification *messaging.Noti
 	}
 
 	// Build the message
-	message := messaging.Message{
+	message, err := m.messageBuilder.BuildMessage(recipient, &messagebuilder.MessageConfig{
 		Data:         data,
 		Notification: notification,
 		Android:      androidConfig,
-		Topic:        recipient,
+	})
+	if err != nil {
+		return fmt.Errorf("error while building notification message: %s", err)
 	}
 
+	// Context with 5 seconds to send the notification
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Send the message
-	_, err := m.client.Send(ctx, &message)
+	switch notificationMessage := message.(type) {
+	case *types.SingleNotificationMessage:
+		_, err = m.client.Send(ctx, notificationMessage.Message)
+	case *types.MultiNotificationMessage:
+		_, err = m.client.SendMulticast(ctx, notificationMessage.MulticastMessage)
+	}
 	if err != nil {
-		return err
+		return fmt.Errorf("error while sending notification: %s", err)
 	}
 
 	// Store the notification (if enabled)

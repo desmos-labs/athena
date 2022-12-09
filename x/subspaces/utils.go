@@ -3,7 +3,7 @@ package subspaces
 import (
 	"context"
 
-	"github.com/forbole/juno/v3/node/remote"
+	"github.com/forbole/juno/v4/node/remote"
 
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
 

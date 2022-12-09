@@ -3,9 +3,47 @@ package database
 import (
 	"fmt"
 
-	"github.com/forbole/juno/v3/database"
-	"github.com/forbole/juno/v3/database/postgresql"
-	juno "github.com/forbole/juno/v3/types"
+	junodb "github.com/forbole/juno/v4/database"
+	"github.com/forbole/juno/v4/database/postgresql"
+	juno "github.com/forbole/juno/v4/types"
+
+	"github.com/desmos-labs/djuno/v2/x/authz"
+	contracts "github.com/desmos-labs/djuno/v2/x/contracts/base"
+	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
+	"github.com/desmos-labs/djuno/v2/x/feegrant"
+	"github.com/desmos-labs/djuno/v2/x/fees"
+	"github.com/desmos-labs/djuno/v2/x/notifications"
+	"github.com/desmos-labs/djuno/v2/x/posts"
+	"github.com/desmos-labs/djuno/v2/x/profiles"
+	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
+	"github.com/desmos-labs/djuno/v2/x/reactions"
+	"github.com/desmos-labs/djuno/v2/x/relationships"
+	"github.com/desmos-labs/djuno/v2/x/reports"
+	"github.com/desmos-labs/djuno/v2/x/subspaces"
+)
+
+type Database interface {
+	junodb.Database
+
+	authz.Database
+	contracts.Database
+	tips.Database
+	feegrant.Database
+	fees.Database
+	notifications.Database
+	posts.Database
+	profiles.Database
+	profilesscore.Database
+	reactions.Database
+	relationships.Database
+	reports.Database
+	subspaces.Database
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+var (
+	_ Database = &Db{}
 )
 
 // Db represents a PostgreSQL database with expanded features.
@@ -14,17 +52,8 @@ type Db struct {
 	*postgresql.Database
 }
 
-// Cast casts the given database to be a *Db
-func Cast(database database.Database) *Db {
-	desmosDb, ok := (database).(*Db)
-	if !ok {
-		panic(fmt.Errorf("database is not a DesmosDB instance"))
-	}
-	return desmosDb
-}
-
 // Builder allows to create a new Db instance implementing the database.Builder type
-func Builder(ctx *database.Context) (database.Database, error) {
+func Builder(ctx *junodb.Context) (junodb.Database, error) {
 	database, err := postgresql.Builder(ctx)
 	if err != nil {
 		return nil, err
@@ -39,6 +68,17 @@ func Builder(ctx *database.Context) (database.Database, error) {
 		Database: psqlDb,
 	}, nil
 }
+
+// Cast casts the given database to be a *Db
+func Cast(database junodb.Database) Database {
+	desmosDb, ok := (database).(Database)
+	if !ok {
+		panic(fmt.Errorf("database is not a DJuno database instance"))
+	}
+	return desmosDb
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // SaveTx overrides postgresql.Database to perform a no-op
 func (db *Db) SaveTx(_ *juno.Tx) error {

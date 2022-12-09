@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: post_tag
+  schema: public
 object_relationships:
   - name: post
     using:

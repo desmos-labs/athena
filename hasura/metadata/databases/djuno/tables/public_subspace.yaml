@@ -1,66 +1,66 @@
 table:
-  schema: public
   name: subspace
+  schema: public
 object_relationships:
   - name: free_text_reactions_params
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: subspace_free_text_params
+          schema: public
   - name: registered_reactions_params
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: subspace_registered_reaction_params
-        insertion_order: null
         column_mapping:
           id: subspace_id
+        insertion_order: null
+        remote_table:
+          name: subspace_registered_reaction_params
+          schema: public
 array_relationships:
   - name: posts
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: post
+          schema: public
   - name: registered_reactions
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: subspace_registered_reaction
+          schema: public
   - name: report_reasons
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: subspace_report_reason
+          schema: public
   - name: reports
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: report
+          schema: public
   - name: sections
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: subspace_section
+          schema: public
   - name: user_groups
     using:
       foreign_key_constraint_on:
         column: subspace_id
         table:
-          schema: public
           name: subspace_user_group
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

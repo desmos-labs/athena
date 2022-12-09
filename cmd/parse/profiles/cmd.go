@@ -1,7 +1,7 @@
 package profiles
 
 import (
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +13,7 @@ func NewProfilesCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		profilesCmd(parseCfg),
 		applicationLinksCmd(parseCfg),
 		chainLinksCmd(parseCfg),
 	)

@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: report_reason
+  schema: public
 object_relationships:
   - name: reason
     using:

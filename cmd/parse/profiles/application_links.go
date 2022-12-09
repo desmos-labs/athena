@@ -3,12 +3,13 @@ package profiles
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
+
 	profilesscorebuilder "github.com/desmos-labs/djuno/v2/x/profiles-score/builder"
 
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
-	"github.com/forbole/juno/v3/node/remote"
-	"github.com/forbole/juno/v3/types/config"
-	"github.com/rs/zerolog/log"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
+	"github.com/forbole/juno/v4/node/remote"
+	"github.com/forbole/juno/v4/types/config"
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
@@ -21,8 +22,6 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 		Use:   "application-links",
 		Short: "Fetch the application links stored on chain and save them",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Debug().Msg("parsing application links")
-
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
 			if err != nil {
 				return err
@@ -53,6 +52,7 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Refresh the application link scores
+			log.Info().Int64("height", height).Msg("refreshing applications links")
 			return profilesScoreModule.RefreshApplicationLinksScores()
 		},
 	}

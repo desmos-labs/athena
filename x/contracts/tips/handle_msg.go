@@ -1,17 +1,17 @@
 package tips
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"github.com/desmos-labs/djuno/v2/utils"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
-	juno "github.com/forbole/juno/v3/types"
+	juno "github.com/forbole/juno/v4/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -29,7 +29,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 	switch desmosMsg := msg.(type) {
 	case *wasmtypes.MsgInstantiateContract:
-		return m.handleMsgInstantiateContract(tx, index, desmosMsg)
+		return m.handleMsgInstantiateContract(tx, index)
 	case *wasmtypes.MsgExecuteContract:
 		return m.handleMsgExecuteContract(tx, desmosMsg)
 	}
@@ -40,23 +40,23 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 // --------------------------------------------------------------------------------------------------------------------
 
 // handleMsgInstantiateContract handles a MsgInstantiateContract instance by refreshing the stored tips contracts
-func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmtypes.MsgInstantiateContract) error {
-	// Skip the contracts that have a different code id
-	if msg.CodeID != m.cfg.CodeID {
-		return nil
-	}
-
-	// Store the contract base data
-	err := m.base.HandleMsgInstantiateContract(tx, index, types.ContractTypeTips)
-	if err != nil {
-		return err
-	}
-
+func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int) error {
 	// Refresh the configuration
 	address, err := m.base.ParseContractAddress(tx, index)
 	if err != nil {
 		return err
 	}
+
+	if !m.cfg.IsContractSupported(address) {
+		return nil
+	}
+
+	// Store the contract base data
+	err = m.base.HandleMsgInstantiateContract(tx, index, types.ContractTypeTips)
+	if err != nil {
+		return err
+	}
+
 	return m.refreshContractConfig(tx.Height, address)
 }
 
@@ -64,9 +64,13 @@ func (m *Module) handleMsgInstantiateContract(tx *juno.Tx, index int, msg *wasmt
 
 // handleMsgExecuteContract handles a MsgExecuteContract that contains a send_tip message by storing the tip details
 func (m *Module) handleMsgExecuteContract(tx *juno.Tx, msg *wasmtypes.MsgExecuteContract) error {
-	msgSendTip, err := m.getMsgSendTipFromMsgExecuteContract(msg)
-	if err != nil {
-		return err
+	if !m.cfg.IsContractSupported(msg.Contract) {
+		return nil
+	}
+
+	msgSendTip, ok := utils.IsMsgSendTip(msg)
+	if !ok {
+		return nil
 	}
 
 	// If it's not a send_tip message, then return
@@ -99,26 +103,19 @@ func (m *Module) handleMsgExecuteContract(tx *juno.Tx, msg *wasmtypes.MsgExecute
 	return m.db.SaveTip(tip)
 }
 
-// getMsgSendTipFromMsgExecuteContract tries reading the given MsgExecuteContract as
-// it's containing a send_tip message, and returns the inner message
-func (m *Module) getMsgSendTipFromMsgExecuteContract(msg *wasm.MsgExecuteContract) (*MsgSendTip, error) {
-	var msgTip TipMsg
-	return msgTip.SendTip, json.Unmarshal(msg.Msg, &msgTip)
-}
-
 // getSameTargetSendTipMessages iterates over the given transaction, and extracts the
 // inner send_tip message out of all MsgExecuteContract instances
-func (m *Module) getSameTargetSendTipMessages(tx *juno.Tx, msg *MsgSendTip) ([]*MsgSendTip, error) {
+func (m *Module) getSameTargetSendTipMessages(tx *juno.Tx, msg *types.MsgSendTip) ([]*types.MsgSendTip, error) {
 	msgExecContracts, err := m.extractMsgExecuteContracts(tx.GetMsgs())
 	if err != nil {
 		return nil, err
 	}
 
-	var msgs []*MsgSendTip
+	var msgs []*types.MsgSendTip
 	for _, msgExecContract := range msgExecContracts {
-		msgSendTip, err := m.getMsgSendTipFromMsgExecuteContract(msgExecContract)
-		if err != nil {
-			return nil, err
+		msgSendTip, ok := utils.IsMsgSendTip(msgExecContract)
+		if !ok {
+			return nil, nil
 		}
 
 		if msgSendTip.Target.Equal(msg.Target) {
@@ -154,7 +151,7 @@ func (m *Module) extractMsgExecuteContracts(msgs []sdk.Msg) ([]*wasmtypes.MsgExe
 // combineMsgSendTips combines the given send_tip messages into a single send_tip message
 // that has the amount equals to the sum of all amounts.
 // NOTE. All send_tip messages should have the same target
-func (m *Module) combineMsgSendTips(msgs []*MsgSendTip) *MsgSendTip {
+func (m *Module) combineMsgSendTips(msgs []*types.MsgSendTip) *types.MsgSendTip {
 	if len(msgs) == 0 {
 		return nil
 	}
@@ -164,14 +161,14 @@ func (m *Module) combineMsgSendTips(msgs []*MsgSendTip) *MsgSendTip {
 		amount = amount.Add(msg.Amount...)
 	}
 
-	return &MsgSendTip{
+	return &types.MsgSendTip{
 		Amount: amount,
 		Target: msgs[0].Target,
 	}
 }
 
 // convertMsgSendTip converts the given data into a types.Tip instance
-func (m *Module) convertMsgSendTip(sender string, msg *MsgSendTip, config *configResponse, height int64) (types.Tip, error) {
+func (m *Module) convertMsgSendTip(sender string, msg *types.MsgSendTip, config *configResponse, height int64) (types.Tip, error) {
 	subspaceID, err := subspacestypes.ParseSubspaceID(config.SubspaceID)
 	if err != nil {
 		return types.Tip{}, fmt.Errorf("error while parsing subsapce id: %s", err)

@@ -2,11 +2,20 @@ package filters
 
 import (
 	"gopkg.in/yaml.v3"
+
+	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
 )
 
 type Config struct {
 	// SupportedSubspaceIDs represents the list of supported subspaces
 	SupportedSubspaceIDs []uint64 `yaml:"supported_subspace_ids"`
+
+	// Contracts contains the list of contracts to be parsed
+	Contracts *ContractsConfig `yaml:"contracts"`
+}
+
+type ContractsConfig struct {
+	Tips *tips.Config `yaml:"tips"`
 }
 
 // isSubspaceSupported tells whether the given subspace is supported from this config

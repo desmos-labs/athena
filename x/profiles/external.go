@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/forbole/juno/v3/node/remote"
+	authttypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/forbole/juno/v4/node/remote"
 
 	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
 
@@ -49,7 +50,7 @@ func (m *Module) UpdateProfiles(height int64, addresses []string) error {
 }
 
 func (m *Module) getProfile(height int64, address string) (*types.Profile, error) {
-	res, err := m.client.Profile(
+	res, err := m.profilesClient.Profile(
 		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryProfileRequest(address),
 	)
@@ -61,13 +62,73 @@ func (m *Module) getProfile(height int64, address string) (*types.Profile, error
 		return nil, fmt.Errorf("error while getting profile from gRPC: %s", err)
 	}
 
-	var account authtypes.AccountI
+	var account authttypes.AccountI
 	err = m.cdc.UnpackAny(res.Profile, &account)
 	if err != nil {
 		return nil, fmt.Errorf("error while unpacking profile: %s", err)
 	}
 
 	return types.NewProfile(account.(*profilestypes.Profile), height), nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// RefreshProfiles fetches and stores all the profiles present on the chain
+func (m *Module) RefreshProfiles(height int64) error {
+	profiles, err := m.queryAllProfiles(height)
+	if err != nil {
+		return fmt.Errorf("error while querying profiles: %s", err)
+	}
+
+	for _, profile := range profiles {
+		log.Debug().Str("module", "profiles").Str("dTag", profile.DTag).Msg("saving profile")
+		err = m.db.SaveProfile(profile)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// queryAllProfiles queries all the profiles stored inside the chain
+func (m *Module) queryAllProfiles(height int64) ([]*types.Profile, error) {
+	var profiles []*types.Profile
+
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := m.authClient.Accounts(
+			remote.GetHeightRequestContext(context.Background(), height),
+			&authttypes.QueryAccountsRequest{
+				Pagination: &query.PageRequest{
+					Key:        nextKey,
+					Limit:      1000,
+					CountTotal: true,
+				},
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, acc := range res.Accounts {
+			var account authttypes.AccountI
+			err = m.cdc.UnpackAny(acc, &account)
+			if err != nil {
+				return nil, fmt.Errorf("error while unpacking account: %s", err)
+			}
+
+			if profile, ok := account.(*profilestypes.Profile); ok {
+				profiles = append(profiles, types.NewProfile(profile, height))
+			}
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = nextKey == nil
+	}
+
+	return profiles, nil
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -112,7 +173,7 @@ func (m *Module) queryAllChainLinks(height int64) ([]types.ChainLink, error) {
 	var nextKey []byte
 	var stop = false
 	for !stop {
-		res, err := m.client.ChainLinks(
+		res, err := m.profilesClient.ChainLinks(
 			remote.GetHeightRequestContext(context.Background(), height),
 			&profilestypes.QueryChainLinksRequest{
 				Pagination: &query.PageRequest{
@@ -142,7 +203,7 @@ func (m *Module) queryAllDefaultChainLinks(height int64) ([]types.ChainLink, err
 	var nextKey []byte
 	var stop = false
 	for !stop {
-		res, err := m.client.DefaultExternalAddresses(
+		res, err := m.profilesClient.DefaultExternalAddresses(
 			remote.GetHeightRequestContext(context.Background(), height),
 			&profilestypes.QueryDefaultExternalAddressesRequest{
 				Pagination: &query.PageRequest{
@@ -193,7 +254,7 @@ func (m *Module) queryAllApplicationLinks(height int64) ([]types.ApplicationLink
 	var nextKey []byte
 	var stop = false
 	for !stop {
-		res, err := m.client.ApplicationLinks(
+		res, err := m.profilesClient.ApplicationLinks(
 			remote.GetHeightRequestContext(context.Background(), height),
 			&profilestypes.QueryApplicationLinksRequest{
 				Pagination: &query.PageRequest{

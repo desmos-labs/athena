@@ -17,7 +17,9 @@ func (db *Db) SaveReaction(reaction types.Reaction) error {
 INSERT INTO reaction (post_row_id, id, value, author_address, height) 
 VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT ON CONSTRAINT unique_post_reaction DO UPDATE 
-    SET value = excluded.value,
+    SET post_row_id = excluded.post_row_id,
+        id = excluded.id, 
+        value = excluded.value,
         author_address = excluded.author_address,
         height = excluded.height
 WHERE reaction.height <= excluded.height`

@@ -15,7 +15,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	juno "github.com/forbole/juno/v3/types"
+	juno "github.com/forbole/juno/v4/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

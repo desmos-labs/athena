@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: subspace_user_permission
+  schema: public
 object_relationships:
   - name: section
     using:

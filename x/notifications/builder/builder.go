@@ -5,6 +5,7 @@ import (
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
+	notificationscontext "github.com/desmos-labs/djuno/v2/x/notifications/context"
 )
 
 // NotificationData contains the notification data returned by a generic builder
@@ -13,14 +14,9 @@ type NotificationData struct {
 	Data         map[string]string
 }
 
-// UtilityModule represents a module that contains utility method within it
-type UtilityModule interface {
-	GetDisplayName(userAddress string) string
-}
-
 // -------------------------------------------------------------------------------------------------------------------
 
-type NotificationsBuilderCreator = func(module UtilityModule) NotificationsBuilder
+type NotificationsBuilderCreator func(context notificationscontext.Context) NotificationsBuilder
 
 // NotificationsBuilder contains all the notifications builders
 type NotificationsBuilder interface {
