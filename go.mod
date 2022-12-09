@@ -4,11 +4,11 @@ go 1.18
 
 require (
 	firebase.google.com/go/v4 v4.10.0
-	github.com/CosmWasm/wasmd v0.23.1-0.20220303200417-f35a13fa1209
+	github.com/CosmWasm/wasmd v0.29.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
-	github.com/cosmos/cosmos-sdk v0.45.8
-	github.com/cosmos/ibc-go/v3 v3.3.0
-	github.com/desmos-labs/desmos/v4 v4.6.1
+	github.com/cosmos/cosmos-sdk v0.45.11
+	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/desmos-labs/desmos/v4 v4.7.0
 	github.com/forbole/juno/v4 v4.0.0
 	github.com/g8rswimmer/go-twitter/v2 v2.1.4
 	github.com/gin-contrib/cors v1.4.0
@@ -67,7 +67,7 @@ require (
 	github.com/bombsimon/wsl/v3 v3.3.0 // indirect
 	github.com/breml/bidichk v0.2.3 // indirect
 	github.com/breml/errchkjson v0.3.0 // indirect
-	github.com/btcsuite/btcd v0.22.2 // indirect
+	github.com/btcsuite/btcd v0.22.3 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/butuzov/ireturn v0.1.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -226,8 +226,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v1.0.5 // indirect
-	github.com/prometheus/client_golang v1.13.0 // indirect
-	github.com/prometheus/client_model v0.2.0 // indirect
+	github.com/prometheus/client_golang v1.14.0 // indirect
+	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/quasilyte/go-ruleguard v0.3.18 // indirect
@@ -314,14 +314,10 @@ require (
 
 replace (
 	// Our wasmd branch is: https://github.com/desmos-labs/wasmd v0.28.x-desmos
-	github.com/CosmWasm/wasmd => github.com/desmos-labs/wasmd v0.29.0-desmos.1
+	github.com/CosmWasm/wasmd => github.com/desmos-labs/wasmd v0.29.0-desmos.2
 
 	// Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.45.x-desmos
 	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.45.11-desmos
-
-	// The used branch is github.com/forbole/juno riccardom/prepare-v4
-	// TODO: Remove it once a tagged version is out
-	github.com/forbole/juno/v4 => github.com/forbole/juno/v4 v4.0.0-20221130160108-ac7e418f2f6b
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 )
