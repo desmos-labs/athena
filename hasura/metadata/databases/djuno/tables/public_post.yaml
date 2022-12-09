@@ -1,16 +1,16 @@
 table:
-  schema: public
   name: post
+  schema: public
 object_relationships:
   - name: author
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: profile
-        insertion_order: null
         column_mapping:
           author_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
   - name: conversation
     using:
       foreign_key_constraint_on: conversation_row_id
@@ -26,78 +26,78 @@ array_relationships:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_attachment
+          schema: public
   - name: comments
     using:
       foreign_key_constraint_on:
         column: conversation_row_id
         table:
-          schema: public
           name: post
+          schema: public
   - name: hashtags
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_hashtag
+          schema: public
   - name: mentions
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_mention
+          schema: public
   - name: reactions
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: reaction
+          schema: public
   - name: referees
     using:
       foreign_key_constraint_on:
         column: reference_row_id
         table:
-          schema: public
           name: post_reference
+          schema: public
   - name: references
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_reference
+          schema: public
   - name: tags
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_tag
+          schema: public
   - name: tips
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: tip_post
+          schema: public
   - name: transactions
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_transaction
+          schema: public
   - name: urls
     using:
       foreign_key_constraint_on:
         column: post_row_id
         table:
-          schema: public
           name: post_url
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

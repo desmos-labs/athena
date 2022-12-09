@@ -1,13 +1,25 @@
 table:
-  schema: public
   name: dtag_transfer_requests
+  schema: public
 object_relationships:
-  - name: profile
+  - name: receiver
     using:
-      foreign_key_constraint_on: receiver_address
-  - name: profileBySenderAddress
+      manual_configuration:
+        column_mapping:
+          receiver_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
+  - name: sender
     using:
-      foreign_key_constraint_on: sender_address
+      manual_configuration:
+        column_mapping:
+          sender_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

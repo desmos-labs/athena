@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: notification
+  schema: public
 select_permissions:
   - role: anonymous
     permission:

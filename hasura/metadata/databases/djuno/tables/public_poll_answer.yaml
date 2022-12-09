@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: poll_answer
+  schema: public
 object_relationships:
   - name: post_attachment
     using:

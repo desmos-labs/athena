@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: subspace_section
+  schema: public
 object_relationships:
   - name: parent
     using:
@@ -14,29 +14,29 @@ array_relationships:
       foreign_key_constraint_on:
         column: parent_row_id
         table:
-          schema: public
           name: subspace_section
+          schema: public
   - name: posts
     using:
       foreign_key_constraint_on:
         column: section_row_id
         table:
-          schema: public
           name: post
+          schema: public
   - name: user_groups
     using:
       foreign_key_constraint_on:
         column: section_row_id
         table:
-          schema: public
           name: subspace_user_group
+          schema: public
   - name: user_permissions
     using:
       foreign_key_constraint_on:
         column: section_row_id
         table:
-          schema: public
           name: subspace_user_permission
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

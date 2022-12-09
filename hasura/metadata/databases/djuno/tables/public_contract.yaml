@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: contract
+  schema: public
 select_permissions:
   - role: anonymous
     permission:

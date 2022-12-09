@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: subspace_user_group_member
+  schema: public
 object_relationships:
   - name: group
     using:

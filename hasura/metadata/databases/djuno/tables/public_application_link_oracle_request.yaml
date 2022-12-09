@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: application_link_oracle_request
+  schema: public
 object_relationships:
   - name: application_link
     using:

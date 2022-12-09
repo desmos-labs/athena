@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: default_chain_link
+  schema: public
 object_relationships:
   - name: chain_config
     using:
