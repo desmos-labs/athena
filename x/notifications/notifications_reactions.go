@@ -34,7 +34,7 @@ func (m *Module) SendReactionNotifications(reaction types.Reaction) error {
 		return nil
 	}
 
-	log.Debug().Str("module", m.Name()).Str("recipient", post.Author).
+	log.Trace().Str("module", m.Name()).Str("recipient", post.Author).
 		Str("notification type", notificationsbuilder.TypeReaction).Msg("sending notification")
 	return m.SendNotification(post.Author, data.Notification, data.Data)
 }

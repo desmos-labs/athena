@@ -20,7 +20,7 @@ func (m *Module) SendTransactionNotifications(tx *juno.Tx, user string) error {
 	}
 
 	// Send a notification to the original post owner
-	log.Debug().Str("module", m.Name()).Str("recipient", user).Str("tx hash", tx.TxHash).
+	log.Trace().Str("module", m.Name()).Str("recipient", user).Str("tx hash", tx.TxHash).
 		Str("notification type", data[builder.NotificationTypeKey]).Msg("sending notification")
 	return m.SendNotification(user, nil, data)
 }

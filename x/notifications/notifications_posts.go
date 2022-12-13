@@ -106,7 +106,7 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 		return nil
 	}
 
-	log.Debug().Str("module", m.Name()).Str("recipient", originalPost.Author).
+	log.Trace().Str("module", m.Name()).Str("recipient", originalPost.Author).
 		Str("notification type", notificationsbuilder.TypeReply).Msg("sending notification")
 	return m.SendNotification(originalPost.Author, data.Notification, data.Data)
 }
@@ -138,7 +138,7 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 		return nil
 	}
 
-	log.Debug().Str("module", m.Name()).Str("recipient", originalPost.Author).
+	log.Trace().Str("module", m.Name()).Str("recipient", originalPost.Author).
 		Str("notification type", data.Data[notificationsbuilder.NotificationTypeKey]).Msg("sending notification")
 	return m.SendNotification(originalPost.Author, data.Notification, data.Data)
 }
@@ -159,7 +159,7 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 		return nil
 	}
 
-	log.Debug().Str("module", m.Name()).Str("recipient", mention.Tag).
+	log.Trace().Str("module", m.Name()).Str("recipient", mention.Tag).
 		Str("notification type", notificationsbuilder.TypeMention).Msg("sending notification")
 	return m.SendNotification(mention.Tag, data.Notification, data.Data)
 }
