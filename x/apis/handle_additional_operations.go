@@ -58,7 +58,7 @@ func (m *Module) RunAdditionalOperations() error {
 func (m *Module) Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
-		log.Debug().Str("module", "apis").Str("path", c.Request.URL.Path).Msg("received request")
+		log.Trace().Str("module", "apis").Str("path", c.Request.URL.Path).Msg("received request")
 	}
 }
 
