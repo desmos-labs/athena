@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: application_link_score
+  schema: public
 select_permissions:
   - role: anonymous
     permission:

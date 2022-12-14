@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: subspace_report_reason
+  schema: public
 object_relationships:
   - name: subspace
     using:

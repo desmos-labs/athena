@@ -1,11 +1,11 @@
 package main
 
 import (
-	junocmd "github.com/forbole/juno/v3/cmd"
-	initcmd "github.com/forbole/juno/v3/cmd/init"
-	migratecmd "github.com/forbole/juno/v3/cmd/migrate"
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
-	startcmd "github.com/forbole/juno/v3/cmd/start"
+	junocmd "github.com/forbole/juno/v4/cmd"
+	initcmd "github.com/forbole/juno/v4/cmd/init"
+	migratecmd "github.com/forbole/juno/v4/cmd/migrate"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
+	startcmd "github.com/forbole/juno/v4/cmd/start"
 
 	desmosapp "github.com/desmos-labs/desmos/v4/app"
 

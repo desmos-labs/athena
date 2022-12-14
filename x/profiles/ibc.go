@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	juno "github.com/forbole/juno/v3/types"
+	juno "github.com/forbole/juno/v4/types"
 
-	"github.com/forbole/juno/v3/node/remote"
+	"github.com/forbole/juno/v4/node/remote"
 
 	"github.com/desmos-labs/djuno/v2/types"
 
@@ -56,7 +56,7 @@ func (m *Module) handleLinkChainAccountPacketData(height int64, packet channelty
 	}
 
 	// Get the link from the chain
-	res, err := m.client.ChainLinks(
+	res, err := m.profilesClient.ChainLinks(
 		remote.GetHeightRequestContext(context.Background(), height),
 		&profilestypes.QueryChainLinksRequest{
 			User:      packetData.DestinationAddress,
@@ -89,7 +89,7 @@ func (m *Module) handleOracleRequestPacketData(height int64, packet channeltypes
 		return false, nil
 	}
 
-	res, err := m.client.ApplicationLinkByClientID(
+	res, err := m.profilesClient.ApplicationLinkByClientID(
 		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
 	)
@@ -109,7 +109,7 @@ func (m *Module) handleOracleResponsePacketData(height int64, packet channeltype
 		return false, nil
 	}
 
-	res, err := m.client.ApplicationLinkByClientID(
+	res, err := m.profilesClient.ApplicationLinkByClientID(
 		remote.GetHeightRequestContext(context.Background(), height),
 		profilestypes.NewQueryApplicationLinkByClientIDRequest(data.ClientID),
 	)

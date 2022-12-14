@@ -1,5 +1,8 @@
 CREATE TABLE user_relationship
 (
+    /* Required for Hasura links */
+    row_id               SERIAL NOT NULL PRIMARY KEY,
+
     creator_address      TEXT   NOT NULL,
     counterparty_address TEXT   NOT NULL,
     subspace_id          BIGINT NOT NULL REFERENCES subspace (id) ON DELETE CASCADE,

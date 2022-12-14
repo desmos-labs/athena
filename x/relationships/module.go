@@ -6,9 +6,7 @@ import (
 
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
 
-	"github.com/desmos-labs/djuno/v2/database"
-
-	"github.com/forbole/juno/v3/modules"
+	"github.com/forbole/juno/v4/modules"
 )
 
 var (
@@ -20,13 +18,13 @@ var (
 // Module represents the x/profiles module handler
 type Module struct {
 	cdc            codec.Codec
-	db             *database.Db
+	db             Database
 	profilesModule ProfilesModule
 	client         relationshipstypes.QueryClient
 }
 
 // NewModule allows to build a new Module instance
-func NewModule(profilesModule ProfilesModule, grpcConnection *grpc.ClientConn, cdc codec.Codec, db *database.Db) *Module {
+func NewModule(profilesModule ProfilesModule, grpcConnection *grpc.ClientConn, cdc codec.Codec, db Database) *Module {
 	return &Module{
 		cdc:            cdc,
 		db:             db,

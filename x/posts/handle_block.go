@@ -1,7 +1,7 @@
 package posts
 
 import (
-	juno "github.com/forbole/juno/v3/types"
+	juno "github.com/forbole/juno/v4/types"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"

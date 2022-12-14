@@ -1,6 +1,6 @@
 table:
-  schema: public
   name: subspace_registered_reaction
+  schema: public
 object_relationships:
   - name: subspace
     using:

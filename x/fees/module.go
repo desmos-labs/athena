@@ -2,13 +2,11 @@ package fees
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/forbole/juno/v3/modules"
-	"github.com/forbole/juno/v3/node"
+	"github.com/forbole/juno/v4/modules"
+	"github.com/forbole/juno/v4/node"
 	"google.golang.org/grpc"
 
 	feestypes "github.com/desmos-labs/desmos/v4/x/fees/types"
-
-	"github.com/desmos-labs/djuno/v2/database"
 )
 
 var (
@@ -19,13 +17,13 @@ var (
 // Module represents the x/fees module handler
 type Module struct {
 	cdc        codec.Codec
-	db         *database.Db
+	db         Database
 	node       node.Node
 	feesClient feestypes.QueryClient
 }
 
 // NewModule allows to build a new Module instance
-func NewModule(node node.Node, grpcConnection *grpc.ClientConn, cdc codec.Codec, db *database.Db) *Module {
+func NewModule(node node.Node, grpcConnection *grpc.ClientConn, cdc codec.Codec, db Database) *Module {
 	return &Module{
 		cdc:        cdc,
 		db:         db,

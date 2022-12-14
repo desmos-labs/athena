@@ -1,25 +1,25 @@
 table:
-  schema: public
   name: fee_grant
+  schema: public
 object_relationships:
   - name: grantee
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: profile
-        insertion_order: null
         column_mapping:
           grantee_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
   - name: granter
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: profile
-        insertion_order: null
         column_mapping:
           granter_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

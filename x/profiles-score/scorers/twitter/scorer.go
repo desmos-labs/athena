@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/forbole/juno/v3/types/config"
+	"github.com/forbole/juno/v4/types/config"
 	"github.com/g8rswimmer/go-twitter/v2"
 
 	"github.com/desmos-labs/djuno/v2/types"

@@ -1,69 +1,70 @@
 table:
-  schema: public
   name: profile
+  schema: public
 array_relationships:
-  - name: application_links
+  - name: applications_links
     using:
-      foreign_key_constraint_on:
-        column: user_address
-        table:
-          schema: public
+      manual_configuration:
+        column_mapping:
+          address: user_address
+        insertion_order: null
+        remote_table:
           name: application_link
-  - name: blocked_users
-    using:
-      foreign_key_constraint_on:
-        column: blocked_address
-        table:
           schema: public
-          name: user_block
   - name: chain_links
     using:
-      foreign_key_constraint_on:
-        column: user_address
-        table:
-          schema: public
+      manual_configuration:
+        column_mapping:
+          address: user_address
+        insertion_order: null
+        remote_table:
           name: chain_link
+          schema: public
   - name: default_chain_links
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: default_chain_link
-        insertion_order: null
         column_mapping:
           address: user_address
+        insertion_order: null
+        remote_table:
+          name: default_chain_link
+          schema: public
   - name: followage
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: user_relationship
-        insertion_order: null
         column_mapping:
           address: counterparty_address
+        insertion_order: null
+        remote_table:
+          name: user_relationship
+          schema: public
   - name: following
     using:
       manual_configuration:
-        remote_table:
-          schema: public
-          name: user_relationship
-        insertion_order: null
         column_mapping:
           address: creator_address
+        insertion_order: null
+        remote_table:
+          name: user_relationship
+          schema: public
   - name: incoming_dtag_transfer_requests
     using:
-      foreign_key_constraint_on:
-        column: receiver_address
-        table:
-          schema: public
+      manual_configuration:
+        column_mapping:
+          address: receiver_address
+        insertion_order: null
+        remote_table:
           name: dtag_transfer_requests
+          schema: public
   - name: outgoing_dtag_transfer_requests
     using:
-      foreign_key_constraint_on:
-        column: sender_address
-        table:
-          schema: public
+      manual_configuration:
+        column_mapping:
+          address: sender_address
+        insertion_order: null
+        remote_table:
           name: dtag_transfer_requests
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

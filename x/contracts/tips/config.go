@@ -9,7 +9,16 @@ type ContractsConfig struct {
 }
 
 type Config struct {
-	CodeID uint64 `yaml:"code_id"`
+	Addresses []string `yaml:"addresses"`
+}
+
+func (c *Config) IsContractSupported(address string) bool {
+	for _, addr := range c.Addresses {
+		if addr == address {
+			return true
+		}
+	}
+	return false
 }
 
 func ParseConfig(bz []byte) (*Config, error) {

@@ -1,13 +1,25 @@
 table:
-  schema: public
   name: user_block
+  schema: public
 object_relationships:
   - name: blocked
     using:
-      foreign_key_constraint_on: blocked_address
+      manual_configuration:
+        column_mapping:
+          blocked_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
   - name: blocker
     using:
-      foreign_key_constraint_on: blocker_address
+      manual_configuration:
+        column_mapping:
+          blocker_address: address
+        insertion_order: null
+        remote_table:
+          name: profile
+          schema: public
   - name: subspace
     using:
       foreign_key_constraint_on: subspace_id

@@ -3,9 +3,9 @@ package profiles
 import (
 	"fmt"
 
-	parsecmdtypes "github.com/forbole/juno/v3/cmd/parse/types"
-	"github.com/forbole/juno/v3/node/remote"
-	"github.com/forbole/juno/v3/types/config"
+	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
+	"github.com/forbole/juno/v4/node/remote"
+	"github.com/forbole/juno/v4/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
@@ -19,8 +19,6 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 		Use:   "chain-links",
 		Short: "Fetch the chain links stored on chain and save them",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Debug().Msg("parsing chain links")
-
 			parseCtx, err := parsecmdtypes.GetParserContext(config.Cfg, parseConfig)
 			if err != nil {
 				return err
@@ -44,6 +42,7 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
 
 			// Refresh the chain links
+			log.Info().Int64("height", height).Msg("refreshing chain links")
 			return profilesModule.RefreshChainLinks(height)
 		},
 	}

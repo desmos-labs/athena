@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
-	"github.com/forbole/juno/v3/node/remote"
+	"github.com/forbole/juno/v4/node/remote"
 	"github.com/rs/zerolog/log"
 
 	"github.com/desmos-labs/djuno/v2/types"
