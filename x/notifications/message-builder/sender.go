@@ -14,9 +14,6 @@ type FirebaseMessageBuilderCreator func(ctx notificationscontext.Context) Fireba
 type MessageConfig struct {
 	Data         map[string]string
 	Notification *messaging.Notification
-	Android      *messaging.AndroidConfig
-	WebPush      *messaging.WebpushConfig
-	Apple        *messaging.APNSConfig
 }
 
 // FirebaseMessageBuilder represents the interface that allows to build a Firebase message

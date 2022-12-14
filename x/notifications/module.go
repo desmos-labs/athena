@@ -114,19 +114,10 @@ func (m *Module) SendNotification(recipient string, notification *messaging.Noti
 	data[notificationsbuilder.ClickActionKey] = notificationsbuilder.ClickActionValue
 	data[notificationsbuilder.RecipientKey] = recipient
 
-	// Build the Android config
-	var androidConfig *messaging.AndroidConfig
-	if notification != nil {
-		androidConfig = &messaging.AndroidConfig{
-			Notification: &messaging.AndroidNotification{ChannelID: m.cfg.AndroidChannelID},
-		}
-	}
-
 	// Build the message
 	message, err := m.messageBuilder.BuildMessage(recipient, &messagebuilder.MessageConfig{
 		Data:         data,
 		Notification: notification,
-		Android:      androidConfig,
 	})
 	if err != nil {
 		return fmt.Errorf("error while building notification message: %s", err)

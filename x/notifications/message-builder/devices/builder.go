@@ -25,8 +25,8 @@ func NewMessageBuilder(db notifications.Database) *MessageBuilder {
 	}
 }
 
-// BuildMessage implements FirebaseMessageBuilder
-func (b *MessageBuilder) BuildMessage(recipient string, config *messagebuilder.MessageConfig) (types.NotificationMessage, error) {
+// GetTokens returns the tokens to be used in order to send the notification to the devices of the given recipient
+func (b *MessageBuilder) GetTokens(recipient string) ([]string, error) {
 	tokens, err := b.db.GetUserTokens(recipient)
 	if err != nil {
 		return nil, err
@@ -37,17 +37,23 @@ func (b *MessageBuilder) BuildMessage(recipient string, config *messagebuilder.M
 	for i, token := range tokens {
 		tokensValues[i] = token.Token
 	}
+	return tokensValues, nil
+}
 
-	if len(tokensValues) == 0 {
+// BuildMessage implements FirebaseMessageBuilder
+func (b *MessageBuilder) BuildMessage(recipient string, config *messagebuilder.MessageConfig) (types.NotificationMessage, error) {
+	tokens, err := b.GetTokens(recipient)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tokens) == 0 {
 		return nil, nil
 	}
 
 	return types.NewMultiNotificationMessage(&messaging.MulticastMessage{
-		Tokens:       tokensValues,
+		Tokens:       tokens,
 		Data:         config.Data,
 		Notification: config.Notification,
-		Android:      config.Android,
-		Webpush:      config.WebPush,
-		APNS:         config.Apple,
 	}), nil
 }
