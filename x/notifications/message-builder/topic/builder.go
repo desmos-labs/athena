@@ -26,8 +26,5 @@ func (m *MessageBuilder) BuildMessage(recipient string, config *messagebuilder.M
 		Topic:        recipient,
 		Data:         config.Data,
 		Notification: config.Notification,
-		Android:      config.Android,
-		Webpush:      config.WebPush,
-		APNS:         config.Apple,
 	}), nil
 }
