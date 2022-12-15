@@ -96,9 +96,11 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
 	// DJuno modules
-	apisModule := apis.NewModule(apis.NewContext(ctx, grpcConnection)).
-		WithRegistrar(r.options.GetAPIsRegistrar()).
-		WithConfigurator(r.options.GetAPIsConfigurator())
+	apisModule := apis.NewModule(apis.NewContext(ctx, grpcConnection))
+	if apisModule != nil {
+		apisModule = apisModule.WithRegistrar(r.options.GetAPIsRegistrar())
+		apisModule = apisModule.WithConfigurator(r.options.GetAPIsConfigurator())
+	}
 
 	authzModule := authz.NewModule(ctx.Proxy, cdc, djunoDb)
 	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, djunoDb)
@@ -113,9 +115,11 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	subspacesModule := subspaces.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 
 	context := notificationscontext.NewContext(ctx, ctx.Proxy, grpcConnection)
-	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb).
-		WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context)).
-		WithFirebaseMessageBuilder(r.options.CreateFirebaseMessageBuilder(context))
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb)
+	if notificationsModule != nil {
+		notificationsModule = notificationsModule.WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context))
+		notificationsModule = notificationsModule.WithFirebaseMessageBuilder(r.options.CreateFirebaseMessageBuilder(context))
+	}
 
 	return []modules.Module{
 		apisModule,
