@@ -2,6 +2,8 @@ package github
 
 import (
 	"context"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -10,9 +12,6 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/types"
 	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
-
-	"net/http"
-	"strings"
 )
 
 var (
@@ -24,7 +23,7 @@ type Scorer struct {
 }
 
 // NewScorer returns a new Scorer instance
-func NewScorer(junoCfg config.Config) *Scorer {
+func NewScorer(junoCfg config.Config) profilesscore.Scorer {
 	cfgBz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)

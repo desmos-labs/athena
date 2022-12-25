@@ -10,8 +10,6 @@ import (
 
 // RefreshApplicationLinksScores reads all the applications links stored inside the database and refreshes their scores
 func (m *Module) RefreshApplicationLinksScores() error {
-	log.Info().Str("module", "profiles:score").Msg("refreshing application links scores")
-
 	applicationLinks, err := m.db.GetApplicationLinkInfos()
 	if err != nil {
 		return err

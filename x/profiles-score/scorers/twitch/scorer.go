@@ -22,7 +22,7 @@ type Scorer struct {
 }
 
 // NewScorer returns a new Scorer instance
-func NewScorer(junoCfg config.Config) *Scorer {
+func NewScorer(junoCfg config.Config) profilesscore.Scorer {
 	cfgBz, err := junoCfg.GetBytes()
 	if err != nil {
 		panic(err)

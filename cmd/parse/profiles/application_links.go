@@ -53,12 +53,8 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 
 			// Refresh the application link scores
 			profilesScoreModule := profilesscorebuilder.BuildModule(config.Cfg, db)
-			if profilesScoreModule != nil {
-				log.Info().Int64("height", height).Msg("refreshing applications links scores")
-				return profilesScoreModule.RefreshApplicationLinksScores()
-			}
-
-			return nil
+			log.Info().Int64("height", height).Msg("refreshing applications links scores")
+			return profilesScoreModule.RefreshApplicationLinksScores()
 		},
 	}
 }
