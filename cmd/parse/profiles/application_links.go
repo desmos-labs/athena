@@ -43,17 +43,22 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
 			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
-			profilesScoreModule := profilesscorebuilder.BuildModule(config.Cfg, db)
 
 			// Refresh the application links
+			log.Info().Int64("height", height).Msg("refreshing applications links")
 			err = profilesModule.RefreshApplicationLinks(height)
 			if err != nil {
 				return err
 			}
 
 			// Refresh the application link scores
-			log.Info().Int64("height", height).Msg("refreshing applications links")
-			return profilesScoreModule.RefreshApplicationLinksScores()
+			profilesScoreModule := profilesscorebuilder.BuildModule(config.Cfg, db)
+			if profilesScoreModule != nil {
+				log.Info().Int64("height", height).Msg("refreshing applications links scores")
+				return profilesScoreModule.RefreshApplicationLinksScores()
+			}
+
+			return nil
 		},
 	}
 }
