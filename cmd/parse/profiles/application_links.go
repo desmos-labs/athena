@@ -5,8 +5,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	profilesscorebuilder "github.com/desmos-labs/djuno/v2/x/profiles-score/builder"
-
 	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
 	"github.com/forbole/juno/v4/node/remote"
 	"github.com/forbole/juno/v4/types/config"
@@ -46,15 +44,7 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 
 			// Refresh the application links
 			log.Info().Int64("height", height).Msg("refreshing applications links")
-			err = profilesModule.RefreshApplicationLinks(height)
-			if err != nil {
-				return err
-			}
-
-			// Refresh the application link scores
-			profilesScoreModule := profilesscorebuilder.BuildModule(config.Cfg, db)
-			log.Info().Int64("height", height).Msg("refreshing applications links scores")
-			return profilesScoreModule.RefreshApplicationLinksScores()
+			return profilesModule.RefreshApplicationLinks(height)
 		},
 	}
 }

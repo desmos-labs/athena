@@ -15,6 +15,7 @@ func NewProfilesCmd(parseCfg *parsecmdtypes.Config) *cobra.Command {
 	cmd.AddCommand(
 		profilesCmd(parseCfg),
 		applicationLinksCmd(parseCfg),
+		applicationLinksScoresCmd(parseCfg),
 		chainLinksCmd(parseCfg),
 	)
 
