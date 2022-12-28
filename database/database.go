@@ -99,8 +99,3 @@ func (db *Db) SaveValidators(_ []*juno.Validator) error {
 func (db *Db) SaveCommitSignatures(_ []*juno.CommitSig) error {
 	return nil
 }
-
-// SaveMessage overrides postgresql.Database to perform a no-op
-func (db *Db) SaveMessage(_ *juno.Message) error {
-	return nil
-}
