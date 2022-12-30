@@ -10,7 +10,7 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/desmos-labs/desmos/v4 v4.7.0
 	github.com/forbole/juno/v4 v4.0.0
-	github.com/g8rswimmer/go-twitter/v2 v2.1.4
+	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-co-op/gocron v1.18.0
@@ -196,7 +196,6 @@ require (
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/likexian/gokit v0.25.9 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
-	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/maratori/testableexamples v1.0.0 // indirect
 	github.com/maratori/testpackage v1.1.0 // indirect
 	github.com/matoous/godox v0.0.0-20210227103229-6504466cf951 // indirect
