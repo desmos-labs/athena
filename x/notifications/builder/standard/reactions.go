@@ -31,13 +31,13 @@ func (d DefaultReactionsNotificationsBuilder) Reaction() notificationsbuilder.Re
 				Body:  fmt.Sprintf("%s reacted to your post", d.m.GetDisplayName(reaction.Author)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeReaction,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
+				types.NotificationTypeKey:   types.TypeReaction,
+				types.NotificationActionKey: types.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey:     fmt.Sprintf("%d", post.SubspaceID),
-				notificationsbuilder.PostIDKey:         fmt.Sprintf("%d", post.ID),
-				notificationsbuilder.ReactionIDKey:     fmt.Sprintf("%d", reaction.ID),
-				notificationsbuilder.ReactionAuthorKey: reaction.Author,
+				types.SubspaceIDKey:     fmt.Sprintf("%d", post.SubspaceID),
+				types.PostIDKey:         fmt.Sprintf("%d", post.ID),
+				types.ReactionIDKey:     fmt.Sprintf("%d", reaction.ID),
+				types.ReactionAuthorKey: reaction.Author,
 			},
 		}
 	}

@@ -22,7 +22,7 @@ ON CONFLICT ON CONSTRAINT unique_user_notification DO UPDATE
         data = excluded.data,
         timestamp = excluded.timestamp
 WHERE notification.timestamp <= excluded.timestamp`
-	_, err = db.SQL.Exec(stmt, notification.RecipientAddress, notification.Type, string(dataBz), notification.Timestamp)
+	_, err = db.SQL.Exec(stmt, notification.Recipient.String(), notification.Type, string(dataBz), notification.Timestamp)
 	return err
 }
 

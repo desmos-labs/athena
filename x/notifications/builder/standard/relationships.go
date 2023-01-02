@@ -31,11 +31,11 @@ func (d DefaultRelationshipsNotificationsBuilder) Relationship() notificationsbu
 				Body:  fmt.Sprintf("%s has started following you", d.m.GetDisplayName(relationship.Creator)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeFollow,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenProfile,
+				types.NotificationTypeKey:   types.TypeFollow,
+				types.NotificationActionKey: types.ActionOpenProfile,
 
-				notificationsbuilder.SubspaceIDKey:          fmt.Sprintf("%d", relationship.SubspaceID),
-				notificationsbuilder.RelationshipCreatorKey: relationship.Creator,
+				types.SubspaceIDKey:          fmt.Sprintf("%d", relationship.SubspaceID),
+				types.RelationshipCreatorKey: relationship.Creator,
 			},
 		}
 	}

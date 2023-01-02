@@ -14,8 +14,6 @@ import (
 	"github.com/desmos-labs/djuno/v2/x/notifications"
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 	standardnotificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder/standard"
-	messagebuilder "github.com/desmos-labs/djuno/v2/x/notifications/message-builder"
-	topicfirebasemessagebuilder "github.com/desmos-labs/djuno/v2/x/notifications/message-builder/topic"
 	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
 	profilesscorebuilder "github.com/desmos-labs/djuno/v2/x/profiles-score/builder"
@@ -31,10 +29,9 @@ import (
 )
 
 type RegistrarOptions struct {
-	NotificationsBuilderCreator   notificationsbuilder.NotificationsBuilderCreator
-	FirebaseMessageBuilderCreator messagebuilder.FirebaseMessageBuilderCreator
-	APIsRegistrar                 apis.Registrar
-	APIsConfigurator              apis.Configurator
+	NotificationsBuilderCreator notificationsbuilder.NotificationsBuilderCreator
+	APIsRegistrar               apis.Registrar
+	APIsConfigurator            apis.Configurator
 }
 
 func (o RegistrarOptions) CreateNotificationsBuilder(context notificationscontext.Context) notificationsbuilder.NotificationsBuilder {
@@ -42,13 +39,6 @@ func (o RegistrarOptions) CreateNotificationsBuilder(context notificationscontex
 		return o.NotificationsBuilderCreator(context)
 	}
 	return standardnotificationsbuilder.CreateNotificationsBuilder(context)
-}
-
-func (o RegistrarOptions) CreateFirebaseMessageBuilder(context notificationscontext.Context) messagebuilder.FirebaseMessageBuilder {
-	if o.FirebaseMessageBuilderCreator != nil {
-		return o.FirebaseMessageBuilderCreator(context)
-	}
-	return topicfirebasemessagebuilder.CreateMessageBuilder(context)
 }
 
 func (o RegistrarOptions) GetAPIsRegistrar() apis.Registrar {
@@ -118,7 +108,6 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb)
 	if notificationsModule != nil {
 		notificationsModule = notificationsModule.WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context))
-		notificationsModule = notificationsModule.WithFirebaseMessageBuilder(r.options.CreateFirebaseMessageBuilder(context))
 	}
 
 	return []modules.Module{

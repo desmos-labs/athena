@@ -32,13 +32,13 @@ func (d DefaultPostsNotificationsBuilder) Comment() notificationsbuilder.PostNot
 				Body:  fmt.Sprintf("%s commented on your post", d.m.GetDisplayName(comment.Author)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeComment,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
+				types.NotificationTypeKey:   types.TypeComment,
+				types.NotificationActionKey: types.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey:    fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:        fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.CommentIDKey:     fmt.Sprintf("%d", comment.ID),
-				notificationsbuilder.CommentAuthorKey: comment.Author,
+				types.SubspaceIDKey:    fmt.Sprintf("%d", originalPost.SubspaceID),
+				types.PostIDKey:        fmt.Sprintf("%d", originalPost.ID),
+				types.CommentIDKey:     fmt.Sprintf("%d", comment.ID),
+				types.CommentAuthorKey: comment.Author,
 			},
 		}
 	}
@@ -52,13 +52,13 @@ func (d DefaultPostsNotificationsBuilder) Reply() notificationsbuilder.PostNotif
 				Body:  fmt.Sprintf("%s replied to your post", d.m.GetDisplayName(reply.Author)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeReply,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
+				types.NotificationTypeKey:   types.TypeReply,
+				types.NotificationActionKey: types.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey:  fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:      fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.ReplyIDKey:     fmt.Sprintf("%d", reply.ID),
-				notificationsbuilder.ReplyAuthorKey: reply.Author,
+				types.SubspaceIDKey:  fmt.Sprintf("%d", originalPost.SubspaceID),
+				types.PostIDKey:      fmt.Sprintf("%d", originalPost.ID),
+				types.ReplyIDKey:     fmt.Sprintf("%d", reply.ID),
+				types.ReplyAuthorKey: reply.Author,
 			},
 		}
 	}
@@ -72,13 +72,13 @@ func (d DefaultPostsNotificationsBuilder) Repost() notificationsbuilder.PostNoti
 				Body:  fmt.Sprintf("%s reposted your post", d.m.GetDisplayName(repost.Author)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeRepost,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
+				types.NotificationTypeKey:   types.TypeRepost,
+				types.NotificationActionKey: types.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey:   fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:       fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.RepostIDKey:     fmt.Sprintf("%d", repost.ID),
-				notificationsbuilder.RepostAuthorKey: repost.Author,
+				types.SubspaceIDKey:   fmt.Sprintf("%d", originalPost.SubspaceID),
+				types.PostIDKey:       fmt.Sprintf("%d", originalPost.ID),
+				types.RepostIDKey:     fmt.Sprintf("%d", repost.ID),
+				types.RepostAuthorKey: repost.Author,
 			},
 		}
 	}
@@ -92,13 +92,13 @@ func (d DefaultPostsNotificationsBuilder) Quote() notificationsbuilder.PostNotif
 				Body:  fmt.Sprintf("%s quoted your post", d.m.GetDisplayName(quote.Author)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeQuote,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
+				types.NotificationTypeKey:   types.TypeQuote,
+				types.NotificationActionKey: types.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey:  fmt.Sprintf("%d", originalPost.SubspaceID),
-				notificationsbuilder.PostIDKey:      fmt.Sprintf("%d", originalPost.ID),
-				notificationsbuilder.QuoteIDKey:     fmt.Sprintf("%d", quote.ID),
-				notificationsbuilder.QuoteAuthorKey: quote.Author,
+				types.SubspaceIDKey:  fmt.Sprintf("%d", originalPost.SubspaceID),
+				types.PostIDKey:      fmt.Sprintf("%d", originalPost.ID),
+				types.QuoteIDKey:     fmt.Sprintf("%d", quote.ID),
+				types.QuoteAuthorKey: quote.Author,
 			},
 		}
 	}
@@ -112,12 +112,12 @@ func (d DefaultPostsNotificationsBuilder) Mention() notificationsbuilder.Mention
 				Body:  fmt.Sprintf("%s mentioned you post", d.m.GetDisplayName(post.Author)),
 			},
 			Data: map[string]string{
-				notificationsbuilder.NotificationTypeKey:   notificationsbuilder.TypeMention,
-				notificationsbuilder.NotificationActionKey: notificationsbuilder.ActionOpenPost,
+				types.NotificationTypeKey:   types.TypeMention,
+				types.NotificationActionKey: types.ActionOpenPost,
 
-				notificationsbuilder.SubspaceIDKey: fmt.Sprintf("%d", post.SubspaceID),
-				notificationsbuilder.PostIDKey:     fmt.Sprintf("%d", post.ID),
-				notificationsbuilder.PostAuthorKey: post.Author,
+				types.SubspaceIDKey: fmt.Sprintf("%d", post.SubspaceID),
+				types.PostIDKey:     fmt.Sprintf("%d", post.ID),
+				types.PostAuthorKey: post.Author,
 			},
 		}
 	}

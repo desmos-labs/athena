@@ -1,4 +1,4 @@
-package builder
+package types
 
 const (
 	NotificationTypeKey    = "type"
