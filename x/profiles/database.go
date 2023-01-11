@@ -16,10 +16,12 @@ type Database interface {
 	SaveDTagTransferRequest(request types.DTagTransferRequest) error
 	DeleteDTagTransferRequest(request types.DTagTransferRequest) error
 	SaveChainLink(link types.ChainLink) error
-	SaveDefaultChainLink(chainLink types.ChainLink) error
 	DeleteChainLink(user string, externalAddress string, chainName string, height int64) error
-	DeleteProfileChainLinks(user string) error
+	DeleteAllChainLinks(height int64) error
+	SaveDefaultChainLink(chainLink types.ChainLink) error
+	DeleteAllDefaultChainLinks(height int64) error
 	SaveApplicationLink(link types.ApplicationLink) error
 	GetApplicationLinkInfos() ([]types.ApplicationLinkInfo, error)
 	DeleteApplicationLink(user, application, username string, height int64) error
+	DeleteAllApplicationLinks(height int64) error
 }

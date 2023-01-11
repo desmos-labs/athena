@@ -135,6 +135,12 @@ func (m *Module) queryAllProfiles(height int64) ([]*types.Profile, error) {
 
 // RefreshChainLinks fetches and stores all the chain links present on the chain
 func (m *Module) RefreshChainLinks(height int64) error {
+	// Delete the existing chain links
+	err := m.db.DeleteAllChainLinks(height)
+	if err != nil {
+		return err
+	}
+
 	// Get the chain links
 	chainLinks, err := m.queryAllChainLinks(height)
 	if err != nil {
@@ -143,6 +149,7 @@ func (m *Module) RefreshChainLinks(height int64) error {
 
 	// Save the chain links
 	for _, chainLink := range chainLinks {
+		log.Debug().Str("module", "profiles").Str("user", chainLink.User).Str("chain", chainLink.ChainConfig.Name).Msg("saving chain link")
 		err = m.db.SaveChainLink(chainLink)
 		if err != nil {
 			return err
@@ -155,8 +162,15 @@ func (m *Module) RefreshChainLinks(height int64) error {
 		return err
 	}
 
+	// Delete the default chain links
+	err = m.db.DeleteAllDefaultChainLinks(height)
+	if err != nil {
+		return err
+	}
+
 	// Save the default chain links
 	for _, chainLink := range defaultChainLinks {
+		log.Debug().Str("module", "profiles").Str("user", chainLink.User).Str("chain", chainLink.ChainConfig.Name).Msg("saving default chain link")
 		err = m.db.SaveDefaultChainLink(chainLink)
 		if err != nil {
 			return err
@@ -230,6 +244,12 @@ func (m *Module) queryAllDefaultChainLinks(height int64) ([]types.ChainLink, err
 
 // RefreshApplicationLinks fetches and stores all the application links present on the chain
 func (m *Module) RefreshApplicationLinks(height int64) error {
+	// Delete all the application links
+	err := m.db.DeleteAllApplicationLinks(height)
+	if err != nil {
+		return err
+	}
+
 	// Get the chain links
 	applicationLinks, err := m.queryAllApplicationLinks(height)
 	if err != nil {
@@ -237,8 +257,12 @@ func (m *Module) RefreshApplicationLinks(height int64) error {
 	}
 
 	// Save the application links
-	for _, chainLink := range applicationLinks {
-		err = m.db.SaveApplicationLink(chainLink)
+	for _, applicationLink := range applicationLinks {
+		log.Debug().Str("module", "applications").Str("user", applicationLink.User).
+			Str("application", applicationLink.Data.Application).
+			Str("username", applicationLink.Data.Username).
+			Msg("saving application link")
+		err = m.db.SaveApplicationLink(applicationLink)
 		if err != nil {
 			return err
 		}

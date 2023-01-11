@@ -242,6 +242,26 @@ func (db *Db) getChainLinkConfigID(name string) (int64, error) {
 	return id, err
 }
 
+// DeleteChainLink removes from the database the chain link made for the given user and having the provided
+// external address and linked to the chain with the given name
+func (db *Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
+	stmt := `
+DELETE FROM chain_link 
+WHERE user_address = $1 
+  AND external_address = $2
+  AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)
+  AND height <= $4`
+	_, err := db.SQL.Exec(stmt, user, externalAddress, chainName, height)
+	return err
+}
+
+// DeleteAllChainLinks deletes all the chain links having a height lower than the given one
+func (db *Db) DeleteAllChainLinks(height int64) error {
+	stmt := `DELETE FROM chain_link WHERE height <= $1`
+	_, err := db.SQL.Exec(stmt, height)
+	return err
+}
+
 // SaveDefaultChainLink saves the given chain link as a default chain link
 func (db *Db) SaveDefaultChainLink(chainLink types.ChainLink) error {
 	stmt := `
@@ -273,22 +293,10 @@ WHERE default_chain_link.height <= excluded.height`
 	return err
 }
 
-// DeleteChainLink removes from the database the chain link made for the given user and having the provided
-// external address and linked to the chain with the given name
-func (db *Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
-	stmt := `
-DELETE FROM chain_link 
-WHERE user_address = $1 
-  AND external_address = $2
-  AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)
-  AND height <= $4`
-	_, err := db.SQL.Exec(stmt, user, externalAddress, chainName, height)
-	return err
-}
-
-// DeleteProfileChainLinks deletes all the chain links for the user having the given address
-func (db *Db) DeleteProfileChainLinks(user string) error {
-	_, err := db.SQL.Exec(`DELETE from chain_link WHERE user_address = $1`, user)
+// DeleteAllDefaultChainLinks removes all default chain links having a height lower than the one specified
+func (db *Db) DeleteAllDefaultChainLinks(height int64) error {
+	stmt := `DELETE FROM default_chain_link WHERE height <= $1`
+	_, err := db.SQL.Exec(stmt, height)
 	return err
 }
 
@@ -411,5 +419,12 @@ WHERE user_address = $1
   AND username = $3 
   AND height <= $4`
 	_, err := db.SQL.Exec(stmt, user, application, username, height)
+	return err
+}
+
+// DeleteAllApplicationLinks deletes all the application links that have a height equal or lower to the one given
+func (db *Db) DeleteAllApplicationLinks(height int64) error {
+	stmt := `DELETE FROM application_link WHERE height <= $1`
+	_, err := db.SQL.Exec(stmt, height)
 	return err
 }
