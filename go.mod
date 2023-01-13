@@ -27,7 +27,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.23
-	google.golang.org/api v0.106.0
+	google.golang.org/api v0.107.0
 	google.golang.org/grpc v1.52.0
 	gopkg.in/yaml.v3 v3.0.1
 )
