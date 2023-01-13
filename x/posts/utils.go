@@ -35,7 +35,7 @@ func (m *Module) GetPost(height int64, subspaceID uint64, postID uint64) (types.
 
 // updatePostAttachments updates the stored attachments for the post having the given id
 func (m *Module) updatePostAttachments(height int64, subspaceID uint64, postID uint64) error {
-	attachments, err := m.getPostAttachments(height, subspaceID, postID)
+	attachments, err := m.GetPostAttachments(height, subspaceID, postID)
 	if err != nil {
 		return fmt.Errorf("error while getting post attachments: %s", err)
 	}
@@ -50,7 +50,7 @@ func (m *Module) updatePostAttachments(height int64, subspaceID uint64, postID u
 	return nil
 }
 
-func (m *Module) getPostAttachments(height int64, subspaceID uint64, postID uint64) ([]types.PostAttachment, error) {
+func (m *Module) GetPostAttachments(height int64, subspaceID uint64, postID uint64) ([]types.PostAttachment, error) {
 	var attachments []types.PostAttachment
 	var nextKey []byte
 	var stop = false
