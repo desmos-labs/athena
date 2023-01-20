@@ -31,6 +31,7 @@ type Module struct {
 	reactionsModule ReactionsModule
 
 	notificationBuilder notificationsbuilder.NotificationsBuilder
+	messagesBuilder     notificationsbuilder.MessagesBuilder
 }
 
 // NewModule returns a new Module instance
@@ -67,7 +68,8 @@ func NewModule(
 		panic(err)
 	}
 
-	return &Module{
+	// Build the module
+	module := &Module{
 		cdc:             cdc,
 		db:              db,
 		cfg:             cfg,
@@ -76,6 +78,11 @@ func NewModule(
 		postsModule:     postsModule,
 		reactionsModule: reactionsModule,
 	}
+
+	// Set the default messages builder
+	module = module.WithMessagesBuilder(module.BuildMessage)
+
+	return module
 }
 
 // Name implements modules.Module
@@ -87,6 +94,14 @@ func (m *Module) Name() string {
 func (m *Module) WithNotificationsBuilder(builder notificationsbuilder.NotificationsBuilder) *Module {
 	if builder != nil {
 		m.notificationBuilder = builder
+	}
+	return m
+}
+
+// WithMessagesBuilder sets the given builder as the messages builder
+func (m *Module) WithMessagesBuilder(builder notificationsbuilder.MessagesBuilder) *Module {
+	if builder != nil {
+		m.messagesBuilder = builder
 	}
 	return m
 }

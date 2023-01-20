@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"firebase.google.com/go/v4/messaging"
-
 	"github.com/desmos-labs/djuno/v2/types"
 )
 
@@ -25,39 +23,6 @@ func (m *Module) getUserTokens(recipient string) ([]string, error) {
 	return tokensValues, nil
 }
 
-// BuildMessage builds the notification message that should be sent based on the given recipient, notifiation and data
-func (m *Module) BuildMessage(recipient types.NotificationRecipient, config *types.NotificationConfig) (types.NotificationMessage, error) {
-	switch recipient := recipient.(type) {
-	case *types.NotificationTopicRecipient:
-		return types.NewSingleNotificationMessage(&messaging.Message{
-			Topic:        recipient.Topic,
-			Data:         config.Data,
-			Notification: config.Notification,
-			Android:      config.Android,
-			APNS:         config.APNS,
-		}), nil
-
-	case *types.NotificationUserRecipient:
-		tokens, err := m.getUserTokens(recipient.Address)
-		if err != nil {
-			return nil, err
-		}
-		if len(tokens) == 0 {
-			return nil, nil
-		}
-		return types.NewMultiNotificationMessage(&messaging.MulticastMessage{
-			Tokens:       tokens,
-			Data:         config.Data,
-			Notification: config.Notification,
-			Android:      config.Android,
-			APNS:         config.APNS,
-		}), nil
-
-	default:
-		return nil, fmt.Errorf("invalid notification recipient: %T", recipient)
-	}
-}
-
 // SendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
 func (m *Module) SendNotification(recipient types.NotificationRecipient, config *types.NotificationConfig) error {
@@ -66,7 +31,7 @@ func (m *Module) SendNotification(recipient types.NotificationRecipient, config 
 	}
 
 	// Build the message
-	message, err := m.BuildMessage(recipient, config)
+	message, err := m.messagesBuilder(recipient, config)
 	if err != nil {
 		return err
 	}
