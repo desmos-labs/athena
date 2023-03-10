@@ -5,9 +5,9 @@ on:
   pull_request:
   push:
     tags:
+      - '*'
     branches:
       - main
-
 
 jobs:
   Build-and-Publish:
