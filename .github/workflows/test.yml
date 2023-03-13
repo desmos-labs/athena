@@ -38,6 +38,7 @@ jobs:
             go.sum
 
       - name: Build 🔨
+        if: env.GIT_DIFF
         run: make build
 
       - name: Test & Coverage report creation 🧪
@@ -45,6 +46,7 @@ jobs:
         if: env.GIT_DIFF
 
       - name: Upload coverage 📤
+        if: env.GIT_DIFF
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.txt
