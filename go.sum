@@ -869,12 +869,12 @@ github.com/libp2p/go-buffer-pool v0.1.0 h1:oK4mSFcQz7cTQIfqbe4MIj9gLW+mnanjyFtc6
 github.com/libp2p/go-buffer-pool v0.1.0/go.mod h1:N+vh8gMqimBzdKkSMVuydVDq+UV5QTWy5HSiZacSbPg=
 github.com/lightstep/lightstep-tracer-common/golang/gogo v0.0.0-20190605223551-bc2310a04743/go.mod h1:qklhhLq1aX+mtWk9cPHPzaBjWImj5ULL6C7HFJtXQMM=
 github.com/lightstep/lightstep-tracer-go v0.18.1/go.mod h1:jlF1pusYV4pidLvZ+XD0UBX0ZE6WURAspgAczcDHrL4=
-github.com/likexian/gokit v0.25.10 h1:hNTOPFpgiMfCWQJkxKqaVQoR0qTu1iLc80zm5s3QskU=
-github.com/likexian/gokit v0.25.10/go.mod h1:YB8W4bVK51ge7aONXa+IUtsyOAo7YhG075ZsWmQIwAo=
+github.com/likexian/gokit v0.25.11 h1:o5H5JgVtBYBQn0QX30zE5+V8j2rgLTDoZWAO8xLFFfY=
+github.com/likexian/gokit v0.25.11/go.mod h1:IKRQFPah2KQ0HL3iVjaOvFbx2apkSdFicGmsA0A4a1c=
 github.com/likexian/whois v1.14.5 h1:9cw8ljMHfc8KwGDxxeSOzD8RTzZ7CsNC8ngjUz/rM7c=
 github.com/likexian/whois v1.14.5/go.mod h1:J7pC+b5CrldSfZyNDf9q3D3M44/CNXNouyZJG5j/h+Q=
-github.com/likexian/whois-parser v1.24.4 h1:Bs51C5wUeLTsNGDHPcY0KMHGWUmffSW0KRURyP27ZlI=
-github.com/likexian/whois-parser v1.24.4/go.mod h1:Big+6yEUFc94zBwnLYdU3PzMDASAbYc3X5+kUg24N8M=
+github.com/likexian/whois-parser v1.24.5 h1:q9bxJ1EyokyToAOOrzPh7KoVMqc3j+4blZJxGNZb5XA=
+github.com/likexian/whois-parser v1.24.5/go.mod h1:MJN8IUeQ55VSG2OCB01a88T6V6VQm/UYxKLQySSqdSc=
 github.com/lucasjones/reggen v0.0.0-20180717132126-cdb49ff09d77/go.mod h1:5ELEyG+X8f+meRWHuqUOewBOhvHkl7M76pdGEansxW4=
 github.com/lufeee/execinquery v1.2.1 h1:hf0Ems4SHcUGBxpGN7Jz78z1ppVkP/837ZlETPCEtOM=
 github.com/lufeee/execinquery v1.2.1/go.mod h1:EC7DrEKView09ocscGHC+apXMIaorh4xqSxS/dy8SbM=
