@@ -100,7 +100,7 @@ func (m *Module) handleMsgExecuteContract(tx *juno.Tx, msg *wasmtypes.MsgExecute
 	}
 
 	// Don't store the tip if the target is a post and the post doesn't exist
-	if postTarget, ok := tip.Target.(*types.PostTarget); ok {
+	if postTarget, ok := tip.Target.(types.PostTarget); ok {
 		subspaceID, err := subspacestypes.ParseSubspaceID(config.SubspaceID)
 		if err != nil {
 			return err

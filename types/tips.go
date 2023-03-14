@@ -24,6 +24,10 @@ type Target interface {
 	isTarget()
 }
 
+var (
+	_ Target = UserTarget{}
+)
+
 type UserTarget struct {
 	Address string
 }
@@ -35,6 +39,10 @@ func NewUserTarget(address string) UserTarget {
 }
 
 func (u UserTarget) isTarget() {}
+
+var (
+	_ Target = PostTarget{}
+)
 
 type PostTarget struct {
 	PostID uint64
