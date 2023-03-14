@@ -5,6 +5,8 @@ import (
 )
 
 type Database interface {
+	HasPost(height int64, subspaceID uint64, postID uint64) (bool, error)
+
 	SaveReaction(reaction types.Reaction) error
 	DeleteReaction(height int64, subspaceID uint64, postID uint64, reactionID uint32) error
 	DeleteAllReactions(height int64, subspaceID uint64, postID uint64) error

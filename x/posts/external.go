@@ -54,6 +54,32 @@ func (m *Module) RefreshPostsData(height int64, subspaceID uint64) error {
 
 // RefreshPostData refreshes the data associated with the given post at the specified height
 func (m *Module) RefreshPostData(height int64, postTxs []types.PostTransaction, post types.Post) error {
+	// Make sure the post conversation was stored properly
+	if post.ConversationID != 0 {
+		conversationExists, err := m.db.HasPost(height, post.SubspaceID, post.ConversationID)
+		if err != nil {
+			return err
+		}
+
+		// Skip posts for which we have not stored the conversation yet
+		if !conversationExists {
+			return nil
+		}
+	}
+
+	// Make sure the post reference all exists properly
+	for _, reference := range post.ReferencedPosts {
+		referenceExists, err := m.db.HasPost(height, post.SubspaceID, reference.PostID)
+		if err != nil {
+			return err
+		}
+
+		// Skip posts for which we have not stored the reference yet
+		if !referenceExists {
+			return nil
+		}
+	}
+
 	log.Debug().Uint64("subspace", post.SubspaceID).Uint64("post", post.ID).Msg("refreshing post")
 
 	err := m.db.SavePost(post)

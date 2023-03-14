@@ -264,6 +264,14 @@ func (db *Db) savePostReferences(subspaceID uint64, postRowID uint64, references
 	return err
 }
 
+// HasPost returns true if the post with the given id exists inside the database
+func (db *Db) HasPost(height int64, subspaceID uint64, postID uint64) (bool, error) {
+	stmt := `SELECT EXISTS(SELECT 1 FROM post WHERE subspace_id = $1 AND id = $2 AND height <= $3)`
+	var exists bool
+	err := db.SQL.QueryRow(stmt, subspaceID, postID, height).Scan(&exists)
+	return exists, err
+}
+
 // DeletePost removes the post with the given details from the database
 func (db *Db) DeletePost(height int64, subspaceID uint64, postID uint64) error {
 	stmt := `DELETE FROM post WHERE subspace_id = $1 AND id = $2 AND height <= $3`

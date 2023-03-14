@@ -6,6 +6,7 @@ import (
 
 type Database interface {
 	SavePost(post types.Post) error
+	HasPost(height int64, subspaceID uint64, postID uint64) (bool, error)
 	DeletePost(height int64, subspaceID uint64, postID uint64) error
 	DeleteAllPosts(height int64, subspaceID uint64) error
 	SavePostTx(tx types.PostTransaction) error

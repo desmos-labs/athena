@@ -72,6 +72,16 @@ func (m *Module) queryAllRegisteredReactions(height int64, subspaceID uint64) ([
 
 // RefreshReactionsData refreshes the reactions data for the given post
 func (m *Module) RefreshReactionsData(height int64, subspaceID uint64, postID uint64) error {
+	postExists, err := m.db.HasPost(height, subspaceID, postID)
+	if err != nil {
+		return err
+	}
+
+	// Don't refresh reactions for a post that does not exist
+	if !postExists {
+		return nil
+	}
+
 	reactions, err := m.queryAllReactions(height, subspaceID, postID)
 	if err != nil {
 		return err
