@@ -7,5 +7,6 @@ import (
 
 type Database interface {
 	contractsbase.Database
+	HasPost(height int64, subspaceID uint64, postID uint64) (bool, error)
 	SaveTip(tip types.Tip) error
 }
