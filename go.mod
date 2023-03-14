@@ -8,7 +8,7 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.2.0
 	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/ibc-go/v3 v3.4.0
-	github.com/desmos-labs/desmos/v4 v4.7.0
+	github.com/desmos-labs/desmos/v4 v4.7.1
 	github.com/forbole/juno/v4 v4.1.0
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
