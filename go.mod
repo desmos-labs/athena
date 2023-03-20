@@ -13,21 +13,21 @@ require (
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
-	github.com/go-co-op/gocron v1.18.1
+	github.com/go-co-op/gocron v1.19.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golangci/golangci-lint v1.51.0
 	github.com/google/go-github/v48 v48.2.0
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/lib/pq v1.10.7
 	github.com/likexian/whois v1.14.5
-	github.com/likexian/whois-parser v1.24.5
+	github.com/likexian/whois-parser v1.24.6
 	github.com/nicklaw5/helix v1.25.0
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.23
-	google.golang.org/api v0.112.0
+	google.golang.org/api v0.114.0
 	google.golang.org/grpc v1.53.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -155,7 +155,7 @@ require (
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
-	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.7.1 // indirect
 	github.com/gordonklaus/ineffassign v0.0.0-20210914165742-4cc7213b9bc8 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
@@ -310,8 +310,8 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
-	google.golang.org/genproto v0.0.0-20230303212802-e74f57abe488 // indirect
-	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8 // indirect
+	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
+	google.golang.org/protobuf v1.29.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.4.0-0.dev.0.20221209223220-58c4d7e4b720 // indirect
