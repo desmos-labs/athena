@@ -20,7 +20,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/lib/pq v1.10.7
 	github.com/likexian/whois v1.14.5
-	github.com/likexian/whois-parser v1.24.6
+	github.com/likexian/whois-parser v1.24.7
 	github.com/nicklaw5/helix v1.25.0
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.29.0
