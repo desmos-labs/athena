@@ -16,7 +16,7 @@
 #
 # To exit the bash, just execute
 # > exit
-FROM golang:1.18-alpine
+FROM golang:1.19-alpine
 ARG arch=x86_64
 
 # Set up dependencies
