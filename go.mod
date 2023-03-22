@@ -15,7 +15,7 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-co-op/gocron v1.19.0
 	github.com/gogo/protobuf v1.3.3
-	github.com/golangci/golangci-lint v1.52.0
+	github.com/golangci/golangci-lint v1.52.1
 	github.com/google/go-github/v48 v48.2.0
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/lib/pq v1.10.7
