@@ -13,12 +13,12 @@ require (
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
-	github.com/go-co-op/gocron v1.22.0
+	github.com/go-co-op/gocron v1.22.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golangci/golangci-lint v1.52.2
 	github.com/google/go-github/v48 v48.2.0
 	github.com/jmoiron/sqlx v1.3.5 // indirect
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.8
 	github.com/likexian/whois v1.14.6
 	github.com/likexian/whois-parser v1.24.7
 	github.com/nicklaw5/helix v1.25.0
