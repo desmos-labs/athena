@@ -13,7 +13,7 @@ require (
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
-	github.com/go-co-op/gocron v1.22.2
+	github.com/go-co-op/gocron v1.22.3
 	github.com/gogo/protobuf v1.3.3
 	github.com/golangci/golangci-lint v1.52.2
 	github.com/google/go-github/v48 v48.2.0
