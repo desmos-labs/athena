@@ -18,7 +18,7 @@ require (
 	github.com/golangci/golangci-lint v1.52.2
 	github.com/google/go-github/v48 v48.2.0
 	github.com/jmoiron/sqlx v1.3.5 // indirect
-	github.com/lib/pq v1.10.8
+	github.com/lib/pq v1.10.9
 	github.com/likexian/whois v1.14.6
 	github.com/likexian/whois-parser v1.24.7
 	github.com/nicklaw5/helix v1.25.0
