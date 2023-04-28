@@ -1,9 +1,6 @@
 package relationships
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/desmos-labs/djuno/v2/x/filters"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
@@ -57,13 +54,6 @@ func (m *Module) HandleMsg(_ int, msg sdk.Msg, tx *juno.Tx) error {
 
 // handleMsgCreateRelationship allows to handle a MsgCreateRelationship properly
 func (m *Module) handleMsgCreateRelationship(tx *juno.Tx, msg *relationshipstypes.MsgCreateRelationship) error {
-	// Update the involved accounts profiles
-	addresses := []string{msg.Signer, msg.Counterparty}
-	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
 	return m.db.SaveRelationship(types.NewRelationship(
 		relationshipstypes.NewRelationship(msg.Signer, msg.Counterparty, msg.SubspaceID),
 		tx.Height,
@@ -82,13 +72,6 @@ func (m *Module) handleMsgDeleteRelationship(tx *juno.Tx, msg *relationshipstype
 
 // handleMsgBlockUser allows to handle a MsgBlockUser properly
 func (m *Module) handleMsgBlockUser(tx *juno.Tx, msg *relationshipstypes.MsgBlockUser) error {
-	// Update the involved accounts profiles
-	addresses := []string{msg.Blocked, msg.Blocker}
-	err := m.profilesModule.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
 	return m.db.SaveUserBlock(types.NewBlockage(
 		relationshipstypes.NewUserBlock(
 			msg.Blocker,

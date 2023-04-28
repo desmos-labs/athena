@@ -1,9 +1,6 @@
 package profiles
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/desmos-labs/djuno/v2/x/filters"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
@@ -96,13 +93,6 @@ func (m *Module) handleMsgDeleteProfile(tx *juno.Tx, msg *profilestypes.MsgDelet
 
 // handleMsgRequestDTagTransfer handles a MsgRequestDTagTransfer storing the request into the database
 func (m *Module) handleMsgRequestDTagTransfer(tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer) error {
-	// Update the involved accounts profiles
-	addresses := []string{msg.Receiver, msg.Sender}
-	err := m.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
 	event, err := tx.FindEventByType(index, profilestypes.EventTypeDTagTransferRequest)
 	if err != nil {
 		return err
@@ -138,15 +128,8 @@ func (m *Module) handleDTagTransferRequestDeletion(height int64, sender, receive
 
 // handleMsgChainLink allows to handle a MsgLinkChainAccount properly
 func (m *Module) handleMsgChainLink(tx *juno.Tx, msg *profilestypes.MsgLinkChainAccount) error {
-	// Update the involved account profile
-	addresses := []string{msg.Signer}
-	err := m.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
 	// Save the chain links
-	err = m.updateUserChainLinks(tx.Height, msg.Signer)
+	err := m.updateUserChainLinks(tx.Height, msg.Signer)
 	if err != nil {
 		return err
 	}
@@ -170,13 +153,6 @@ func (m *Module) handleMsgUnlinkChainAccount(tx *juno.Tx, msg *profilestypes.Msg
 
 // handleMsgLinkApplication allows to handle a MsgLinkApplication properly
 func (m *Module) handleMsgLinkApplication(tx *juno.Tx, msg *profilestypes.MsgLinkApplication) error {
-	// Update the involved account profile
-	addresses := []string{msg.Sender}
-	err := m.UpdateProfiles(tx.Height, addresses)
-	if err != nil {
-		return fmt.Errorf("error while updating profiles: %s", strings.Join(addresses, ","))
-	}
-
 	return m.updateUserApplicationLinks(tx.Height, msg.Sender)
 }
 
