@@ -20,7 +20,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/lib/pq v1.10.9
 	github.com/likexian/whois v1.14.6
-	github.com/likexian/whois-parser v1.24.7
+	github.com/likexian/whois-parser v1.24.8
 	github.com/nicklaw5/helix v1.25.0
 	github.com/proullon/ramsql v0.0.0-20181213202341-817cee58a244
 	github.com/rs/zerolog v1.29.1
@@ -202,7 +202,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/leonklingele/grouper v1.1.1 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
-	github.com/likexian/gokit v0.25.11 // indirect
+	github.com/likexian/gokit v0.25.13 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/maratori/testableexamples v1.0.0 // indirect
