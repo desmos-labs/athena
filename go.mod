@@ -8,7 +8,7 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.4.0
 	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/ibc-go/v3 v3.4.0
-	github.com/desmos-labs/desmos/v4 v4.7.1
+	github.com/desmos-labs/desmos/v4 v4.8.1
 	github.com/forbole/juno/v4 v4.1.0
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
@@ -329,6 +329,9 @@ require (
 replace (
 	// Our wasmd branch is: https://github.com/desmos-labs/wasmd v0.28.x-desmos
 	github.com/CosmWasm/wasmd => github.com/desmos-labs/wasmd v0.29.0-desmos.2
+
+	// Fixes Cherry
+	github.com/CosmWasm/wasmvm => github.com/CosmWasm/wasmvm v1.1.2
 
 	// Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.45.x-desmos
 	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.45.11-desmos

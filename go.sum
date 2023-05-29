@@ -96,8 +96,8 @@ github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbi
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d h1:nalkkPQcITbvhmL4+C4cKA87NW0tfm3Kl9VXRoPywFg=
 github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d/go.mod h1:URdX5+vg25ts3aCh8H5IFZybJYKWhJHYMTnf+ULtoC4=
-github.com/CosmWasm/wasmvm v1.1.1 h1:0xtdrmmsP9fibe+x42WcMkp5aQ738BICgcH3FNVLzm4=
-github.com/CosmWasm/wasmvm v1.1.1/go.mod h1:ei0xpvomwSdONsxDuONzV7bL1jSET1M8brEx0FCXc+A=
+github.com/CosmWasm/wasmvm v1.1.2 h1:uvMk0iIJcFFUvdElmV9KQeeqRx7ESspxUrPjfCGki3M=
+github.com/CosmWasm/wasmvm v1.1.2/go.mod h1:ei0xpvomwSdONsxDuONzV7bL1jSET1M8brEx0FCXc+A=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/zstd v1.4.1/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
@@ -331,8 +331,8 @@ github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
 github.com/desmos-labs/cosmos-sdk v0.45.11-desmos h1:bygLchg74SwtXMVOY73l/0tgcOiQ5YioKST+Dn4z7fE=
 github.com/desmos-labs/cosmos-sdk v0.45.11-desmos/go.mod h1:45z8Q1Ah4iypFycu2Kl4kBPIsQKUiND8G2CUX+HTtPM=
-github.com/desmos-labs/desmos/v4 v4.7.1 h1:Ez272l9/Nq1j6SpKEsHpyhGSqfaa/GuKLc3I2hPVzsI=
-github.com/desmos-labs/desmos/v4 v4.7.1/go.mod h1:fm2UCWisnttCM7muygi3dWeiXjbrMSUjYVlALNuIdMc=
+github.com/desmos-labs/desmos/v4 v4.8.1 h1:R3oKEfa3U8NkGK/jR+d0VsuBO8ZRryF5Fifub5iOuws=
+github.com/desmos-labs/desmos/v4 v4.8.1/go.mod h1:n2ftLXSfqpQJv9moTBvTRQ55tcEjgn3h884fB2vJOtE=
 github.com/desmos-labs/wasmd v0.29.0-desmos.2 h1:L6XzOrsJSG1z552PO6lAy0qyxoIrcAy8Ro1KAduIYcQ=
 github.com/desmos-labs/wasmd v0.29.0-desmos.2/go.mod h1:Tn8u5o3n1k+WkZExMMlrXvhjjWfuEY0gs4m9ONgzMQk=
 github.com/dgraph-io/badger/v2 v2.2007.2/go.mod h1:26P/7fbL4kUZVEVKLAKXkBXKOydDmM2p1e+NhhnBCAE=
