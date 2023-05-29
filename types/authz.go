@@ -10,11 +10,11 @@ type AuthzGrant struct {
 	Granter       string
 	Grantee       string
 	Authorization authz.Authorization
-	Expiration    time.Time
+	Expiration    *time.Time
 	Height        int64
 }
 
-func NewAuthzGrant(granter, grantee string, authorization authz.Authorization, expiration time.Time, height int64) AuthzGrant {
+func NewAuthzGrant(granter, grantee string, authorization authz.Authorization, expiration *time.Time, height int64) AuthzGrant {
 	return AuthzGrant{
 		Granter:       granter,
 		Grantee:       grantee,

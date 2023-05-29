@@ -1,8 +1,8 @@
 package context
 
 import (
-	"github.com/forbole/juno/v4/modules/registrar"
-	"github.com/forbole/juno/v4/node"
+	"github.com/forbole/juno/v5/modules/registrar"
+	"github.com/forbole/juno/v5/node"
 	"google.golang.org/grpc"
 )
 

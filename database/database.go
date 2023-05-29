@@ -3,15 +3,15 @@ package database
 import (
 	"fmt"
 
-	junodb "github.com/forbole/juno/v4/database"
-	"github.com/forbole/juno/v4/database/postgresql"
-	juno "github.com/forbole/juno/v4/types"
+	"github.com/cosmos/cosmos-sdk/codec"
+	junodb "github.com/forbole/juno/v5/database"
+	"github.com/forbole/juno/v5/database/postgresql"
+	juno "github.com/forbole/juno/v5/types"
 
 	"github.com/desmos-labs/djuno/v2/x/authz"
 	contracts "github.com/desmos-labs/djuno/v2/x/contracts/base"
 	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
 	"github.com/desmos-labs/djuno/v2/x/feegrant"
-	"github.com/desmos-labs/djuno/v2/x/fees"
 	"github.com/desmos-labs/djuno/v2/x/notifications"
 	"github.com/desmos-labs/djuno/v2/x/posts"
 	"github.com/desmos-labs/djuno/v2/x/profiles"
@@ -29,7 +29,6 @@ type Database interface {
 	contracts.Database
 	tips.Database
 	feegrant.Database
-	fees.Database
 	notifications.Database
 	posts.Database
 	profiles.Database
@@ -49,6 +48,7 @@ var (
 // Db represents a PostgreSQL database with expanded features.
 // so that it can properly store posts and other Desmos-related data.
 type Db struct {
+	cdc codec.Codec
 	*postgresql.Database
 }
 
@@ -65,6 +65,7 @@ func Builder(ctx *junodb.Context) (junodb.Database, error) {
 	}
 
 	return &Db{
+		cdc:      ctx.EncodingConfig.Codec,
 		Database: psqlDb,
 	}, nil
 }

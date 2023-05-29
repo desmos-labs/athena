@@ -1,7 +1,7 @@
 package types
 
 import (
-	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v5/x/relationships/types"
 )
 
 type Relationship struct {

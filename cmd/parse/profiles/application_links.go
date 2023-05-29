@@ -5,9 +5,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
-	"github.com/forbole/juno/v4/node/remote"
-	"github.com/forbole/juno/v4/types/config"
+	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
+	"github.com/forbole/juno/v5/node/remote"
+	"github.com/forbole/juno/v5/types/config"
 	"github.com/spf13/cobra"
 
 	"github.com/desmos-labs/djuno/v2/database"
@@ -40,7 +40,7 @@ func applicationLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
+			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Codec, db)
 
 			// Refresh the application links
 			log.Info().Int64("height", height).Msg("refreshing applications links")

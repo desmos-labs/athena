@@ -1,8 +1,8 @@
 package builder
 
 import (
-	"github.com/forbole/juno/v4/node"
-	"github.com/forbole/juno/v4/types/config"
+	"github.com/forbole/juno/v5/node"
+	"github.com/forbole/juno/v5/types/config"
 	"google.golang.org/grpc"
 
 	"github.com/desmos-labs/djuno/v2/x/contracts"

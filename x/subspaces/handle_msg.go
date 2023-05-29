@@ -2,16 +2,15 @@ package subspaces
 
 import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	"github.com/gogo/protobuf/proto"
 
 	"github.com/desmos-labs/djuno/v2/x/filters"
 
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	juno "github.com/forbole/juno/v4/types"
+	juno "github.com/forbole/juno/v5/types"
 
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -74,7 +73,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgSetUserPermissions(tx, desmosMsg)
 	}
 
-	log.Debug().Str("module", "subspaces").Str("message", proto.MessageName(msg)).
+	log.Debug().Str("module", "subspaces").Str("message", sdk.MsgTypeURL(msg)).
 		Int64("height", tx.Height).Msg("handled message")
 
 	return nil

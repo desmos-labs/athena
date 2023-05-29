@@ -1,7 +1,7 @@
 package apis
 
 import (
-	"github.com/forbole/juno/v4/modules/registrar"
+	"github.com/forbole/juno/v5/modules/registrar"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 

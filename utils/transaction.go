@@ -1,10 +1,10 @@
 package utils
 
 import (
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
-	juno "github.com/forbole/juno/v4/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
+	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	juno "github.com/forbole/juno/v5/types"
 )
 
 func HasSubspaceIDAndPostIDAttributes(event abci.Event, subspaceID uint64, postID uint64) bool {
@@ -12,7 +12,7 @@ func HasSubspaceIDAndPostIDAttributes(event abci.Event, subspaceID uint64, postI
 	if err != nil {
 		return false
 	}
-	subspaceIDValue, err := subspacestypes.ParseSubspaceID(string(subspaceIDAttr.Value))
+	subspaceIDValue, err := subspacestypes.ParseSubspaceID(subspaceIDAttr.Value)
 	if err != nil {
 		return false
 	}
@@ -21,7 +21,7 @@ func HasSubspaceIDAndPostIDAttributes(event abci.Event, subspaceID uint64, postI
 	if err != nil {
 		return false
 	}
-	postIDValue, err := poststypes.ParsePostID(string(postIDAttr.Value))
+	postIDValue, err := poststypes.ParsePostID(postIDAttr.Value)
 	if err != nil {
 		return false
 	}

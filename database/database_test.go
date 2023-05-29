@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	junodb "github.com/forbole/juno/v4/database"
-	junodbcfg "github.com/forbole/juno/v4/database/config"
-	"github.com/forbole/juno/v4/logging"
+	junodb "github.com/forbole/juno/v5/database"
+	junodbcfg "github.com/forbole/juno/v5/database/config"
+	"github.com/forbole/juno/v5/logging"
 
 	"github.com/stretchr/testify/suite"
 
-	desmosapp "github.com/desmos-labs/desmos/v4/app"
+	desmosapp "github.com/desmos-labs/desmos/v5/app"
 
 	"github.com/desmos-labs/djuno/v2/database"
 

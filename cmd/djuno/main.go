@@ -1,13 +1,14 @@
 package main
 
 import (
-	junocmd "github.com/forbole/juno/v4/cmd"
-	initcmd "github.com/forbole/juno/v4/cmd/init"
-	migratecmd "github.com/forbole/juno/v4/cmd/migrate"
-	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
-	startcmd "github.com/forbole/juno/v4/cmd/start"
+	"cosmossdk.io/simapp/params"
+	junocmd "github.com/forbole/juno/v5/cmd"
+	initcmd "github.com/forbole/juno/v5/cmd/init"
+	migratecmd "github.com/forbole/juno/v5/cmd/migrate"
+	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
+	startcmd "github.com/forbole/juno/v5/cmd/start"
 
-	desmosapp "github.com/desmos-labs/desmos/v4/app"
+	desmosapp "github.com/desmos-labs/desmos/v5/app"
 
 	parsecmd "github.com/desmos-labs/djuno/v2/cmd/parse"
 	desmosdb "github.com/desmos-labs/djuno/v2/database"
@@ -18,7 +19,7 @@ func main() {
 	// Setup the config
 	parseCfg := parsecmdtypes.NewConfig().
 		WithRegistrar(x.NewModulesRegistrar()).
-		WithEncodingConfigBuilder(desmosapp.MakeTestEncodingConfig).
+		WithEncodingConfigBuilder(makeEncodingConfig).
 		WithDBBuilder(desmosdb.Builder)
 
 	cfg := junocmd.NewConfig("djuno").
@@ -39,5 +40,15 @@ func main() {
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
+	}
+}
+
+func makeEncodingConfig() params.EncodingConfig {
+	config := desmosapp.MakeEncodingConfig()
+	return params.EncodingConfig{
+		InterfaceRegistry: config.InterfaceRegistry,
+		Codec:             config.Marshaler,
+		TxConfig:          config.TxConfig,
+		Amino:             config.Amino,
 	}
 }

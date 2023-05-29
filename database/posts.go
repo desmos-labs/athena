@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
 
 	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 	"github.com/desmos-labs/djuno/v2/types"
@@ -335,7 +335,7 @@ ON CONFLICT ON CONSTRAINT unique_post_attachment DO UPDATE
         height = excluded.height
 WHERE post_attachment.height <= excluded.height`
 
-	contentBz, err := db.EncodingConfig.Marshaler.MarshalJSON(attachment.Content)
+	contentBz, err := db.cdc.MarshalJSON(attachment.Content)
 	if err != nil {
 		return fmt.Errorf("failed to json encode attachment content: %s", err)
 	}

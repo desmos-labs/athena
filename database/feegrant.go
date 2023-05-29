@@ -18,7 +18,7 @@ func (db *Db) SaveFeeGrant(grant types.FeeGrant) error {
 	if !ok {
 		return fmt.Errorf("cannot proto marshal %T", grant.Allowance)
 	}
-	allowanceBz, err := db.EncodingConfig.Marshaler.MarshalInterfaceJSON(msg)
+	allowanceBz, err := db.cdc.MarshalInterfaceJSON(msg)
 	if err != nil {
 		return fmt.Errorf("cannot encode %T", msg)
 	}

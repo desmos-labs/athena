@@ -2,16 +2,15 @@ package reactions
 
 import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	"github.com/gogo/protobuf/proto"
 
 	"github.com/desmos-labs/djuno/v2/x/filters"
 
-	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v5/x/reactions/types"
 
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	juno "github.com/forbole/juno/v4/types"
+	juno "github.com/forbole/juno/v5/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule
@@ -45,7 +44,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgSetReactionsParams(tx, desmosMsg)
 	}
 
-	log.Debug().Str("module", "reactions").Str("message", proto.MessageName(msg)).
+	log.Debug().Str("module", "reactions").Str("message", sdk.MsgTypeURL(msg)).
 		Int64("height", tx.Height).Msg("handled message")
 
 	return nil

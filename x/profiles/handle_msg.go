@@ -5,15 +5,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/gogo/protobuf/proto"
-
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	juno "github.com/forbole/juno/v4/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	juno "github.com/forbole/juno/v5/types"
 
-	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v5/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -70,7 +68,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgUnlinkApplication(tx, desmosMsg)
 	}
 
-	log.Debug().Str("module", "profiles").Str("message", proto.MessageName(msg)).
+	log.Debug().Str("module", "profiles").Str("message", sdk.MsgTypeURL(msg)).
 		Int64("height", tx.Height).Msg("handled message")
 
 	return nil

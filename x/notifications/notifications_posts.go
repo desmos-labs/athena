@@ -5,7 +5,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"

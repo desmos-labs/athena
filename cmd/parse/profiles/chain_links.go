@@ -3,9 +3,9 @@ package profiles
 import (
 	"fmt"
 
-	parsecmdtypes "github.com/forbole/juno/v4/cmd/parse/types"
-	"github.com/forbole/juno/v4/node/remote"
-	"github.com/forbole/juno/v4/types/config"
+	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
+	"github.com/forbole/juno/v5/node/remote"
+	"github.com/forbole/juno/v5/types/config"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
@@ -39,7 +39,7 @@ func chainLinksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
-			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Marshaler, db)
+			profilesModule := profiles.NewModule(parseCtx.Node, grpcConnection, parseCtx.EncodingConfig.Codec, db)
 
 			// Refresh the chain links
 			log.Info().Int64("height", height).Msg("refreshing chain links")

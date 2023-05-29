@@ -5,9 +5,9 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/types"
 
-	tmtypes "github.com/tendermint/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
 )
 
 // HandleGenesis implements modules.GenesisModule

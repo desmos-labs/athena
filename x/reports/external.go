@@ -6,9 +6,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/forbole/juno/v4/node/remote"
+	"github.com/forbole/juno/v5/node/remote"
 
-	reportstypes "github.com/desmos-labs/desmos/v4/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v5/x/reports/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	juno "github.com/forbole/juno/v4/types"
+	juno "github.com/forbole/juno/v5/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -34,10 +34,15 @@ func (m *Module) handleMsgGrant(tx *juno.Tx, msg *authz.MsgGrant) error {
 		return fmt.Errorf("error when unpacking authorization: %s", err)
 	}
 
+	authorization, err := msg.Grant.GetAuthorization()
+	if err != nil {
+		return fmt.Errorf("error when getting authorization: %s", err)
+	}
+
 	return m.db.SaveAuthzGrant(types.NewAuthzGrant(
 		msg.Granter,
 		msg.Grantee,
-		msg.Grant.GetAuthorization(),
+		authorization,
 		msg.Grant.Expiration,
 		tx.Height,
 	))

@@ -6,8 +6,8 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/forbole/juno/v4/modules"
-	"github.com/forbole/juno/v4/types/config"
+	"github.com/forbole/juno/v5/modules"
+	"github.com/forbole/juno/v5/types/config"
 	"google.golang.org/api/option"
 
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"

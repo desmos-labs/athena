@@ -23,7 +23,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_report DO UPDATE
 WHERE report.height <= excluded.height
 RETURNING row_id`
 
-	targetBz, err := db.EncodingConfig.Marshaler.MarshalJSON(report.Target)
+	targetBz, err := db.cdc.MarshalJSON(report.Target)
 	if err != nil {
 		return fmt.Errorf("failed to json encode report target: %s", err)
 	}

@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"sort"
 
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 
 	"github.com/desmos-labs/djuno/v2/utils"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/forbole/juno/v4/node/remote"
+	"github.com/forbole/juno/v5/node/remote"
 
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

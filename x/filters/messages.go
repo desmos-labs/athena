@@ -2,8 +2,8 @@ package filters
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
-	"github.com/forbole/juno/v4/types/config"
+	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	"github.com/forbole/juno/v5/types/config"
 )
 
 var (

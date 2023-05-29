@@ -10,7 +10,7 @@ import (
 // SaveAuthzGrant saves the given grant inside the database
 func (db *Db) SaveAuthzGrant(grant types.AuthzGrant) error {
 	// Serialize the authorizations
-	authzBz, err := db.EncodingConfig.Marshaler.MarshalInterfaceJSON(grant.Authorization)
+	authzBz, err := db.cdc.MarshalInterfaceJSON(grant.Authorization)
 	if err != nil {
 		return fmt.Errorf("error while marshalling authorization to json: %s", err)
 	}

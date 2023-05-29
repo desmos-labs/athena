@@ -2,11 +2,11 @@ package reactions
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/forbole/juno/v4/modules"
-	"github.com/forbole/juno/v4/node"
+	"github.com/forbole/juno/v5/modules"
+	"github.com/forbole/juno/v5/node"
 	"google.golang.org/grpc"
 
-	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v5/x/reactions/types"
 )
 
 var (

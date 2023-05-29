@@ -3,10 +3,10 @@ package contracts
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	"github.com/forbole/juno/v4/modules"
+	"github.com/forbole/juno/v5/modules"
 	"github.com/rs/zerolog/log"
 
-	juno "github.com/forbole/juno/v4/types"
+	juno "github.com/forbole/juno/v5/types"
 )
 
 // SmartContractModule represents a generic smart contract module

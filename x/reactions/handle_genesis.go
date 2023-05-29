@@ -3,11 +3,11 @@ package reactions
 import (
 	"encoding/json"
 
-	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v5/x/reactions/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 
-	tmtypes "github.com/tendermint/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 )
 
 // HandleGenesis implements modules.GenesisModule

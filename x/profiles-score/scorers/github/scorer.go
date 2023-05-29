@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/forbole/juno/v4/types/config"
+	"github.com/forbole/juno/v5/types/config"
 	"github.com/google/go-github/v48/github"
 
 	"github.com/desmos-labs/djuno/v2/types"

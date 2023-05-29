@@ -10,7 +10,7 @@ import (
 // CreateNotificationsBuilder returns the default NotificationsBuilderCreator implementation
 func CreateNotificationsBuilder(context notificationscontext.Context) notificationsbuilder.NotificationsBuilder {
 	db := database.Cast(context.Database)
-	utilityModule := profiles.NewModule(context.Node, context.GRPCConnection, context.EncodingConfig.Marshaler, db)
+	utilityModule := profiles.NewModule(context.Node, context.GRPCConnection, context.EncodingConfig.Codec, db)
 	return NewDefaultBuilder(utilityModule)
 }
 

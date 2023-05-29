@@ -5,14 +5,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/gogo/protobuf/proto"
-
-	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v5/x/relationships/types"
 
 	"github.com/rs/zerolog/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	juno "github.com/forbole/juno/v4/types"
+	juno "github.com/forbole/juno/v5/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -44,7 +42,7 @@ func (m *Module) HandleMsg(_ int, msg sdk.Msg, tx *juno.Tx) error {
 
 	}
 
-	log.Debug().Str("module", "relationships").Str("message", proto.MessageName(msg)).
+	log.Debug().Str("module", "relationships").Str("message", sdk.MsgTypeURL(msg)).
 		Int64("height", tx.Height).Msg("handled message")
 
 	return nil

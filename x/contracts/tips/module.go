@@ -1,12 +1,12 @@
 package tips
 
 import (
-	"github.com/forbole/juno/v4/node"
+	"github.com/forbole/juno/v5/node"
 
 	"github.com/desmos-labs/djuno/v2/x/contracts"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/forbole/juno/v4/types/config"
+	"github.com/forbole/juno/v5/types/config"
 	"google.golang.org/grpc"
 
 	contractsbase "github.com/desmos-labs/djuno/v2/x/contracts/base"

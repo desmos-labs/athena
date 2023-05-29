@@ -24,7 +24,7 @@ ON CONFLICT ON CONSTRAINT unique_post_reaction DO UPDATE
         height = excluded.height
 WHERE reaction.height <= excluded.height`
 
-	valueBz, err := db.EncodingConfig.Marshaler.MarshalJSON(reaction.Value)
+	valueBz, err := db.cdc.MarshalJSON(reaction.Value)
 	if err != nil {
 		return fmt.Errorf("failed to json encode reaction value: %s", err)
 	}

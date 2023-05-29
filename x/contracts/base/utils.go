@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/forbole/juno/v4/node/remote"
-	juno "github.com/forbole/juno/v4/types"
+	"github.com/forbole/juno/v5/node/remote"
+	juno "github.com/forbole/juno/v5/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

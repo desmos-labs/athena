@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v5/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 
@@ -141,7 +141,7 @@ WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
 func (db *Db) SaveChainLink(link types.ChainLink) error {
 	// Unpack the address data
 	var address profilestypes.AddressData
-	err := db.EncodingConfig.Marshaler.UnpackAny(link.Address, &address)
+	err := db.cdc.UnpackAny(link.Address, &address)
 	if err != nil {
 		return fmt.Errorf("error while reading link address as AddressData: %s", err)
 	}
@@ -187,7 +187,7 @@ func (db *Db) getChainLinkID(userAddress string, chainConfigID int64, externalAd
 
 // saveChainLinkProof stores the given proof as associated with the chain link having the given id
 func (db *Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, height int64) error {
-	publicKeyBz, err := db.EncodingConfig.Marshaler.MarshalJSON(proof.PubKey)
+	publicKeyBz, err := db.cdc.MarshalJSON(proof.PubKey)
 	if err != nil {
 		return fmt.Errorf("error serializing chain link proof public key: %s", err)
 	}
@@ -210,7 +210,7 @@ ON CONFLICT ON CONSTRAINT unique_proof_for_link DO UPDATE
         height = excluded.height
 WHERE chain_link_proof.height <= excluded.height`
 
-	signatureBz, err := db.EncodingConfig.Marshaler.MarshalJSON(proof.Signature)
+	signatureBz, err := db.cdc.MarshalJSON(proof.Signature)
 	if err != nil {
 		return fmt.Errorf("error serializing chain link signature: %s", err)
 	}
@@ -279,7 +279,7 @@ WHERE default_chain_link.height <= excluded.height`
 	}
 
 	var address profilestypes.AddressData
-	err = db.EncodingConfig.Marshaler.UnpackAny(chainLink.Address, &address)
+	err = db.cdc.UnpackAny(chainLink.Address, &address)
 	if err != nil {
 		return fmt.Errorf("error while reading link address as AddressData: %s", err)
 	}
@@ -336,7 +336,7 @@ RETURNING id`
 
 	var result sql.NullString
 	if link.Result != nil {
-		resultBz, err := db.EncodingConfig.Marshaler.MarshalJSON(link.Result)
+		resultBz, err := db.cdc.MarshalJSON(link.Result)
 		if err != nil {
 			return fmt.Errorf("error while serializing result: %s", err)
 		}
@@ -370,7 +370,7 @@ ON CONFLICT ON CONSTRAINT unique_oracle_request DO UPDATE
         height = excluded.height
 WHERE application_link_oracle_request.height <= excluded.height`
 
-	callDataBz, err := db.EncodingConfig.Marshaler.MarshalJSON(&request.CallData)
+	callDataBz, err := db.cdc.MarshalJSON(&request.CallData)
 	if err != nil {
 		return fmt.Errorf("error while serializing oracle request call data: %s", err)
 	}

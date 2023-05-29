@@ -3,10 +3,10 @@ package profiles
 import (
 	"encoding/json"
 
+	tmtypes "github.com/cometbft/cometbft/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 
-	profilestypes "github.com/desmos-labs/desmos/v4/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v5/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

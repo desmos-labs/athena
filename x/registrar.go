@@ -10,7 +10,6 @@ import (
 	"github.com/desmos-labs/djuno/v2/x/authz"
 	contractsbuilder "github.com/desmos-labs/djuno/v2/x/contracts/builder"
 	"github.com/desmos-labs/djuno/v2/x/feegrant"
-	"github.com/desmos-labs/djuno/v2/x/fees"
 	"github.com/desmos-labs/djuno/v2/x/notifications"
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 	standardnotificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder/standard"
@@ -22,10 +21,10 @@ import (
 	"github.com/desmos-labs/djuno/v2/x/reports"
 	"github.com/desmos-labs/djuno/v2/x/subspaces"
 
-	"github.com/forbole/juno/v4/modules"
-	"github.com/forbole/juno/v4/modules/registrar"
-	"github.com/forbole/juno/v4/modules/telemetry"
-	"github.com/forbole/juno/v4/node/remote"
+	"github.com/forbole/juno/v5/modules"
+	"github.com/forbole/juno/v5/modules/registrar"
+	"github.com/forbole/juno/v5/modules/telemetry"
+	"github.com/forbole/juno/v5/node/remote"
 )
 
 type RegistrarOptions struct {
@@ -72,7 +71,7 @@ func (r *ModulesRegistrar) WithOptions(options RegistrarOptions) *ModulesRegistr
 
 // BuildModules implements modules.Registrar
 func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
-	cdc := ctx.EncodingConfig.Marshaler
+	cdc := ctx.EncodingConfig.Codec
 	djunoDb := database.Cast(ctx.Database)
 
 	remoteCfg, ok := ctx.JunoConfig.Node.Details.(*remote.Details)
@@ -95,7 +94,6 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	authzModule := authz.NewModule(ctx.Proxy, cdc, djunoDb)
 	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, djunoDb)
 	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, djunoDb)
-	feesModule := fees.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 	postsModule := posts.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 	profilesModule := profiles.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
 	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, djunoDb)
@@ -114,7 +112,6 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		apisModule,
 		authzModule,
 		feegrantModule,
-		feesModule,
 		profilesModule,
 		relationshipsModule,
 		subspacesModule,

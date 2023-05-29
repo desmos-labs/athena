@@ -1,5 +1,5 @@
 VERSION := $(shell echo $(shell git describe --always) | sed 's/^v//')
-TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+TENDERMINT_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 COMMIT := $(shell git log -1 --format='%H')
 BUILDDIR ?= $(CURDIR)/build
 DOCKER := $(shell which docker)
@@ -23,10 +23,8 @@ comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # Process linker flags
-ldflags = -X 'github.com/forbole/juno/v3/cmd.Version=$(VERSION)' \
- 	-X 'github.com/forbole/juno/v3/cmd.Commit=$(COMMIT)' \
-  	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-  	-X "github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)"
+ldflags = -X 'github.com/forbole/juno/v5/cmd.Version=$(VERSION)' \
+ 	-X 'github.com/forbole/juno/v5/cmd.Commit=$(COMMIT)'
 
 ifeq ($(LINK_STATICALLY),true)
   ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"

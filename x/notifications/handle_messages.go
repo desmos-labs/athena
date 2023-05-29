@@ -3,10 +3,10 @@ package notifications
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
-	reactionstypes "github.com/desmos-labs/desmos/v4/x/reactions/types"
-	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
-	juno "github.com/forbole/juno/v4/types"
+	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
+	reactionstypes "github.com/desmos-labs/desmos/v5/x/reactions/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v5/x/relationships/types"
+	juno "github.com/forbole/juno/v5/types"
 
 	"github.com/desmos-labs/djuno/v2/x/filters"
 

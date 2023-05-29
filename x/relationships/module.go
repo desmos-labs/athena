@@ -4,9 +4,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"google.golang.org/grpc"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v4/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v5/x/relationships/types"
 
-	"github.com/forbole/juno/v4/modules"
+	"github.com/forbole/juno/v5/modules"
 )
 
 var (

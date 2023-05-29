@@ -1,7 +1,7 @@
 package builder
 
 import (
-	"github.com/forbole/juno/v4/types/config"
+	"github.com/forbole/juno/v5/types/config"
 
 	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/youtube"
 

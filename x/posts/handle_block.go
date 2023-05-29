@@ -1,11 +1,11 @@
 package posts
 
 import (
-	juno "github.com/forbole/juno/v4/types"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
+	juno "github.com/forbole/juno/v5/types"
 
-	poststypes "github.com/desmos-labs/desmos/v4/x/posts/types"
-	subspacestypes "github.com/desmos-labs/desmos/v4/x/subspaces/types"
+	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
+	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
 )
 
 // HandleBlock implements modules.BlockModule
@@ -16,7 +16,7 @@ func (m *Module) HandleBlock(block *coretypes.ResultBlock, results *coretypes.Re
 		if err != nil {
 			return err
 		}
-		subspaceID, err := subspacestypes.ParseSubspaceID(string(subspaceIDStr.Value))
+		subspaceID, err := subspacestypes.ParseSubspaceID(subspaceIDStr.Value)
 		if err != nil {
 			return err
 		}
@@ -26,7 +26,7 @@ func (m *Module) HandleBlock(block *coretypes.ResultBlock, results *coretypes.Re
 		if err != nil {
 			return err
 		}
-		postID, err := poststypes.ParsePostID(string(postIDStr.Value))
+		postID, err := poststypes.ParsePostID(postIDStr.Value)
 		if err != nil {
 			return err
 		}
