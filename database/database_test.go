@@ -29,17 +29,8 @@ type DbTestSuite struct {
 func (suite *DbTestSuite) SetupTest() {
 	// Build the database
 	encodingConfig := app.MakeEncodingConfig()
-	databaseConfig := junodbcfg.NewDatabaseConfig(
-		"postgres://djuno:password@localhost:6432/djuno?sslmode=disable&search_path=public",
-		"false",
-		"",
-		"",
-		"",
-		10,
-		10,
-		0,
-		0,
-	)
+	databaseConfig := junodbcfg.DefaultDatabaseConfig().
+		WithURL("postgres://djuno:password@localhost:6432/djuno?sslmode=disable&search_path=public")
 
 	db, err := database.Builder(junodb.NewContext(databaseConfig, &encodingConfig, logging.DefaultLogger()))
 	suite.Require().NoError(err)

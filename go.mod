@@ -32,8 +32,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require cosmossdk.io/simapp v0.0.0-20230224204036-a6adb0821462
-
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
@@ -49,6 +47,7 @@ require (
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
 	cosmossdk.io/errors v1.0.0-beta.7 // indirect
 	cosmossdk.io/math v1.0.1 // indirect
+	cosmossdk.io/simapp v0.0.0-20230224204036-a6adb0821462 // indirect
 	cosmossdk.io/tools/rosetta v0.2.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
@@ -358,6 +357,12 @@ replace (
 
 	// Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.47.x-desmos
 	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.47.2-desmos
-	// Replace Desmos dependencies with our change
+
+	// Replace Desmos to include our change EncodingConfig type change.
+	// TODO: Remove this as soon as Desmos v5.0.2 is released
 	github.com/desmos-labs/desmos/v5 => github.com/desmos-labs/desmos/v5 v5.0.1-0.20230531144833-6465d7ce0273
+
+	// Replace Juno to include our addition to the DatabaseConfig type
+	// TODO: Remove this as soon as a new version is released
+	github.com/forbole/juno/v5 => github.com/forbole/juno/v5 v5.0.1-0.20230531151655-54de9e4a742d
 )
