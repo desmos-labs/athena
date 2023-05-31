@@ -8,13 +8,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/desmos-labs/desmos/v5/app"
 	junodb "github.com/forbole/juno/v5/database"
 	junodbcfg "github.com/forbole/juno/v5/database/config"
 	"github.com/forbole/juno/v5/logging"
 
 	"github.com/stretchr/testify/suite"
-
-	desmosapp "github.com/desmos-labs/desmos/v5/app"
 
 	"github.com/desmos-labs/djuno/v2/database"
 
@@ -29,9 +28,13 @@ type DbTestSuite struct {
 
 func (suite *DbTestSuite) SetupTest() {
 	// Build the database
-	encodingConfig := desmosapp.MakeTestEncodingConfig()
+	encodingConfig := app.MakeEncodingConfig()
 	databaseConfig := junodbcfg.NewDatabaseConfig(
 		"postgres://djuno:password@localhost:6432/djuno?sslmode=disable&search_path=public",
+		"false",
+		"",
+		"",
+		"",
 		10,
 		10,
 		0,
