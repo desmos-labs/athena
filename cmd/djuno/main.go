@@ -1,7 +1,6 @@
 package main
 
 import (
-	"cosmossdk.io/simapp/params"
 	junocmd "github.com/forbole/juno/v5/cmd"
 	initcmd "github.com/forbole/juno/v5/cmd/init"
 	migratecmd "github.com/forbole/juno/v5/cmd/migrate"
@@ -19,7 +18,7 @@ func main() {
 	// Setup the config
 	parseCfg := parsecmdtypes.NewConfig().
 		WithRegistrar(x.NewModulesRegistrar()).
-		WithEncodingConfigBuilder(makeEncodingConfig).
+		WithEncodingConfigBuilder(desmosapp.MakeEncodingConfig).
 		WithDBBuilder(desmosdb.Builder)
 
 	cfg := junocmd.NewConfig("djuno").
@@ -40,15 +39,5 @@ func main() {
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
-	}
-}
-
-func makeEncodingConfig() params.EncodingConfig {
-	config := desmosapp.MakeEncodingConfig()
-	return params.EncodingConfig{
-		InterfaceRegistry: config.InterfaceRegistry,
-		Codec:             config.Marshaler,
-		TxConfig:          config.TxConfig,
-		Amino:             config.Amino,
 	}
 }
