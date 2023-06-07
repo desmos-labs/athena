@@ -11,7 +11,7 @@ require (
 	github.com/cosmos/gogoproto v1.4.8
 	github.com/cosmos/ibc-go/v7 v7.0.1
 	github.com/desmos-labs/desmos/v5 v5.0.1
-	github.com/forbole/juno/v5 v5.0.0
+	github.com/forbole/juno/v5 v5.1.0
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
@@ -89,6 +89,7 @@ require (
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/coinbase/rosetta-sdk-go/types v1.0.0 // indirect
 	github.com/cometbft/cometbft-db v0.8.0 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
@@ -96,7 +97,6 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
-	github.com/cosmos/gogoproto v1.4.8 // indirect
 	github.com/cosmos/iavl v0.20.0 // indirect
 	github.com/cosmos/ics23/go v0.9.1-0.20221207100636-b1abd8678aab // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.2 // indirect
@@ -146,6 +146,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/glog v1.1.0 // indirect
@@ -361,8 +362,4 @@ replace (
 	// Replace Desmos to include our change EncodingConfig type change.
 	// TODO: Remove this as soon as Desmos v5.0.2 is released
 	github.com/desmos-labs/desmos/v5 => github.com/desmos-labs/desmos/v5 v5.0.1-0.20230531144833-6465d7ce0273
-
-	// Replace Juno to include our addition to the DatabaseConfig type
-	// TODO: Remove this as soon as a new version is released
-	github.com/forbole/juno/v5 => github.com/forbole/juno/v5 v5.0.1-0.20230531151655-54de9e4a742d
 )
