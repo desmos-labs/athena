@@ -7,10 +7,10 @@ require (
 	github.com/CosmWasm/wasmd v0.40.0-rc.1
 	github.com/bradleyfalzon/ghinstallation/v2 v2.4.0
 	github.com/cometbft/cometbft v0.37.1
-	github.com/cosmos/cosmos-sdk v0.47.2
+	github.com/cosmos/cosmos-sdk v0.47.3
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-go/v7 v7.1.0
-	github.com/desmos-labs/desmos/v5 v5.0.1
+	github.com/desmos-labs/desmos/v5 v5.1.0
 	github.com/forbole/juno/v5 v5.1.0
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
@@ -254,7 +254,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
-	github.com/petermattis/goid v0.0.0-20221215004737-a150e88a970d // indirect
+	github.com/petermattis/goid v0.0.0-20230317030725-371a4b8eda08 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v1.4.0 // indirect
@@ -321,7 +321,7 @@ require (
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
+	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
 	golang.org/x/exp/typeparams v0.0.0-20230224173230-c95f2b4c22f2 // indirect
 	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
@@ -362,7 +362,7 @@ replace (
 	// Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.47.x-desmos
 	github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.47.2-desmos
 
-	// Replace Desmos to include our change EncodingConfig type change.
-	// TODO: Remove this as soon as Desmos v5.0.2 is released
-	github.com/desmos-labs/desmos/v5 => github.com/desmos-labs/desmos/v5 v5.0.1-0.20230531144833-6465d7ce0273
+	// This is to avoid warnings while running the binary
+	// See here: https://github.com/desmos-labs/desmos/pull/1131#discussion_r1194090419
+	github.com/cosmos/gogoproto => github.com/cosmos/gogoproto v1.4.8
 )
