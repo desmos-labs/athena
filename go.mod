@@ -27,7 +27,7 @@ require (
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
-	google.golang.org/api v0.127.0
+	google.golang.org/api v0.128.0
 	google.golang.org/grpc v1.56.0
 	gopkg.in/yaml.v3 v3.0.1
 )
