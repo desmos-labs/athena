@@ -644,8 +644,8 @@ github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
 github.com/desmos-labs/cosmos-sdk v0.47.2-desmos h1:vZApJFAGmrB8osk3YuDfHNb2L8YLUbLR9w/2RQ/ijMA=
 github.com/desmos-labs/cosmos-sdk v0.47.2-desmos/go.mod h1:zYzgI8w8hhotXTSoGbbSOAKfpJTx4wOy4XgbaKhtRtc=
-github.com/desmos-labs/desmos/v5 v5.1.0 h1:buv0OW1Oa1+UQUmcZ/8DVgWeNhsa02+NvzKdO6LKHvI=
-github.com/desmos-labs/desmos/v5 v5.1.0/go.mod h1:6Hi/XcEDdxqtCro+7kwYwPWV4KACHUpL1NshENAboFQ=
+github.com/desmos-labs/desmos/v5 v5.2.0 h1:G0fxZ89KKtgzShDEomzWy8uWO1aryyHLg/nhGta1xzA=
+github.com/desmos-labs/desmos/v5 v5.2.0/go.mod h1:QndDsyQn+LJn7reFRm+dn7jrUwD09rvO67uloXj5YmE=
 github.com/desmos-labs/wasmd v0.40.0-rc.1-desmos h1:kMD6Z0bw5kmi9t59y6smn1xoHEz/k3atXOI2Eyd10iI=
 github.com/desmos-labs/wasmd v0.40.0-rc.1-desmos/go.mod h1:AgWQP8z5NQ71tqboXvmA5WaCJuoNj+rZA4tNwvAaGBw=
 github.com/dgraph-io/badger/v2 v2.2007.4 h1:TRWBQg8UrlUhaFdco01nO2uXwzKS7zd+HVdwV/GHc4o=
