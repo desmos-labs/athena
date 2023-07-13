@@ -3,7 +3,7 @@ module github.com/desmos-labs/djuno/v2
 go 1.19
 
 require (
-	firebase.google.com/go/v4 v4.11.0
+	firebase.google.com/go/v4 v4.12.0
 	github.com/CosmWasm/wasmd v0.40.0-rc.1
 	github.com/bradleyfalzon/ghinstallation/v2 v2.6.0
 	github.com/cometbft/cometbft v0.37.2

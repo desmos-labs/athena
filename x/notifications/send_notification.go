@@ -45,7 +45,7 @@ func (m *Module) SendNotification(recipient types.NotificationRecipient, config 
 	case *types.SingleNotificationMessage:
 		_, err = m.client.Send(ctx, notificationMessage.Message)
 	case *types.MultiNotificationMessage:
-		_, err = m.client.SendMulticast(ctx, notificationMessage.MulticastMessage)
+		_, err = m.client.SendEachForMulticast(ctx, notificationMessage.MulticastMessage)
 	}
 	if err != nil {
 		return fmt.Errorf("error while sending notification: %s", err)
