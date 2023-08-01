@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/desmos-labs/djuno/v2/x/apis/endpoints"
+	"github.com/desmos-labs/djuno/v2/x/apis/endpoints/links"
 )
 
 // Context contains all the useful data that might be used when registering an API handler
@@ -38,7 +39,8 @@ func CombinedRegistrar(registrars ...Registrar) Registrar {
 }
 
 // DefaultRegistrar returns the default API registrar
-func DefaultRegistrar(_ Context, router *gin.Engine) error {
+func DefaultRegistrar(ctx Context, router *gin.Engine) error {
 	endpoints.RegisterRoutesList(router)
+	links.RegisterRoutes(router, links.NewHandler(ctx.JunoConfig))
 	return nil
 }
