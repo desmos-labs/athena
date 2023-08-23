@@ -143,6 +143,7 @@ func (suite *DbTestSuite) saveRelationship() types.Relationship {
 		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 		time.Now(),
+		nil,
 	), 1))
 	suite.Require().NoError(err)
 
@@ -214,6 +215,7 @@ func (suite *DbTestSuite) saveBlockage() types.Blockage {
 		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 		time.Now(),
+		nil,
 	), 1))
 	suite.Require().NoError(err)
 
