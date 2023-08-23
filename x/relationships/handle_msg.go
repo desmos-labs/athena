@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v5/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
 
 	"github.com/rs/zerolog/log"
 

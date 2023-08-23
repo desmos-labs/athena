@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
 	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 	"github.com/desmos-labs/djuno/v2/types"

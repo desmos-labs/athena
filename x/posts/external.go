@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/juno/v5/node/remote"
 
-	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

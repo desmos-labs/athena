@@ -3,7 +3,7 @@ package relationships
 import (
 	"fmt"
 
-	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	"github.com/rs/zerolog/log"
 
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"

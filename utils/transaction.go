@@ -2,8 +2,8 @@ package utils
 
 import (
 	abci "github.com/cometbft/cometbft/abci/types"
-	poststypes "github.com/desmos-labs/desmos/v5/x/posts/types"
-	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
+	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	juno "github.com/forbole/juno/v5/types"
 )
 

@@ -6,7 +6,7 @@ import (
 	"github.com/forbole/juno/v5/node"
 	"google.golang.org/grpc"
 
-	reportstypes "github.com/desmos-labs/desmos/v5/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 )
 
 var (

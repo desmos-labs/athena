@@ -3,7 +3,7 @@ package types
 import (
 	"github.com/lib/pq"
 
-	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 )
 
 // ConvertPermissions converts the given permissions into a pq.StringArray so that

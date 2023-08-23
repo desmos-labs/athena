@@ -1,7 +1,7 @@
 package types
 
 import (
-	reportstypes "github.com/desmos-labs/desmos/v5/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 )
 
 type Report struct {

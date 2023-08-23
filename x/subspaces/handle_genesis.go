@@ -7,7 +7,7 @@ import (
 
 	tmtypes "github.com/cometbft/cometbft/types"
 
-	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 )
 
 // HandleGenesis implements modules.GenesisModule

@@ -6,7 +6,7 @@ import (
 	"github.com/forbole/juno/v5/node"
 	"google.golang.org/grpc"
 
-	reactionstypes "github.com/desmos-labs/desmos/v5/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 )
 
 var (

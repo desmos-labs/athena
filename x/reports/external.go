@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/juno/v5/node/remote"
 
-	reportstypes "github.com/desmos-labs/desmos/v5/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

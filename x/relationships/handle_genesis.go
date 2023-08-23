@@ -5,7 +5,7 @@ import (
 
 	tmtypes "github.com/cometbft/cometbft/types"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v5/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

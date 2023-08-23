@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/desmos-labs/desmos/v5/app"
+	"github.com/desmos-labs/desmos/v6/app"
 	junodb "github.com/forbole/juno/v5/database"
 	junodbcfg "github.com/forbole/juno/v5/database/config"
 	"github.com/forbole/juno/v5/logging"

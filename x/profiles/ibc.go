@@ -12,8 +12,8 @@ import (
 
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
-	oracletypes "github.com/desmos-labs/desmos/v5/x/oracle/types"
-	profilestypes "github.com/desmos-labs/desmos/v5/x/profiles/types"
+	oracletypes "github.com/desmos-labs/desmos/v6/x/oracle/types"
+	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 )
 
 // packetHandler defines a function that handles a packet.

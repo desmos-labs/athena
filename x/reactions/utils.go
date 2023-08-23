@@ -7,7 +7,7 @@ import (
 
 	"github.com/forbole/juno/v5/node/remote"
 
-	reactionstypes "github.com/desmos-labs/desmos/v5/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 )

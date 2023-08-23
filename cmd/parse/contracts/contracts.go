@@ -7,7 +7,7 @@ import (
 
 	contractsbuilder "github.com/desmos-labs/djuno/v2/x/contracts/builder"
 
-	subspacestypes "github.com/desmos-labs/desmos/v5/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
 	"github.com/forbole/juno/v5/node/remote"
 	"github.com/forbole/juno/v5/types/config"

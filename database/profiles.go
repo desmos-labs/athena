@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	profilestypes "github.com/desmos-labs/desmos/v5/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 

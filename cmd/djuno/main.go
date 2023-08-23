@@ -7,7 +7,7 @@ import (
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
 	startcmd "github.com/forbole/juno/v5/cmd/start"
 
-	desmosapp "github.com/desmos-labs/desmos/v5/app"
+	desmosapp "github.com/desmos-labs/desmos/v6/app"
 
 	parsecmd "github.com/desmos-labs/djuno/v2/cmd/parse"
 	desmosdb "github.com/desmos-labs/djuno/v2/database"

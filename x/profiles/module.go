@@ -6,7 +6,7 @@ import (
 	"github.com/forbole/juno/v5/node"
 	"google.golang.org/grpc"
 
-	profilestypes "github.com/desmos-labs/desmos/v5/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 
 	"github.com/forbole/juno/v5/modules"
 )

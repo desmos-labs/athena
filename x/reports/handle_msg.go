@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/djuno/v2/x/filters"
 
-	reportstypes "github.com/desmos-labs/desmos/v5/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 
 	"github.com/rs/zerolog/log"
 

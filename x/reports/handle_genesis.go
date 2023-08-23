@@ -7,7 +7,7 @@ import (
 
 	tmtypes "github.com/cometbft/cometbft/types"
 
-	reportstypes "github.com/desmos-labs/desmos/v5/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 )
 
 // HandleGenesis implements modules.GenesisModule
