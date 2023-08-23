@@ -65,6 +65,7 @@ select_permissions:
   - role: anonymous
     permission:
       columns:
+        - additional_fee_tokens
         - creation_time
         - creator_address
         - description

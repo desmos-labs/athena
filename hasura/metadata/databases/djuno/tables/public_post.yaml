@@ -107,6 +107,7 @@ select_permissions:
         - external_id
         - id
         - last_edited_date
+        - owner_address
         - reply_settings
         - subspace_id
         - text
