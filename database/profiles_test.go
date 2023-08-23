@@ -143,7 +143,7 @@ func (suite *DbTestSuite) saveRelationship() types.Relationship {
 		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
 		time.Now(),
-		nil,
+		sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100000))),
 	), 1))
 	suite.Require().NoError(err)
 
