@@ -9,6 +9,7 @@ CREATE TABLE post
     external_id         TEXT,
     text                TEXT,
     author_address      TEXT                        NOT NULL,
+    owner_address       TEXT,
     conversation_row_id BIGINT REFERENCES post (row_id),
     reply_settings      TEXT                        NOT NULL,
     creation_date       TIMESTAMP WITHOUT TIME ZONE NOT NULL,

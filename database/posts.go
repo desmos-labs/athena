@@ -41,8 +41,8 @@ func (db *Db) SavePost(post types.Post) error {
 
 	// Insert the post
 	stmt := `
-INSERT INTO post (subspace_id, section_row_id, id, external_id, text, author_address, conversation_row_id, reply_settings, creation_date, last_edited_date, height) 
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+INSERT INTO post (subspace_id, section_row_id, id, external_id, text, author_address, owner_address, conversation_row_id, reply_settings, creation_date, last_edited_date, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 ON CONFLICT ON CONSTRAINT unique_subspace_post DO UPDATE 
     SET subspace_id = excluded.subspace_id,
         section_row_id = excluded.section_row_id,
@@ -50,6 +50,7 @@ ON CONFLICT ON CONSTRAINT unique_subspace_post DO UPDATE
         external_id = excluded.external_id,
         text = excluded.text,
         author_address = excluded.author_address,
+        owner_address = excluded.owner_address,
         conversation_row_id = excluded.conversation_row_id,
         reply_settings = excluded.reply_settings,
         creation_date = excluded.creation_date,
@@ -66,6 +67,7 @@ RETURNING row_id`
 		dbtypes.ToNullString(post.ExternalID),
 		dbtypes.ToNullString(post.Text),
 		post.Author,
+		dbtypes.ToNullString(post.Owner),
 		conversationRowID,
 		post.ReplySettings.String(),
 		post.CreationDate,
