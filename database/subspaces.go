@@ -12,8 +12,8 @@ import (
 // SaveSubspace stores the given subspace inside the database
 func (db *Db) SaveSubspace(subspace types.Subspace) error {
 	stmt := `
-INSERT INTO subspace (id, name, description, treasury_address, owner_address, creator_address, creation_time, height) 
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO subspace (id, name, description, treasury_address, owner_address, creator_address, creation_time, additional_fee_tokens, height) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 ON CONFLICT (id) DO UPDATE 
     SET name = excluded.name,
         description = excluded.description,
@@ -21,6 +21,7 @@ ON CONFLICT (id) DO UPDATE
         owner_address = excluded.owner_address,
         creator_address = excluded.creator_address,
         creation_time = excluded.creation_time,
+        additional_fee_tokens = excluded.additional_fee_tokens,
         height = excluded.height
 WHERE subspace.height <= excluded.height`
 
@@ -32,6 +33,7 @@ WHERE subspace.height <= excluded.height`
 		subspace.Owner,
 		subspace.Creator,
 		subspace.CreationTime,
+		dbtypes.NewDbCoins(subspace.AdditionalFeeTokens),
 		subspace.Height,
 	)
 	return err

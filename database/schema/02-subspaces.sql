@@ -1,13 +1,14 @@
 CREATE TABLE subspace
 (
-    id               BIGINT                      NOT NULL PRIMARY KEY,
-    name             TEXT                        NOT NULL,
-    description      TEXT,
-    treasury_address TEXT,
-    owner_address    TEXT                        NOT NULL,
-    creator_address  TEXT                        NOT NULL,
-    creation_time    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    height           BIGINT                      NOT NULL
+    id                    BIGINT                      NOT NULL PRIMARY KEY,
+    name                  TEXT                        NOT NULL,
+    description           TEXT,
+    treasury_address      TEXT,
+    owner_address         TEXT                        NOT NULL,
+    creator_address       TEXT                        NOT NULL,
+    creation_time         TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    additional_fee_tokens COIN[],
+    height                BIGINT                      NOT NULL
 );
 
 CREATE TABLE subspace_section
