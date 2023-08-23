@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/lib/pq"
+
 	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
 	"github.com/desmos-labs/djuno/v2/types"
 )
@@ -33,7 +35,7 @@ WHERE subspace.height <= excluded.height`
 		subspace.Owner,
 		subspace.Creator,
 		subspace.CreationTime,
-		dbtypes.NewDbCoins(subspace.AdditionalFeeTokens),
+		pq.Array(dbtypes.NewDbCoins(subspace.AdditionalFeeTokens)),
 		subspace.Height,
 	)
 	return err
