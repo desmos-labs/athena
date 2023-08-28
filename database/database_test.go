@@ -12,6 +12,7 @@ import (
 	junodb "github.com/forbole/juno/v5/database"
 	junodbcfg "github.com/forbole/juno/v5/database/config"
 	"github.com/forbole/juno/v5/logging"
+	"github.com/forbole/juno/v5/types/params"
 
 	"github.com/stretchr/testify/suite"
 
@@ -32,7 +33,7 @@ func (suite *DbTestSuite) SetupTest() {
 	databaseConfig := junodbcfg.DefaultDatabaseConfig().
 		WithURL("postgres://djuno:password@localhost:6432/djuno?sslmode=disable&search_path=public")
 
-	db, err := database.Builder(junodb.NewContext(databaseConfig, &encodingConfig, logging.DefaultLogger()))
+	db, err := database.Builder(junodb.NewContext(databaseConfig, params.EncodingConfig(encodingConfig), logging.DefaultLogger()))
 	suite.Require().NoError(err)
 
 	desmosDb, ok := (db).(*database.Db)
