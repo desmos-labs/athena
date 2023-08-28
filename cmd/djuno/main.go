@@ -20,12 +20,7 @@ func main() {
 		WithRegistrar(x.NewModulesRegistrar()).
 		WithEncodingConfigBuilder(func() params.EncodingConfig {
 			config := desmosapp.MakeEncodingConfig()
-			return params.EncodingConfig{
-				InterfaceRegistry: config.InterfaceRegistry,
-				Codec:             config.Codec,
-				TxConfig:          config.TxConfig,
-				Amino:             config.Amino,
-			}
+			return params.EncodingConfig(config)
 		}).
 		WithDBBuilder(desmosdb.Builder)
 
