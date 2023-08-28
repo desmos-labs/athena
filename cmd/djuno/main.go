@@ -1,13 +1,13 @@
 package main
 
 import (
+	desmosapp "github.com/desmos-labs/desmos/v6/app"
 	junocmd "github.com/forbole/juno/v5/cmd"
 	initcmd "github.com/forbole/juno/v5/cmd/init"
 	migratecmd "github.com/forbole/juno/v5/cmd/migrate"
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
 	startcmd "github.com/forbole/juno/v5/cmd/start"
-
-	desmosapp "github.com/desmos-labs/desmos/v6/app"
+	"github.com/forbole/juno/v5/types/params"
 
 	parsecmd "github.com/desmos-labs/djuno/v2/cmd/parse"
 	desmosdb "github.com/desmos-labs/djuno/v2/database"
@@ -18,7 +18,15 @@ func main() {
 	// Setup the config
 	parseCfg := parsecmdtypes.NewConfig().
 		WithRegistrar(x.NewModulesRegistrar()).
-		WithEncodingConfigBuilder(desmosapp.MakeEncodingConfig).
+		WithEncodingConfigBuilder(func() params.EncodingConfig {
+			config := desmosapp.MakeEncodingConfig()
+			return params.EncodingConfig{
+				InterfaceRegistry: config.InterfaceRegistry,
+				Codec:             config.Codec,
+				TxConfig:          config.TxConfig,
+				Amino:             config.Amino,
+			}
+		}).
 		WithDBBuilder(desmosdb.Builder)
 
 	cfg := junocmd.NewConfig("djuno").
