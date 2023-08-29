@@ -15,7 +15,7 @@ require (
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-co-op/gocron v1.32.1
+	github.com/go-co-op/gocron v1.33.0
 	github.com/golangci/golangci-lint v1.54.1
 	github.com/google/go-github/v48 v48.2.0
 	github.com/jmoiron/sqlx v1.3.5 // indirect
@@ -179,7 +179,7 @@ require (
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/google/s2a-go v0.1.5 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gordonklaus/ineffassign v0.0.0-20230610083614-0e73809eb601 // indirect
