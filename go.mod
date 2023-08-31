@@ -10,7 +10,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.47.4
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-go/v7 v7.2.0
-	github.com/desmos-labs/desmos/v6 v6.0.0
+	github.com/desmos-labs/desmos/v6 v6.1.0
 	github.com/forbole/juno/v5 v5.2.1-0.20230828170207-c75730cef085
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/gin-contrib/cors v1.4.0
