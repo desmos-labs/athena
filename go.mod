@@ -24,7 +24,7 @@ require (
 	github.com/likexian/whois-parser v1.24.9
 	github.com/nicklaw5/helix v1.25.0
 	github.com/proullon/ramsql v0.1.2
-	github.com/rs/zerolog v1.30.0
+	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/api v0.142.0
