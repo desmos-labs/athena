@@ -1,7 +1,7 @@
 # DJuno
 
 [![Codecov](https://img.shields.io/codecov/c/github/desmos-labs/djuno)](https://codecov.io/gh/desmos-labs/djuno)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/desmos-labs/djuno/Tests)](https://github.com/desmos-labs/djuno/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/desmos-labs/djuno/test.yml)](https://github.com/desmos-labs/djuno/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/desmos-labs/djuno)](https://goreportcard.com/report/github.com/desmos-labs/djuno)
 
 This project represents the [Juno](https://github.com/forbole/juno/v3) implementation for
