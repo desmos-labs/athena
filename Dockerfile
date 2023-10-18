@@ -16,7 +16,7 @@
 #
 # To exit the bash, just execute
 # > exit
-FROM golang:1.20-alpine
+FROM golang:1.20-alpine as builder
 ARG arch=x86_64
 
 # Set up dependencies
@@ -41,7 +41,15 @@ RUN cp /lib/libwasmvm_muslc.${arch}.a /usr/local/lib/libwasmvm_muslc.a
 
 # force it to use static lib (from above) not standard libgo_cosmwasm.so file
 RUN BUILD_TAGS=muslc GOOS=linux GOARCH=amd64 LEDGER_ENABLED=true LINK_STATICALLY=true make build
-RUN cp /code/build/djuno /usr/bin/djuno
-RUN echo "Ensuring binary is statically linked ..." && (file /usr/bin/djuno | grep "statically linked")
+RUN echo "Ensuring binary is statically linked ..." && (file /code/build/djuno | grep "statically linked")
+
+
+FROM alpine:latest
+
+# Set up dependencies
+RUN apk update && apk add --no-cache ca-certificates build-base
+
+# Copy the binary
+COPY --from=builder /code/build/djuno /usr/bin/djuno
 
 ENTRYPOINT ["djuno"]
