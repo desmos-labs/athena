@@ -363,4 +363,4 @@ require (
 )
 
 // Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.47.x-desmos
-replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.47.4-desmos
+replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.47.5-desmos
