@@ -56,10 +56,8 @@ func NewModule(
 		return nil
 	}
 
-	firebaseCfg := firebase.Config{ProjectID: cfg.FirebaseProjectID}
-
 	// Build the firebase app
-	app, err := firebase.NewApp(context.Background(), &firebaseCfg, option.WithCredentialsFile(cfg.FirebaseCredentialsFilePath))
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsFile(cfg.FirebaseCredentialsFilePath))
 	if err != nil {
 		panic(err)
 	}
