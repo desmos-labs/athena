@@ -23,5 +23,5 @@ func (m *Module) SendTransactionNotifications(tx *juno.Tx, user string) error {
 	log.Trace().Str("module", m.Name()).Str("recipient", user).Str("tx hash", tx.TxHash).
 		Str("notification type", "transaction").Msg("sending notification")
 
-	return m.SendNotification(types.NewNotificationUserRecipient(user), types.NewStdNotificationDataWithConfig(nil, data))
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(user), types.NewStdNotificationDataWithConfig(nil, data))
 }

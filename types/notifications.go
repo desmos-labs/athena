@@ -78,6 +78,7 @@ type StdNotificationDataWithConfig struct {
 	Android      *messaging.AndroidConfig
 	APNS         *messaging.APNSConfig
 	Webpush      *messaging.WebpushConfig
+	Timestamp    time.Time
 }
 
 func NewStdNotificationDataWithConfig(notification *messaging.Notification, data map[string]string) *StdNotificationDataWithConfig {
@@ -93,7 +94,23 @@ func NewStdNotificationDataWithConfig(notification *messaging.Notification, data
 		Type:         data[NotificationTypeKey],
 		Data:         data,
 		Notification: notification,
+		Timestamp:    time.Now(),
 	}
+}
+
+func (s StdNotificationDataWithConfig) WithAndroidConfig(config *messaging.AndroidConfig) *StdNotificationDataWithConfig {
+	s.Android = config
+	return &s
+}
+
+func (s StdNotificationDataWithConfig) WithAPNSConfig(config *messaging.APNSConfig) *StdNotificationDataWithConfig {
+	s.APNS = config
+	return &s
+}
+
+func (s StdNotificationDataWithConfig) WithWebpushConfig(config *messaging.WebpushConfig) *StdNotificationDataWithConfig {
+	s.Webpush = config
+	return &s
 }
 
 func (s StdNotificationDataWithConfig) GetType() string {

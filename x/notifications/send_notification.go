@@ -23,15 +23,31 @@ func (m *Module) getUserTokens(recipient string) ([]string, error) {
 	return tokensValues, nil
 }
 
-// SendNotification allows to send to the devices subscribing to the specific topic a message
+// SendAndStoreNotification sends the given notification to the given recipient and stores it inside the database.
+func (m *Module) SendAndStoreNotification(recipient types.NotificationRecipient, notification types.NotificationData) error {
+	// Send the notification
+	err := m.notificationSender(recipient, notification)
+	if err != nil {
+		return err
+	}
+
+	// Store the notification (if enabled)
+	if m.cfg.PersistHistory {
+		return m.db.SaveNotification(recipient, notification)
+	}
+
+	return nil
+}
+
+// sendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
-func (m *Module) SendNotification(recipient types.NotificationRecipient, config types.NotificationData) error {
-	if _, hasRecipientField := config.GetAdditionalData()[types.RecipientKey]; !hasRecipientField {
-		config.GetAdditionalData()[types.RecipientKey] = recipient.String()
+func (m *Module) sendNotification(recipient types.NotificationRecipient, notification types.NotificationData) error {
+	if _, hasRecipientField := notification.GetAdditionalData()[types.RecipientKey]; !hasRecipientField {
+		notification.GetAdditionalData()[types.RecipientKey] = recipient.String()
 	}
 
 	// Build the message
-	message, err := m.buildMessage(recipient, config)
+	message, err := m.buildMessage(recipient, notification)
 	if err != nil {
 		return err
 	}
@@ -49,16 +65,6 @@ func (m *Module) SendNotification(recipient types.NotificationRecipient, config 
 	}
 	if err != nil {
 		return fmt.Errorf("error while sending notification: %s", err)
-	}
-
-	// Store the notification (if enabled)
-	if m.cfg.PersistHistory {
-		return m.db.SaveNotification(types.NewNotification(
-			recipient,
-			config.GetType(),
-			config.GetAdditionalData(),
-			time.Now(),
-		))
 	}
 
 	return nil

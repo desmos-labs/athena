@@ -109,7 +109,7 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 	log.Trace().Str("module", m.Name()).Str("recipient", originalPost.Author).
 		Str("notification type", "post reply").Msg("sending notification")
 
-	return m.SendNotification(types.NewNotificationUserRecipient(originalPost.Author), data)
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(originalPost.Author), data)
 }
 
 func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenceType poststypes.PostReferenceType, reference types.Post, notifiedUsers []string) error {
@@ -142,7 +142,7 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 	log.Trace().Str("module", m.Name()).Str("recipient", originalPost.Author).
 		Str("notification type", "post reference").Msg("sending notification")
 
-	return m.SendNotification(types.NewNotificationUserRecipient(originalPost.Author), data)
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(originalPost.Author), data)
 }
 
 func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes.TextTag, notifiedUsers []string) error {
@@ -164,7 +164,7 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 	log.Trace().Str("module", m.Name()).Str("recipient", mention.Tag).
 		Str("notification type", "post mention").Msg("sending notification")
 
-	return m.SendNotification(types.NewNotificationUserRecipient(mention.Tag), data)
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(mention.Tag), data)
 }
 
 func hasBeenNotified(user string, notifiedUsers []string) bool {

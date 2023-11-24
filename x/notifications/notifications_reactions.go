@@ -37,5 +37,5 @@ func (m *Module) SendReactionNotifications(reaction types.Reaction) error {
 	log.Trace().Str("module", m.Name()).Str("recipient", post.Author).
 		Str("notification type", "reaction").Msg("sending notification")
 
-	return m.SendNotification(types.NewNotificationUserRecipient(post.Author), data)
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(post.Author), data)
 }

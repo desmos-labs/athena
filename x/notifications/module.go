@@ -33,7 +33,7 @@ type Module struct {
 
 	notificationsBuilder notificationsbuilder.NotificationsBuilder
 	buildMessage         notificationsbuilder.MessagesBuilder
-	sendMessage          notificationssender.NotificationSender
+	notificationSender   notificationssender.NotificationSender
 }
 
 // NewModule returns a new Module instance
@@ -81,7 +81,7 @@ func NewModule(
 
 	// Set the default messages builder and sender
 	module = module.WithMessagesBuilder(module.BuildMessage)
-	module = module.WithNotificationSender(module.SendNotification)
+	module = module.WithNotificationSender(module.sendNotification)
 
 	return module
 }
@@ -110,7 +110,7 @@ func (m *Module) WithMessagesBuilder(builder notificationsbuilder.MessagesBuilde
 // WithNotificationSender sets the given sender as the notification sender
 func (m *Module) WithNotificationSender(sender notificationssender.NotificationSender) *Module {
 	if sender != nil {
-		m.sendMessage = sender
+		m.notificationSender = sender
 	}
 	return m
 }
