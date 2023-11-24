@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (m *Module) getRelationshipNotificationData(relationship types.Relationship, builder notificationsbuilder.RelationshipNotificationBuilder) *notificationsbuilder.NotificationData {
+func (m *Module) getRelationshipNotificationData(relationship types.Relationship, builder notificationsbuilder.RelationshipNotificationBuilder) types.NotificationData {
 	if builder == nil {
 		return nil
 	}
@@ -23,15 +23,13 @@ func (m *Module) SendRelationshipNotifications(relationship types.Relationship) 
 		return nil
 	}
 
-	data := m.getRelationshipNotificationData(relationship, m.notificationBuilder.Relationships().Relationship())
+	data := m.getRelationshipNotificationData(relationship, m.notificationsBuilder.Relationships().Relationship())
 	if data == nil {
 		return nil
 	}
 
 	log.Trace().Str("module", m.Name()).Str("recipient", relationship.Counterparty).
-		Str("notification type", types.TypeFollow).Msg("sending notification")
-	return m.SendNotification(
-		types.NewNotificationUserRecipient(relationship.Counterparty),
-		types.NewNotificationConfig(data.Notification, data.Data),
-	)
+		Str("notification type", "relationship").Msg("sending notification")
+
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(relationship.Counterparty), data)
 }

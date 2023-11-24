@@ -9,15 +9,26 @@ import (
 )
 
 // BuildMessage builds the notification message that should be sent based on the given recipient, notification and data
-func (m *Module) BuildMessage(recipient types.NotificationRecipient, config *types.NotificationConfig) (types.NotificationMessage, error) {
+func (m *Module) BuildMessage(recipient types.NotificationRecipient, config types.NotificationData) (types.NotificationMessage, error) {
+	var androidConfig *messaging.AndroidConfig
+	var apnsConfig *messaging.APNSConfig
+	var webpushConfig *messaging.WebpushConfig
+
+	if dataWithConfig, ok := config.(types.NotificationDataWithConfig); ok {
+		androidConfig = dataWithConfig.GetAndroidConfig()
+		apnsConfig = dataWithConfig.GetAPNSConfig()
+		webpushConfig = dataWithConfig.GetWebpushConfig()
+	}
+
 	switch recipient := recipient.(type) {
 	case *types.NotificationTopicRecipient:
 		return types.NewSingleNotificationMessage(&messaging.Message{
 			Topic:        recipient.Topic,
-			Data:         config.Data,
-			Notification: config.Notification,
-			Android:      config.Android,
-			APNS:         config.APNS,
+			Data:         config.GetAdditionalData(),
+			Notification: config.GetNotification(),
+			Android:      androidConfig,
+			APNS:         apnsConfig,
+			Webpush:      webpushConfig,
 		}), nil
 
 	case *types.NotificationUserRecipient:
@@ -30,10 +41,11 @@ func (m *Module) BuildMessage(recipient types.NotificationRecipient, config *typ
 		}
 		return types.NewMultiNotificationMessage(&messaging.MulticastMessage{
 			Tokens:       tokens,
-			Data:         config.Data,
-			Notification: config.Notification,
-			Android:      config.Android,
-			APNS:         config.APNS,
+			Data:         config.GetAdditionalData(),
+			Notification: config.GetNotification(),
+			Android:      androidConfig,
+			APNS:         apnsConfig,
+			Webpush:      webpushConfig,
 		}), nil
 
 	default:

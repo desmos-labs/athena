@@ -6,7 +6,6 @@ import (
 
 type Config struct {
 	FirebaseCredentialsFilePath string `yaml:"firebase_credentials_file_path"`
-	FirebaseProjectID           string `yaml:"firebase_project_id"`
 	PersistHistory              bool   `yaml:"persist_history"`
 }
 

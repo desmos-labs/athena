@@ -5,7 +5,7 @@ import (
 )
 
 type Database interface {
-	SaveNotification(notification types.Notification) error
+	SaveNotification(recipient types.NotificationRecipient, notification types.NotificationData) error
 	SaveToken(token types.NotificationToken) error
 	GetUserTokens(userAddress string) ([]types.NotificationToken, error)
 }

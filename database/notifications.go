@@ -8,7 +8,12 @@ import (
 )
 
 // SaveNotification stores the given notification inside the database
-func (db *Db) SaveNotification(notification types.Notification) error {
+func (db *Db) SaveNotification(recipient types.NotificationRecipient, data types.NotificationData) error {
+	notification, ok := data.(types.StdNotificationDataWithConfig)
+	if !ok {
+		return nil
+	}
+
 	dataBz, err := json.Marshal(&notification.Data)
 	if err != nil {
 		return err
@@ -22,7 +27,7 @@ ON CONFLICT ON CONSTRAINT unique_user_notification DO UPDATE
         data = excluded.data,
         timestamp = excluded.timestamp
 WHERE notification.timestamp <= excluded.timestamp`
-	_, err = db.SQL.Exec(stmt, notification.Recipient.String(), notification.Type, string(dataBz), notification.Timestamp)
+	_, err = db.SQL.Exec(stmt, recipient.String(), notification.Type, string(dataBz), notification.Timestamp)
 	return err
 }
 

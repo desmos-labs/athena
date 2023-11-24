@@ -1,18 +1,11 @@
 package builder
 
 import (
-	"firebase.google.com/go/v4/messaging"
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
 	"github.com/desmos-labs/djuno/v2/types"
 	notificationscontext "github.com/desmos-labs/djuno/v2/x/notifications/context"
 )
-
-// NotificationData contains the notification data returned by a generic builder
-type NotificationData struct {
-	Notification *messaging.Notification
-	Data         map[string]string
-}
 
 // -------------------------------------------------------------------------------------------------------------------
 
@@ -27,9 +20,9 @@ type NotificationsBuilder interface {
 
 // -------------------------------------------------------------------------------------------------------------------
 
-type PostNotificationBuilder = func(originalPost types.Post, post types.Post) *NotificationData
+type PostNotificationBuilder = func(originalPost types.Post, post types.Post) types.NotificationData
 
-type MentionNotificationBuilder = func(post types.Post, mention poststypes.TextTag) *NotificationData
+type MentionNotificationBuilder = func(post types.Post, mention poststypes.TextTag) types.NotificationData
 
 // PostsNotificationsBuilder contains all the notifications builders for the posts module
 type PostsNotificationsBuilder interface {
@@ -42,7 +35,7 @@ type PostsNotificationsBuilder interface {
 
 // -------------------------------------------------------------------------------------------------------------------
 
-type ReactionNotificationBuilder = func(post types.Post, reaction types.Reaction) *NotificationData
+type ReactionNotificationBuilder = func(post types.Post, reaction types.Reaction) types.NotificationData
 
 // ReactionsNotificationsBuilder contains all the notifications builders for the reactions module
 type ReactionsNotificationsBuilder interface {
@@ -51,7 +44,7 @@ type ReactionsNotificationsBuilder interface {
 
 // -------------------------------------------------------------------------------------------------------------------
 
-type RelationshipNotificationBuilder = func(relationship types.Relationship) *NotificationData
+type RelationshipNotificationBuilder = func(relationship types.Relationship) types.NotificationData
 
 // RelationshipsNotificationsBuilder contains all the notifications builders for the relationships module
 type RelationshipsNotificationsBuilder interface {

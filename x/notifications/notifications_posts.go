@@ -11,7 +11,7 @@ import (
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
 )
 
-func (m *Module) getPostNotificationData(originalPost types.Post, reply types.Post, builder notificationsbuilder.PostNotificationBuilder) *notificationsbuilder.NotificationData {
+func (m *Module) getPostNotificationData(originalPost types.Post, reply types.Post, builder notificationsbuilder.PostNotificationBuilder) types.NotificationData {
 	if builder == nil {
 		return nil
 	}
@@ -82,7 +82,7 @@ func (m *Module) SendPostNotifications(height int64, subspaceID uint64, postID u
 	return nil
 }
 
-func (m *Module) getMentionNotificationData(post types.Post, mention poststypes.TextTag, builder notificationsbuilder.MentionNotificationBuilder) *notificationsbuilder.NotificationData {
+func (m *Module) getMentionNotificationData(post types.Post, mention poststypes.TextTag, builder notificationsbuilder.MentionNotificationBuilder) types.NotificationData {
 	if builder == nil {
 		return nil
 	}
@@ -101,17 +101,15 @@ func (m *Module) sendConversationNotification(originalPost types.Post, reply typ
 	}
 
 	// Get the notification data
-	data := m.getPostNotificationData(originalPost, reply, m.notificationBuilder.Posts().Comment())
+	data := m.getPostNotificationData(originalPost, reply, m.notificationsBuilder.Posts().Comment())
 	if data == nil {
 		return nil
 	}
 
 	log.Trace().Str("module", m.Name()).Str("recipient", originalPost.Author).
-		Str("notification type", types.TypeReply).Msg("sending notification")
-	return m.SendNotification(
-		types.NewNotificationUserRecipient(originalPost.Author),
-		types.NewNotificationConfig(data.Notification, data.Data),
-	)
+		Str("notification type", "post reply").Msg("sending notification")
+
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(originalPost.Author), data)
 }
 
 func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenceType poststypes.PostReferenceType, reference types.Post, notifiedUsers []string) error {
@@ -125,16 +123,16 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 		return nil
 	}
 
-	var data *notificationsbuilder.NotificationData
+	var data types.NotificationData
 	switch referenceType {
 	case poststypes.POST_REFERENCE_TYPE_REPLY:
-		data = m.getPostNotificationData(originalPost, reference, m.notificationBuilder.Posts().Reply())
+		data = m.getPostNotificationData(originalPost, reference, m.notificationsBuilder.Posts().Reply())
 
 	case poststypes.POST_REFERENCE_TYPE_REPOST:
-		data = m.getPostNotificationData(originalPost, reference, m.notificationBuilder.Posts().Repost())
+		data = m.getPostNotificationData(originalPost, reference, m.notificationsBuilder.Posts().Repost())
 
 	case poststypes.POST_REFERENCE_TYPE_QUOTE:
-		data = m.getPostNotificationData(originalPost, reference, m.notificationBuilder.Posts().Quote())
+		data = m.getPostNotificationData(originalPost, reference, m.notificationsBuilder.Posts().Quote())
 	}
 
 	if data == nil {
@@ -142,11 +140,9 @@ func (m *Module) sendPostReferenceNotification(originalPost types.Post, referenc
 	}
 
 	log.Trace().Str("module", m.Name()).Str("recipient", originalPost.Author).
-		Str("notification type", data.Data[types.NotificationTypeKey]).Msg("sending notification")
-	return m.SendNotification(
-		types.NewNotificationUserRecipient(originalPost.Author),
-		types.NewNotificationConfig(data.Notification, data.Data),
-	)
+		Str("notification type", "post reference").Msg("sending notification")
+
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(originalPost.Author), data)
 }
 
 func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes.TextTag, notifiedUsers []string) error {
@@ -160,17 +156,15 @@ func (m *Module) sendPostMentionNotification(post types.Post, mention poststypes
 		return nil
 	}
 
-	data := m.getMentionNotificationData(post, mention, m.notificationBuilder.Posts().Mention())
+	data := m.getMentionNotificationData(post, mention, m.notificationsBuilder.Posts().Mention())
 	if data == nil {
 		return nil
 	}
 
 	log.Trace().Str("module", m.Name()).Str("recipient", mention.Tag).
-		Str("notification type", types.TypeMention).Msg("sending notification")
-	return m.SendNotification(
-		types.NewNotificationUserRecipient(mention.Tag),
-		types.NewNotificationConfig(data.Notification, data.Data),
-	)
+		Str("notification type", "post mention").Msg("sending notification")
+
+	return m.SendAndStoreNotification(types.NewNotificationUserRecipient(mention.Tag), data)
 }
 
 func hasBeenNotified(user string, notifiedUsers []string) bool {

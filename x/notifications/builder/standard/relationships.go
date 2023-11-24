@@ -24,19 +24,19 @@ func NewDefaultRelationshipsNotificationsBuilder(utilityModule UtilityModule) *D
 }
 
 func (d DefaultRelationshipsNotificationsBuilder) Relationship() notificationsbuilder.RelationshipNotificationBuilder {
-	return func(relationship types.Relationship) *notificationsbuilder.NotificationData {
-		return &notificationsbuilder.NotificationData{
-			Notification: &messaging.Notification{
+	return func(relationship types.Relationship) types.NotificationData {
+		return types.NewStdNotificationDataWithConfig(
+			&messaging.Notification{
 				Title: "You have a new follower! 👥",
 				Body:  fmt.Sprintf("%s has started following you", d.m.GetDisplayName(relationship.Creator)),
 			},
-			Data: map[string]string{
+			map[string]string{
 				types.NotificationTypeKey:   types.TypeFollow,
 				types.NotificationActionKey: types.ActionOpenProfile,
 
 				types.SubspaceIDKey:          fmt.Sprintf("%d", relationship.SubspaceID),
 				types.RelationshipCreatorKey: relationship.Creator,
 			},
-		}
+		)
 	}
 }
