@@ -25,13 +25,13 @@ func (m *Module) getUserTokens(recipient string) ([]string, error) {
 
 // SendNotification allows to send to the devices subscribing to the specific topic a message
 // containing the given notification and data.
-func (m *Module) SendNotification(recipient types.NotificationRecipient, config *types.NotificationConfig) error {
-	if _, hasRecipientField := config.Data[types.RecipientKey]; !hasRecipientField {
-		config.Data[types.RecipientKey] = recipient.String()
+func (m *Module) SendNotification(recipient types.NotificationRecipient, config types.NotificationData) error {
+	if _, hasRecipientField := config.GetAdditionalData()[types.RecipientKey]; !hasRecipientField {
+		config.GetAdditionalData()[types.RecipientKey] = recipient.String()
 	}
 
 	// Build the message
-	message, err := m.messagesBuilder(recipient, config)
+	message, err := m.buildMessage(recipient, config)
 	if err != nil {
 		return err
 	}
@@ -55,8 +55,8 @@ func (m *Module) SendNotification(recipient types.NotificationRecipient, config 
 	if m.cfg.PersistHistory {
 		return m.db.SaveNotification(types.NewNotification(
 			recipient,
-			config.Type,
-			config.Data,
+			config.GetType(),
+			config.GetAdditionalData(),
 			time.Now(),
 		))
 	}

@@ -54,15 +54,33 @@ func (recipient *NotificationTopicRecipient) String() string {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-type NotificationConfig struct {
+type NotificationData interface {
+	GetType() string
+	GetNotification() *messaging.Notification
+	GetAdditionalData() map[string]string
+}
+
+type NotificationDataWithConfig interface {
+	NotificationData
+	GetAndroidConfig() *messaging.AndroidConfig
+	GetAPNSConfig() *messaging.APNSConfig
+	GetWebpushConfig() *messaging.WebpushConfig
+}
+
+var (
+	_ NotificationDataWithConfig = StdNotificationDataWithConfig{}
+)
+
+type StdNotificationDataWithConfig struct {
 	Type         string
 	Data         map[string]string
 	Notification *messaging.Notification
 	Android      *messaging.AndroidConfig
 	APNS         *messaging.APNSConfig
+	Webpush      *messaging.WebpushConfig
 }
 
-func NewNotificationConfig(notification *messaging.Notification, data map[string]string) *NotificationConfig {
+func NewStdNotificationDataWithConfig(notification *messaging.Notification, data map[string]string) *StdNotificationDataWithConfig {
 	if _, hasTypeField := data[NotificationTypeKey]; !hasTypeField {
 		data[NotificationTypeKey] = "unknown"
 	}
@@ -71,11 +89,35 @@ func NewNotificationConfig(notification *messaging.Notification, data map[string
 		data[ClickActionKey] = ClickActionValue
 	}
 
-	return &NotificationConfig{
+	return &StdNotificationDataWithConfig{
 		Type:         data[NotificationTypeKey],
 		Data:         data,
 		Notification: notification,
 	}
+}
+
+func (s StdNotificationDataWithConfig) GetType() string {
+	return s.Type
+}
+
+func (s StdNotificationDataWithConfig) GetAdditionalData() map[string]string {
+	return s.Data
+}
+
+func (s StdNotificationDataWithConfig) GetNotification() *messaging.Notification {
+	return s.Notification
+}
+
+func (s StdNotificationDataWithConfig) GetAndroidConfig() *messaging.AndroidConfig {
+	return s.Android
+}
+
+func (s StdNotificationDataWithConfig) GetAPNSConfig() *messaging.APNSConfig {
+	return s.APNS
+}
+
+func (s StdNotificationDataWithConfig) GetWebpushConfig() *messaging.WebpushConfig {
+	return s.Webpush
 }
 
 // --------------------------------------------------------------------------------------------------------------------

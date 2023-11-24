@@ -5,4 +5,4 @@ import (
 )
 
 // MessagesBuilder represents a NotificationMessage builder
-type MessagesBuilder = func(recipient types.NotificationRecipient, config *types.NotificationConfig) (types.NotificationMessage, error)
+type MessagesBuilder = func(recipient types.NotificationRecipient, data types.NotificationData) (types.NotificationMessage, error)

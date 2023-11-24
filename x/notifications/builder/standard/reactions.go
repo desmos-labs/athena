@@ -24,13 +24,13 @@ func NewDefaultReactionsNotificationsBuilder(utilityModule UtilityModule) *Defau
 }
 
 func (d DefaultReactionsNotificationsBuilder) Reaction() notificationsbuilder.ReactionNotificationBuilder {
-	return func(post types.Post, reaction types.Reaction) *notificationsbuilder.NotificationData {
-		return &notificationsbuilder.NotificationData{
-			Notification: &messaging.Notification{
+	return func(post types.Post, reaction types.Reaction) types.NotificationData {
+		return types.NewStdNotificationDataWithConfig(
+			&messaging.Notification{
 				Title: "Someone reacted to your post! 🎉",
 				Body:  fmt.Sprintf("%s reacted to your post", d.m.GetDisplayName(reaction.Author)),
 			},
-			Data: map[string]string{
+			map[string]string{
 				types.NotificationTypeKey:   types.TypeReaction,
 				types.NotificationActionKey: types.ActionOpenPost,
 
@@ -39,6 +39,6 @@ func (d DefaultReactionsNotificationsBuilder) Reaction() notificationsbuilder.Re
 				types.ReactionIDKey:     fmt.Sprintf("%d", reaction.ID),
 				types.ReactionAuthorKey: reaction.Author,
 			},
-		}
+		)
 	}
 }

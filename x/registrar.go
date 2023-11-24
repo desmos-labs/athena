@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	notificationscontext "github.com/desmos-labs/djuno/v2/x/notifications/context"
+	notificationssender "github.com/desmos-labs/djuno/v2/x/notifications/sender"
 
 	"github.com/desmos-labs/djuno/v2/database"
 	"github.com/desmos-labs/djuno/v2/x/apis"
@@ -29,6 +30,7 @@ import (
 
 type RegistrarOptions struct {
 	NotificationsBuilderCreator notificationsbuilder.NotificationsBuilderCreator
+	NotificationsSenderCreator  notificationssender.NotificationsSenderCreator
 	APIsRegistrar               apis.Registrar
 	APIsConfigurator            apis.Configurator
 }
@@ -38,6 +40,13 @@ func (o RegistrarOptions) CreateNotificationsBuilder(context notificationscontex
 		return o.NotificationsBuilderCreator(context)
 	}
 	return standardnotificationsbuilder.CreateNotificationsBuilder(context)
+}
+
+func (o RegistrarOptions) CreateNotificationsSender(context notificationscontext.Context) notificationssender.NotificationSender {
+	if o.NotificationsSenderCreator != nil {
+		return o.NotificationsSenderCreator(context)
+	}
+	return nil
 }
 
 func (o RegistrarOptions) GetAPIsRegistrar() apis.Registrar {
@@ -105,7 +114,9 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	context := notificationscontext.NewContext(ctx, ctx.Proxy, grpcConnection)
 	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb)
 	if notificationsModule != nil {
-		notificationsModule = notificationsModule.WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context))
+		notificationsModule = notificationsModule.
+			WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context)).
+			WithNotificationSender(r.options.CreateNotificationsSender(context))
 	}
 
 	return []modules.Module{

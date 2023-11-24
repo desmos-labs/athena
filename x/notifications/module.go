@@ -11,6 +11,7 @@ import (
 	"google.golang.org/api/option"
 
 	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
+	notificationssender "github.com/desmos-labs/djuno/v2/x/notifications/sender"
 )
 
 var (
@@ -30,8 +31,9 @@ type Module struct {
 	postsModule     PostsModule
 	reactionsModule ReactionsModule
 
-	notificationBuilder notificationsbuilder.NotificationsBuilder
-	messagesBuilder     notificationsbuilder.MessagesBuilder
+	notificationsBuilder notificationsbuilder.NotificationsBuilder
+	buildMessage         notificationsbuilder.MessagesBuilder
+	sendMessage          notificationssender.NotificationSender
 }
 
 // NewModule returns a new Module instance
@@ -79,8 +81,9 @@ func NewModule(
 		reactionsModule: reactionsModule,
 	}
 
-	// Set the default messages builder
+	// Set the default messages builder and sender
 	module = module.WithMessagesBuilder(module.BuildMessage)
+	module = module.WithNotificationSender(module.SendNotification)
 
 	return module
 }
@@ -93,7 +96,7 @@ func (m *Module) Name() string {
 // WithNotificationsBuilder sets the given builder as the notifications builder
 func (m *Module) WithNotificationsBuilder(builder notificationsbuilder.NotificationsBuilder) *Module {
 	if builder != nil {
-		m.notificationBuilder = builder
+		m.notificationsBuilder = builder
 	}
 	return m
 }
@@ -101,7 +104,15 @@ func (m *Module) WithNotificationsBuilder(builder notificationsbuilder.Notificat
 // WithMessagesBuilder sets the given builder as the messages builder
 func (m *Module) WithMessagesBuilder(builder notificationsbuilder.MessagesBuilder) *Module {
 	if builder != nil {
-		m.messagesBuilder = builder
+		m.buildMessage = builder
+	}
+	return m
+}
+
+// WithNotificationSender sets the given sender as the notification sender
+func (m *Module) WithNotificationSender(sender notificationssender.NotificationSender) *Module {
+	if sender != nil {
+		m.sendMessage = sender
 	}
 	return m
 }
