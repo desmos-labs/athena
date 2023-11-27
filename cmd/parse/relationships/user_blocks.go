@@ -31,7 +31,7 @@ func userBlocksCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 
 			remoteCfg, ok := config.Cfg.Node.Details.(*remote.Details)
 			if !ok {
-				panic(fmt.Errorf("cannot run DJuno on local node"))
+				panic(fmt.Errorf("cannot run Athena on local node"))
 			}
 
 			// Get the database

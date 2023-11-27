@@ -1,4 +1,4 @@
-# To build the DJuno image, just run:
+# To build the Athena image, just run:
 # > docker build -t djuno .
 #
 # In order to work properly, this Docker container needs to have a volume that:

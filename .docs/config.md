@@ -98,12 +98,12 @@ This section determines how the data will be parsed. You can
 reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#parsing) for more details.
 
 ## `database`
-This section contains all the different configuration related to the PostgreSQL database where DJuno will write the
+This section contains all the different configuration related to the PostgreSQL database where Athena will write the
 data. You can reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#database) for
 more details.
 
 ## `logging`
-This section allows to configure the logging details of DJuno. You can
+This section allows to configure the logging details of Athena. You can
 reference [this page](https://github.com/forbole/juno/blob/cosmos/v0.44.x/.docs/config.md#logging) for more details.
 
 ## `contracts`

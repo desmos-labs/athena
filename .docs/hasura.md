@@ -1,5 +1,5 @@
 # Hasura
-Once DJuno is up and running, what you can do is use [Hasura](https://hasura.io/) to run a GraphQL sever to expose the data you want.
+Once Athena is up and running, what you can do is use [Hasura](https://hasura.io/) to run a GraphQL sever to expose the data you want.
 
 ## Running Hasura
 The easiest way to run a Hasura server is to use [Docker](https://www.docker.com/). This can be done by following [this guide](https://hasura.io/docs/2.0/graphql/core/getting-started/docker-simple.html).

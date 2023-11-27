@@ -1,6 +1,6 @@
 # Upgrade Process
 
-This document provides step-by-step guidance for upgrading from DJuno version to another.
+This document provides step-by-step guidance for upgrading from Athena version to another.
 
 ## Upgrading from Desmos Core v5 to Desmos Core v6
 

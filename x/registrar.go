@@ -62,7 +62,7 @@ func (o RegistrarOptions) GetAPIsConfigurator() apis.Configurator {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// ModulesRegistrar represents the modules.Registrar that allows to register all custom DJuno modules
+// ModulesRegistrar represents the modules.Registrar that allows to register all custom Athena modules
 type ModulesRegistrar struct {
 	options RegistrarOptions
 }
@@ -85,7 +85,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 
 	remoteCfg, ok := ctx.JunoConfig.Node.Details.(*remote.Details)
 	if !ok {
-		panic(fmt.Errorf("cannot run DJuno on local node"))
+		panic(fmt.Errorf("cannot run Athena on local node"))
 	}
 
 	grpcConnection := remote.MustCreateGrpcConnection(remoteCfg.GRPC)
@@ -93,7 +93,7 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	// Juno modules
 	telemetryModule := telemetry.NewModule(ctx.JunoConfig)
 
-	// DJuno modules
+	// Athena modules
 	apisModule := apis.NewModule(apis.NewContext(ctx, grpcConnection))
 	if apisModule != nil {
 		apisModule = apisModule.WithRegistrar(r.options.GetAPIsRegistrar())

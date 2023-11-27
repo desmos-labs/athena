@@ -74,7 +74,7 @@ func Builder(ctx *junodb.Context) (junodb.Database, error) {
 func Cast(database junodb.Database) Database {
 	desmosDb, ok := (database).(Database)
 	if !ok {
-		panic(fmt.Errorf("database is not a DJuno database instance"))
+		panic(fmt.Errorf("database is not a Athena database instance"))
 	}
 	return desmosDb
 }
