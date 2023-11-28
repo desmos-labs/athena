@@ -8,9 +8,9 @@ import (
 	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
 	juno "github.com/forbole/juno/v5/types"
 
-	"github.com/desmos-labs/djuno/v2/x/filters"
+	"github.com/desmos-labs/athena/x/filters"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule

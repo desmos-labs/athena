@@ -9,7 +9,7 @@ import (
 
 	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 func (m *Module) GetReactionID(tx *juno.Tx, index int) (uint32, error) {

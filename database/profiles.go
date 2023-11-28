@@ -9,9 +9,9 @@ import (
 
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 
-	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
+	dbtypes "github.com/desmos-labs/athena/database/types"
 )
 
 // SaveProfilesParams allows to store the given profiles params

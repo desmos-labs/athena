@@ -1,6 +1,6 @@
 package reports
 
-import "github.com/desmos-labs/djuno/v2/types"
+import "github.com/desmos-labs/athena/types"
 
 type Database interface {
 	SaveReport(report types.Report) error

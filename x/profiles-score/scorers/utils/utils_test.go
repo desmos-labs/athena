@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/twitter"
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/utils"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/twitter"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/utils"
 )
 
 func TestUnmarshalConfig(t *testing.T) {

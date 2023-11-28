@@ -3,7 +3,7 @@ package tips
 import (
 	"fmt"
 
-	"github.com/desmos-labs/djuno/v2/utils"
+	"github.com/desmos-labs/athena/utils"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
@@ -13,7 +13,7 @@ import (
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	juno "github.com/forbole/juno/v5/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule

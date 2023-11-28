@@ -1,8 +1,8 @@
 package notifications
 
 import (
-	"github.com/desmos-labs/djuno/v2/types"
-	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
+	"github.com/desmos-labs/athena/types"
+	notificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder"
 
 	"github.com/rs/zerolog/log"
 )

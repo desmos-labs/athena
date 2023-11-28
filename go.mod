@@ -1,4 +1,4 @@
-module github.com/desmos-labs/djuno/v2
+module github.com/desmos-labs/athena
 
 go 1.20
 

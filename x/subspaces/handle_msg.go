@@ -3,7 +3,7 @@ package subspaces
 import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/desmos-labs/djuno/v2/x/filters"
+	"github.com/desmos-labs/athena/x/filters"
 
 	"github.com/rs/zerolog/log"
 
@@ -12,7 +12,7 @@ import (
 
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 
-	"github.com/desmos-labs/djuno/v2/x/apis/endpoints"
+	"github.com/desmos-labs/athena/x/apis/endpoints"
 )
 
 // Context contains all the useful data that might be used when registering an API handler

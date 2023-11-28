@@ -11,10 +11,10 @@ import (
 	"github.com/forbole/juno/v5/types/config"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/profiles"
-	"github.com/desmos-labs/djuno/v2/x/relationships"
-	"github.com/desmos-labs/djuno/v2/x/subspaces"
+	"github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/x/profiles"
+	"github.com/desmos-labs/athena/x/relationships"
+	"github.com/desmos-labs/athena/x/subspaces"
 )
 
 // relationshipsCmd returns a Cobra command that allows to fix the relationships for all the profiles

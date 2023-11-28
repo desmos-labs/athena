@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/lib/pq"
 
-	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
-	"github.com/desmos-labs/djuno/v2/types"
+	dbtypes "github.com/desmos-labs/athena/database/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // SaveFeeGrant stores the given grant inside the database

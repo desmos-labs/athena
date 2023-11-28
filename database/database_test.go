@@ -16,7 +16,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/athena/database"
 
 	_ "github.com/proullon/ramsql/driver"
 )

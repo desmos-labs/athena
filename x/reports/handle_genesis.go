@@ -3,7 +3,7 @@ package reports
 import (
 	"encoding/json"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 
 	tmtypes "github.com/cometbft/cometbft/types"
 

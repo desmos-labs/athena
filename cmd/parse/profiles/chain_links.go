@@ -9,8 +9,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/profiles"
+	"github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/x/profiles"
 )
 
 // chainLinksCmd returns a Cobra command that allows to fix the chain links for all the profiles

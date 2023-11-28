@@ -3,11 +3,11 @@ package posts
 import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/desmos-labs/djuno/v2/x/filters"
+	"github.com/desmos-labs/athena/x/filters"
 
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 
 	"github.com/rs/zerolog/log"
 

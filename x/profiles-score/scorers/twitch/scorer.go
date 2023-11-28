@@ -9,8 +9,8 @@ import (
 	"github.com/forbole/juno/v5/types/config"
 	"github.com/nicklaw5/helix"
 
-	"github.com/desmos-labs/djuno/v2/types"
-	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
+	"github.com/desmos-labs/athena/types"
+	profilesscore "github.com/desmos-labs/athena/x/profiles-score"
 )
 
 var (

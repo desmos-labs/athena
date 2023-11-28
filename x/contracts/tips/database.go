@@ -1,8 +1,8 @@
 package tips
 
 import (
-	"github.com/desmos-labs/djuno/v2/types"
-	contractsbase "github.com/desmos-labs/djuno/v2/x/contracts/base"
+	"github.com/desmos-labs/athena/types"
+	contractsbase "github.com/desmos-labs/athena/x/contracts/base"
 )
 
 type Database interface {

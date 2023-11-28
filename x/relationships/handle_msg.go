@@ -1,7 +1,7 @@
 package relationships
 
 import (
-	"github.com/desmos-labs/djuno/v2/x/filters"
+	"github.com/desmos-labs/athena/x/filters"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	juno "github.com/forbole/juno/v5/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule

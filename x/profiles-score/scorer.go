@@ -3,7 +3,7 @@ package profilesscore
 import (
 	"time"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 type ScoreRateLimit struct {

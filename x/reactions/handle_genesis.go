@@ -5,7 +5,7 @@ import (
 
 	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 
 	tmtypes "github.com/cometbft/cometbft/types"
 )

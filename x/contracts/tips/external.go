@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
-	"github.com/desmos-labs/djuno/v2/utils"
+	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/utils"
 )
 
 // RefreshData refreshes the data related to the tips contract for the given subspace, if any
