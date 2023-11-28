@@ -24,7 +24,7 @@ node:
   type: remote
   config:
     rpc:
-      client_name: djuno
+      client_name: athena
       address: https://rpc.morpheus.desmos.network:443
       max_connections: 10
 
@@ -39,7 +39,7 @@ parsing:
   start_height: 1
 
 database:
-  name: djuno
+  name: athena
   host: localhost
   port: 5432
   user: user

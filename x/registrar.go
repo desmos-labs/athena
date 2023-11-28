@@ -81,7 +81,7 @@ func (r *ModulesRegistrar) WithOptions(options RegistrarOptions) *ModulesRegistr
 // BuildModules implements modules.Registrar
 func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	cdc := ctx.EncodingConfig.Codec
-	djunoDb := database.Cast(ctx.Database)
+	athenaDb := database.Cast(ctx.Database)
 
 	remoteCfg, ok := ctx.JunoConfig.Node.Details.(*remote.Details)
 	if !ok {
@@ -100,19 +100,19 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		apisModule = apisModule.WithConfigurator(r.options.GetAPIsConfigurator())
 	}
 
-	authzModule := authz.NewModule(ctx.Proxy, cdc, djunoDb)
-	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, djunoDb)
-	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, djunoDb)
-	postsModule := posts.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	profilesModule := profiles.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, djunoDb)
-	reactionsModule := reactions.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, djunoDb)
-	reportsModule := reports.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	subspacesModule := subspaces.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
+	authzModule := authz.NewModule(ctx.Proxy, cdc, athenaDb)
+	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, athenaDb)
+	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, athenaDb)
+	postsModule := posts.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	profilesModule := profiles.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, athenaDb)
+	reactionsModule := reactions.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, athenaDb)
+	reportsModule := reports.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	subspacesModule := subspaces.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
 
 	context := notificationscontext.NewContext(ctx, ctx.Proxy, grpcConnection)
-	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb)
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, athenaDb)
 	if notificationsModule != nil {
 		notificationsModule = notificationsModule.
 			WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context)).

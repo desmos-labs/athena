@@ -1,4 +1,4 @@
-- name: djuno
+- name: athena
   kind: postgres
   configuration:
     connection_info:
@@ -6,4 +6,4 @@
         from_env: HASURA_GRAPHQL_DATABASE_URL
       isolation_level: read-committed
       use_prepared_statements: false
-  tables: "!include djuno/tables/tables.yaml"
+  tables: "!include athena/tables/tables.yaml"

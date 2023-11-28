@@ -24,7 +24,7 @@ func main() {
 		}).
 		WithDBBuilder(desmosdb.Builder)
 
-	cfg := junocmd.NewConfig("djuno").
+	cfg := junocmd.NewConfig("athena").
 		WithParseConfig(parseCfg)
 
 	// Run the command

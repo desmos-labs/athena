@@ -17,10 +17,10 @@ Then, you need to install the binary. To do this, run
 $ make install
 ```
 
-This will put the `djuno` binary inside your `$GOPATH/bin` folder. You should now be able to run `djuno` to make sure it's installed: 
+This will put the `athena` binary inside your `$GOPATH/bin` folder. You should now be able to run `athena` to make sure it's installed: 
 
 ```shell
-$ djuno
+$ athena
 A Cosmos chain data aggregator. It improves the chain's data accessibility
 by providing an indexed database exposing aggregated resources and models such as blocks, validators, pre-commits, 
 transactions, and various aspects of the governance module. 
@@ -29,7 +29,7 @@ downstream clients to answer queries such as "What is the average gas cost of a 
 them to compose more aggregate and complex queries.
 
 Usage:
-  djuno [command]
+  athena [command]
 
 Available Commands:
   help        Help about any command
@@ -48,20 +48,20 @@ Use "Athena [command] --help" for more information about a command.
 In order to correctly parse and store the data based on your requirements, Athena allows you to customize its behavior via a TOML file called `config.toml`. In order to create the first instance of the `config.toml` file you can run
 
 ```shell
-$ djuno init
+$ athena init
 ```
 
-This will create such file inside the `~/.djuno` folder.  
+This will create such file inside the `~/.athena` folder.  
 Note that if you want to change the folder used by Athena you can do this using the `--home` flag: 
 
 ```shell
-$ djuno init --home /path/to/my/folder
+$ athena init --home /path/to/my/folder
 ```
 
 Once the file is created, you are required to edit it and change the different values. To do this you can run 
 
 ```shell
-$ nano ~/.djuno/config.yaml
+$ nano ~/.athena/config.yaml
 ```
 
 For a better understanding of what each section and field refers to, please read the [config reference](config.md). 
@@ -70,27 +70,27 @@ For a better understanding of what each section and field refers to, please read
 Once the configuration file has been setup, you can run Athena using the following command: 
 
 ```shell
-$ djuno parse
+$ athena parse
 ```
 
 If you are using a custom folder for the configuration file, please specify it using the `--home` flag: 
 
 
 ```shell
-$ djuno parse --home /path/to/my/config/folder
+$ athena parse --home /path/to/my/config/folder
 ```
 
 We highly suggest you running Athena as a system service so that it can be restarted automatically in the case it stops. To do this you can run: 
 
 ```shell
-$ sudo tee /etc/systemd/system/djuno.service > /dev/null <<EOF
+$ sudo tee /etc/systemd/system/athena.service > /dev/null <<EOF
 [Unit]
 Description=Athena parser
 After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$GOPATH/bin/djuno parse
+ExecStart=$GOPATH/bin/athena parse
 Restart=always
 RestartSec=3
 LimitNOFILE=4096
@@ -103,6 +103,6 @@ EOF
 Then you need to enable and start the service:
 
 ```shell
-$ sudo systemctl enable djuno
-$ sudo systemctl start djuno
+$ sudo systemctl enable athena
+$ sudo systemctl start athena
 ```
