@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 func UnmarshalConfig(cfgBz []byte, nodeName string, value interface{}) (bool, error) {

@@ -1,10 +1,10 @@
 package standard
 
 import (
-	"github.com/desmos-labs/djuno/v2/database"
-	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
-	notificationscontext "github.com/desmos-labs/djuno/v2/x/notifications/context"
-	"github.com/desmos-labs/djuno/v2/x/profiles"
+	"github.com/desmos-labs/athena/database"
+	notificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder"
+	notificationscontext "github.com/desmos-labs/athena/x/notifications/context"
+	"github.com/desmos-labs/athena/x/profiles"
 )
 
 // CreateNotificationsBuilder returns the default NotificationsBuilderCreator implementation

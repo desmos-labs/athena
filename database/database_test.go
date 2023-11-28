@@ -16,7 +16,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/desmos-labs/djuno/v2/database"
+	"github.com/desmos-labs/athena/database"
 
 	_ "github.com/proullon/ramsql/driver"
 )
@@ -31,7 +31,7 @@ func (suite *DbTestSuite) SetupTest() {
 	// Build the database
 	encodingConfig := app.MakeEncodingConfig()
 	databaseConfig := junodbcfg.DefaultDatabaseConfig().
-		WithURL("postgres://djuno:password@localhost:6432/djuno?sslmode=disable&search_path=public")
+		WithURL("postgres://athena:password@localhost:6432/athena?sslmode=disable&search_path=public")
 
 	db, err := database.Builder(junodb.NewContext(databaseConfig, params.EncodingConfig(encodingConfig), logging.DefaultLogger()))
 	suite.Require().NoError(err)

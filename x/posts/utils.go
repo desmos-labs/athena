@@ -8,7 +8,7 @@ import (
 
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // updatePost updates the stored data about the given post at the specified height

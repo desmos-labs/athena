@@ -3,24 +3,24 @@ package x
 import (
 	"fmt"
 
-	notificationscontext "github.com/desmos-labs/djuno/v2/x/notifications/context"
-	notificationssender "github.com/desmos-labs/djuno/v2/x/notifications/sender"
+	notificationscontext "github.com/desmos-labs/athena/x/notifications/context"
+	notificationssender "github.com/desmos-labs/athena/x/notifications/sender"
 
-	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/apis"
-	"github.com/desmos-labs/djuno/v2/x/authz"
-	contractsbuilder "github.com/desmos-labs/djuno/v2/x/contracts/builder"
-	"github.com/desmos-labs/djuno/v2/x/feegrant"
-	"github.com/desmos-labs/djuno/v2/x/notifications"
-	notificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder"
-	standardnotificationsbuilder "github.com/desmos-labs/djuno/v2/x/notifications/builder/standard"
-	"github.com/desmos-labs/djuno/v2/x/posts"
-	"github.com/desmos-labs/djuno/v2/x/profiles"
-	profilesscorebuilder "github.com/desmos-labs/djuno/v2/x/profiles-score/builder"
-	"github.com/desmos-labs/djuno/v2/x/reactions"
-	"github.com/desmos-labs/djuno/v2/x/relationships"
-	"github.com/desmos-labs/djuno/v2/x/reports"
-	"github.com/desmos-labs/djuno/v2/x/subspaces"
+	"github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/x/apis"
+	"github.com/desmos-labs/athena/x/authz"
+	contractsbuilder "github.com/desmos-labs/athena/x/contracts/builder"
+	"github.com/desmos-labs/athena/x/feegrant"
+	"github.com/desmos-labs/athena/x/notifications"
+	notificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder"
+	standardnotificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder/standard"
+	"github.com/desmos-labs/athena/x/posts"
+	"github.com/desmos-labs/athena/x/profiles"
+	profilesscorebuilder "github.com/desmos-labs/athena/x/profiles-score/builder"
+	"github.com/desmos-labs/athena/x/reactions"
+	"github.com/desmos-labs/athena/x/relationships"
+	"github.com/desmos-labs/athena/x/reports"
+	"github.com/desmos-labs/athena/x/subspaces"
 
 	"github.com/forbole/juno/v5/modules"
 	"github.com/forbole/juno/v5/modules/registrar"
@@ -81,7 +81,7 @@ func (r *ModulesRegistrar) WithOptions(options RegistrarOptions) *ModulesRegistr
 // BuildModules implements modules.Registrar
 func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 	cdc := ctx.EncodingConfig.Codec
-	djunoDb := database.Cast(ctx.Database)
+	athenaDb := database.Cast(ctx.Database)
 
 	remoteCfg, ok := ctx.JunoConfig.Node.Details.(*remote.Details)
 	if !ok {
@@ -100,19 +100,19 @@ func (r *ModulesRegistrar) BuildModules(ctx registrar.Context) modules.Modules {
 		apisModule = apisModule.WithConfigurator(r.options.GetAPIsConfigurator())
 	}
 
-	authzModule := authz.NewModule(ctx.Proxy, cdc, djunoDb)
-	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, djunoDb)
-	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, djunoDb)
-	postsModule := posts.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	profilesModule := profiles.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, djunoDb)
-	reactionsModule := reactions.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, djunoDb)
-	reportsModule := reports.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
-	subspacesModule := subspaces.NewModule(ctx.Proxy, grpcConnection, cdc, djunoDb)
+	authzModule := authz.NewModule(ctx.Proxy, cdc, athenaDb)
+	contractsModule := contractsbuilder.BuildModule(ctx.JunoConfig, ctx.Proxy, grpcConnection, athenaDb)
+	feegrantModule := feegrant.NewModule(ctx.Proxy, cdc, athenaDb)
+	postsModule := posts.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	profilesModule := profiles.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	profilesScoreModule := profilesscorebuilder.BuildModule(ctx.JunoConfig, athenaDb)
+	reactionsModule := reactions.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	relationshipsModule := relationships.NewModule(profilesModule, grpcConnection, cdc, athenaDb)
+	reportsModule := reports.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
+	subspacesModule := subspaces.NewModule(ctx.Proxy, grpcConnection, cdc, athenaDb)
 
 	context := notificationscontext.NewContext(ctx, ctx.Proxy, grpcConnection)
-	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, djunoDb)
+	notificationsModule := notifications.NewModule(ctx.JunoConfig, postsModule, reactionsModule, cdc, athenaDb)
 	if notificationsModule != nil {
 		notificationsModule = notificationsModule.
 			WithNotificationsBuilder(r.options.CreateNotificationsBuilder(context)).

@@ -10,7 +10,7 @@ import (
 
 	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // RefreshRegisteredReactionsData refreshes the registered reactions data for the given subspace

@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/utils"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/utils"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 var (

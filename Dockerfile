@@ -1,18 +1,18 @@
 # To build the Athena image, just run:
-# > docker build -t djuno .
+# > docker build -t athena .
 #
 # In order to work properly, this Docker container needs to have a volume that:
 # - as source points to a directory which contains a config.toml and firebase-config.toml files
 # - as destination it points to the /home folder
 #
-# Simple usage with a mounted data directory (considering ~/.djuno/config as the configuration folder):
-# > docker run -it -v ~/.djuno/config:/home djuno djuno parse config.toml firebase-config.json
+# Simple usage with a mounted data directory (considering ~/.athena/config as the configuration folder):
+# > docker run -it -v ~/.athena/config:/home athena athena parse config.toml firebase-config.json
 #
 # If you want to run this container as a daemon, you can do so by executing
-# > docker run -td -v ~/.djuno/config:/home --name djuno djuno
+# > docker run -td -v ~/.athena/config:/home --name athena athena
 #
 # Once you have done so, you can enter the container shell by executing
-# > docker exec -it djuno bash
+# > docker exec -it athena bash
 #
 # To exit the bash, just execute
 # > exit
@@ -41,7 +41,7 @@ RUN cp /lib/libwasmvm_muslc.${arch}.a /usr/local/lib/libwasmvm_muslc.a
 
 # force it to use static lib (from above) not standard libgo_cosmwasm.so file
 RUN BUILD_TAGS=muslc GOOS=linux GOARCH=amd64 LEDGER_ENABLED=true LINK_STATICALLY=true make build
-RUN echo "Ensuring binary is statically linked ..." && (file /code/build/djuno | grep "statically linked")
+RUN echo "Ensuring binary is statically linked ..." && (file /code/build/athena | grep "statically linked")
 
 
 FROM alpine:latest
@@ -50,6 +50,6 @@ FROM alpine:latest
 RUN apk update && apk add --no-cache ca-certificates build-base
 
 # Copy the binary
-COPY --from=builder /code/build/djuno /usr/bin/djuno
+COPY --from=builder /code/build/athena /usr/bin/athena
 
-ENTRYPOINT ["djuno"]
+ENTRYPOINT ["athena"]

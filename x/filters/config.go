@@ -3,7 +3,7 @@ package filters
 import (
 	"gopkg.in/yaml.v3"
 
-	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
+	"github.com/desmos-labs/athena/x/contracts/tips"
 )
 
 type Config struct {

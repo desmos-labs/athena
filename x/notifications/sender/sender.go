@@ -1,8 +1,8 @@
 package sender
 
 import (
-	"github.com/desmos-labs/djuno/v2/types"
-	notificationscontext "github.com/desmos-labs/djuno/v2/x/notifications/context"
+	"github.com/desmos-labs/athena/types"
+	notificationscontext "github.com/desmos-labs/athena/x/notifications/context"
 )
 
 // NotificationSender represents a function that allows to send a notification to the given recipient

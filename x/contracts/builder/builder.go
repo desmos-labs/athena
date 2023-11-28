@@ -5,8 +5,8 @@ import (
 	"github.com/forbole/juno/v5/types/config"
 	"google.golang.org/grpc"
 
-	"github.com/desmos-labs/djuno/v2/x/contracts"
-	"github.com/desmos-labs/djuno/v2/x/contracts/tips"
+	"github.com/desmos-labs/athena/x/contracts"
+	"github.com/desmos-labs/athena/x/contracts/tips"
 )
 
 func BuildModule(junoCfg config.Config, node node.Node, grpcConnection *grpc.ClientConn, db tips.Database) *contracts.Module {

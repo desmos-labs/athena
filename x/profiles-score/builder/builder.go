@@ -3,13 +3,13 @@ package builder
 import (
 	"github.com/forbole/juno/v5/types/config"
 
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/youtube"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/youtube"
 
-	profilesscore "github.com/desmos-labs/djuno/v2/x/profiles-score"
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/domain"
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/github"
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/twitch"
-	"github.com/desmos-labs/djuno/v2/x/profiles-score/scorers/twitter"
+	profilesscore "github.com/desmos-labs/athena/x/profiles-score"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/domain"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/github"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/twitch"
+	"github.com/desmos-labs/athena/x/profiles-score/scorers/twitter"
 )
 
 func BuildModule(junoCfg config.Config, db profilesscore.Database) *profilesscore.Module {

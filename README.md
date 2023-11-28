@@ -5,15 +5,15 @@
 </p>
 
 <p align="center" width="100%">
-  <img height="20" src="https://img.shields.io/github/license/desmos-labs/djuno.svg" />
-   <a href="https://codecov.io/gh/desmos-labs/djuno">
-      <img height="20" src="https://img.shields.io/codecov/c/github/desmos-labs/djuno" />
+  <img height="20" src="https://img.shields.io/github/license/desmos-labs/athena.svg" />
+   <a href="https://codecov.io/gh/desmos-labs/athena">
+      <img height="20" src="https://img.shields.io/codecov/c/github/desmos-labs/athena" />
    </a>
-   <a href="https://github.com/desmos-labs/djuno/actions">
-      <img height="20" src="https://img.shields.io/github/actions/workflow/status/desmos-labs/djuno/test.yml" />
+   <a href="https://github.com/desmos-labs/athena/actions">
+      <img height="20" src="https://img.shields.io/github/actions/workflow/status/desmos-labs/athena/test.yml" />
    </a>
-  <a href="https://goreportcard.com/report/github.com/desmos-labs/djuno">
-      <img height="20" src="https://goreportcard.com/badge/github.com/desmos-labs/djuno" />
+  <a href="https://goreportcard.com/report/github.com/desmos-labs/athena">
+      <img height="20" src="https://goreportcard.com/badge/github.com/desmos-labs/athena" />
    </a>
 </p>
 

@@ -3,7 +3,7 @@ package profiles
 import (
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 type Database interface {

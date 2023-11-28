@@ -10,12 +10,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
+	dbtypes "github.com/desmos-labs/athena/database/types"
 
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 )

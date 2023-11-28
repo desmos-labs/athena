@@ -75,11 +75,11 @@ coverage:
 
 stop-docker-test:
 	@echo "Stopping Docker container..."
-	@docker stop djuno-test-db || true && docker rm djuno-test-db || true
+	@docker stop athena-test-db || true && docker rm athena-test-db || true
 
 start-docker-test: stop-docker-test
 	@echo "Starting Docker container..."
-	@docker run --name djuno-test-db -e POSTGRES_USER=djuno -e POSTGRES_PASSWORD=password -e POSTGRES_DB=djuno -d -p 6432:5432 postgres
+	@docker run --name athena-test-db -e POSTGRES_USER=athena -e POSTGRES_PASSWORD=password -e POSTGRES_DB=athena -d -p 6432:5432 postgres
 
 test-unit: start-docker-test
 	@echo "Executing unit tests..."
@@ -105,7 +105,7 @@ lint-fix:
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs gofmt -w -s
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs goimports -w -local github.com/desmos-labs/djuno
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs goimports -w -local github.com/desmos-labs/athena
 .PHONY: format
 
 .PHONY: lint lint-fix format

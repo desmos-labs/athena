@@ -8,8 +8,8 @@ import (
 
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
-	dbtypes "github.com/desmos-labs/djuno/v2/database/types"
-	"github.com/desmos-labs/djuno/v2/types"
+	dbtypes "github.com/desmos-labs/athena/database/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // getPostRowID returns the row_id of the post having the given data

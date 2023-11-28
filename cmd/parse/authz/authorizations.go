@@ -6,8 +6,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x/authz"
+	"github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/x/authz"
 )
 
 // authorizationsCmd returns a Cobra command that allows to refresh all the authorizations

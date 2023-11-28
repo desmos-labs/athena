@@ -7,7 +7,7 @@ import (
 
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 
-	"github.com/desmos-labs/djuno/v2/types"
+	"github.com/desmos-labs/athena/types"
 )
 
 // updateSubspace updates the stored data for the given subspace at the specified height

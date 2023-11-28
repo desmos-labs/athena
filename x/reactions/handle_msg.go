@@ -3,7 +3,7 @@ package reactions
 import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/desmos-labs/djuno/v2/x/filters"
+	"github.com/desmos-labs/athena/x/filters"
 
 	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 

@@ -9,9 +9,9 @@ import (
 	startcmd "github.com/forbole/juno/v5/cmd/start"
 	"github.com/forbole/juno/v5/types/params"
 
-	parsecmd "github.com/desmos-labs/djuno/v2/cmd/parse"
-	desmosdb "github.com/desmos-labs/djuno/v2/database"
-	"github.com/desmos-labs/djuno/v2/x"
+	parsecmd "github.com/desmos-labs/athena/cmd/parse"
+	desmosdb "github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/x"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 		}).
 		WithDBBuilder(desmosdb.Builder)
 
-	cfg := junocmd.NewConfig("djuno").
+	cfg := junocmd.NewConfig("athena").
 		WithParseConfig(parseCfg)
 
 	// Run the command
