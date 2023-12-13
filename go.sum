@@ -456,8 +456,8 @@ github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
 github.com/desmos-labs/cosmos-sdk v0.47.5-desmos.2 h1:koEBDdrtaSFWfZX/+I29XAxalluytFiWjItYsAODltg=
 github.com/desmos-labs/cosmos-sdk v0.47.5-desmos.2/go.mod h1:A79th9+rj65SLmXGzBMxjq6OaI22pB77BfgP3+R6lyY=
-github.com/desmos-labs/desmos/v6 v6.3.1 h1:KfF9tUR4wug7p9HrdPeG8d65mi93ppMT0Vo8nnlyBOo=
-github.com/desmos-labs/desmos/v6 v6.3.1/go.mod h1:29/fPMUOLI4XgciEgyyhf0dNu7gK3sU/5Au+MLaPYec=
+github.com/desmos-labs/desmos/v6 v6.4.0 h1:bB2bruGkwYc0MkEqCXwu5xqV7SHyz7D1wPr3g7fn0JA=
+github.com/desmos-labs/desmos/v6 v6.4.0/go.mod h1:29/fPMUOLI4XgciEgyyhf0dNu7gK3sU/5Au+MLaPYec=
 github.com/dgraph-io/badger/v2 v2.2007.4 h1:TRWBQg8UrlUhaFdco01nO2uXwzKS7zd+HVdwV/GHc4o=
 github.com/dgraph-io/badger/v2 v2.2007.4/go.mod h1:vSw/ax2qojzbN6eXHIx6KPKtCSHJN/Uz0X0VPruTIhk=
 github.com/dgraph-io/ristretto v0.0.3-0.20200630154024-f66de99634de/go.mod h1:KPxhHT9ZxKefz+PCeOGsrHpl1qZ7i70dGTu2u+Ahh6E=
