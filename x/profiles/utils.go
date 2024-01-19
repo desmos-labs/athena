@@ -3,6 +3,8 @@ package profiles
 import (
 	"context"
 	"fmt"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/forbole/juno/v5/types/utils"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/juno/v5/node/remote"
@@ -11,6 +13,35 @@ import (
 
 	"github.com/desmos-labs/athena/types"
 )
+
+// GetCreatorAddressFromEvent returns the creator address from the given event
+func GetCreatorAddressFromEvent(event abci.Event) (string, error) {
+	creator, err := utils.FindAttributeByKey(event, profilestypes.AttributeKeyProfileCreator)
+	if err != nil {
+		return "", err
+	}
+	return creator.Value, nil
+}
+
+// GetRequestSenderAddressFromEvent returns the request sender address from the given event
+func GetRequestSenderAddressFromEvent(event abci.Event) (string, error) {
+	creator, err := utils.FindAttributeByKey(event, profilestypes.AttributeKeyRequestSender)
+	if err != nil {
+		return "", err
+	}
+	return creator.Value, nil
+}
+
+// GetRequestReceiverAddressFromEvent returns the request receiver address from the given event
+func GetRequestReceiverAddressFromEvent(event abci.Event) (string, error) {
+	creator, err := utils.FindAttributeByKey(event, profilestypes.AttributeKeyRequestReceiver)
+	if err != nil {
+		return "", err
+	}
+	return creator.Value, nil
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // GetDisplayName returns the name to be displayed for the user having the given address
 func (m *Module) GetDisplayName(userAddress string) string {
