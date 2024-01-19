@@ -2,10 +2,11 @@ package profiles
 
 import (
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/desmos-labs/athena/types"
-	"github.com/desmos-labs/athena/utils"
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 	juno "github.com/forbole/juno/v5/types"
+
+	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/utils"
 )
 
 // HandleTx implements modules.TransactionModule

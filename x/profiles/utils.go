@@ -3,6 +3,7 @@ package profiles
 import (
 	"context"
 	"fmt"
+
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/forbole/juno/v5/types/utils"
 
