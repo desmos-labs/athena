@@ -5,13 +5,14 @@ import (
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 	juno "github.com/forbole/juno/v5/types"
 
+	"github.com/desmos-labs/athena/utils/transactions"
+
 	"github.com/desmos-labs/athena/types"
-	"github.com/desmos-labs/athena/utils"
 )
 
 // HandleTx implements modules.TransactionModule
 func (m *Module) HandleTx(tx *juno.Tx) error {
-	return utils.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
+	return transactions.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
 		profilestypes.EventTypeProfileSaved:            m.parseSaveProfileEvent,
 		profilestypes.EventTypeProfileDeleted:          m.parseDeleteProfileEvent,
 		profilestypes.EventTypeDTagTransferRequest:     m.parseRequestDTagTransferEvent,

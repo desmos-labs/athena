@@ -4,9 +4,8 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
+	"github.com/forbole/juno/v5/types"
 	"github.com/forbole/juno/v5/types/config"
-
-	"github.com/desmos-labs/athena/utils"
 )
 
 var (
@@ -18,7 +17,18 @@ var (
 func ShouldEventBeParsed(event abci.Event) bool {
 	parseCfg()
 
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	// Search either a 'subspace' or 'subspace_id' attribute
+	attribute, err := types.FindAttributeByKey(event, "subspace_id")
+	if err != nil {
+		attribute, err = types.FindAttributeByKey(event, "subspace")
+	}
+
+	if err != nil {
+		return false
+	}
+
+	// Parse the subspace id
+	subspaceID, err := subspacestypes.ParseSubspaceID(attribute.Value)
 	if err != nil {
 		return false
 	}

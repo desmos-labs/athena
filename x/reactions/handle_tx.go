@@ -5,12 +5,14 @@ import (
 	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
 	juno "github.com/forbole/juno/v5/types"
 
-	"github.com/desmos-labs/athena/utils"
+	"github.com/desmos-labs/athena/utils/events"
+	"github.com/desmos-labs/athena/utils/transactions"
+
 	"github.com/desmos-labs/athena/x/posts"
 )
 
 func (m *Module) HandleTx(tx *juno.Tx) error {
-	return utils.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
+	return transactions.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
 		reactionstypes.EventTypeAddReaction:              m.parseAddReactionEvent,
 		reactionstypes.EventTypeRemoveReaction:           m.parseRemoveReactionEvent,
 		reactionstypes.EventTypeAddRegisteredReaction:    m.parseAddRegisteredReactionEvent,
@@ -24,7 +26,7 @@ func (m *Module) HandleTx(tx *juno.Tx) error {
 
 // parseAddReactionEvent parses a reaction add event
 func (m *Module) parseAddReactionEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -49,7 +51,7 @@ func (m *Module) parseAddReactionEvent(tx *juno.Tx, event abci.Event) error {
 
 // parseRemoveReactionEvent parses a reaction remove event
 func (m *Module) parseRemoveReactionEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -69,7 +71,7 @@ func (m *Module) parseRemoveReactionEvent(tx *juno.Tx, event abci.Event) error {
 
 // parseAddRegisteredReactionEvent parses a registered reaction add event
 func (m *Module) parseAddRegisteredReactionEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -84,7 +86,7 @@ func (m *Module) parseAddRegisteredReactionEvent(tx *juno.Tx, event abci.Event) 
 
 // parseEditRegisteredReactionEvent parses a registered reaction edit event
 func (m *Module) parseEditRegisteredReactionEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -99,7 +101,7 @@ func (m *Module) parseEditRegisteredReactionEvent(tx *juno.Tx, event abci.Event)
 
 // parseRemoveRegisteredReactionEvent parses a registered reaction remove event
 func (m *Module) parseRemoveRegisteredReactionEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -114,7 +116,7 @@ func (m *Module) parseRemoveRegisteredReactionEvent(tx *juno.Tx, event abci.Even
 
 // parseSetReactionsParamsEvent parses a set reactions params event
 func (m *Module) parseSetReactionsParamsEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}

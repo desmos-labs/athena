@@ -5,13 +5,15 @@ import (
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 	juno "github.com/forbole/juno/v5/types"
 
+	"github.com/desmos-labs/athena/utils/events"
+	"github.com/desmos-labs/athena/utils/transactions"
+
 	"github.com/desmos-labs/athena/types"
-	"github.com/desmos-labs/athena/utils"
 )
 
 // HandleTx handles the transaction events
 func (m *Module) HandleTx(tx *juno.Tx) error {
-	return utils.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
+	return transactions.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
 		poststypes.EventTypeCreatePost:           m.parseCreatePostEvent,
 		poststypes.EventTypeEditPost:             m.parseEditPostEvent,
 		poststypes.EventTypeDeletePost:           m.parseDeletePostEvent,
@@ -25,7 +27,7 @@ func (m *Module) HandleTx(tx *juno.Tx) error {
 
 // parseCreatePostEvent handles the creation of a new post
 func (m *Module) parseCreatePostEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -53,7 +55,7 @@ func (m *Module) parseCreatePostEvent(tx *juno.Tx, event abci.Event) error {
 
 // parseEditPostEvent handles the edition of an existing post
 func (m *Module) parseEditPostEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -75,7 +77,7 @@ func (m *Module) parseEditPostEvent(tx *juno.Tx, event abci.Event) error {
 
 // parseDeletePostEvent handles the deletion of an existing post
 func (m *Module) parseDeletePostEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -90,7 +92,7 @@ func (m *Module) parseDeletePostEvent(tx *juno.Tx, event abci.Event) error {
 
 // parseAddPostReactionEvent handles the addition of a reaction to an existing post
 func (m *Module) parseAddPostAttachmentEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -112,7 +114,7 @@ func (m *Module) parseAddPostAttachmentEvent(tx *juno.Tx, event abci.Event) erro
 
 // parseRemovePostAttachmentEvent handles the removal of a reaction from an existing post
 func (m *Module) parseRemovePostAttachmentEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
@@ -139,7 +141,7 @@ func (m *Module) parseRemovePostAttachmentEvent(tx *juno.Tx, event abci.Event) e
 
 // parseAnswerPollEvent handles the answer to a poll
 func (m *Module) parseAnswerPollEvent(tx *juno.Tx, event abci.Event) error {
-	subspaceID, err := utils.GetSubspaceIDFromEvent(event)
+	subspaceID, err := events.GetSubspaceIDFromEvent(event)
 	if err != nil {
 		return err
 	}
