@@ -12,7 +12,12 @@ import (
 // HandleTx handles the transaction events
 func (m *Module) HandleTx(tx *juno.Tx) error {
 	return utils.ParseTxEvents(tx, map[string]func(tx *juno.Tx, event abci.Event) error{
-		poststypes.EventTypeCreatePost: m.parseCreatePostEvent,
+		poststypes.EventTypeCreatePost:           m.parseCreatePostEvent,
+		poststypes.EventTypeEditPost:             m.parseEditPostEvent,
+		poststypes.EventTypeDeletePost:           m.parseDeletePostEvent,
+		poststypes.EventTypeAddPostAttachment:    m.parseAddPostAttachmentEvent,
+		poststypes.EventTypeRemovePostAttachment: m.parseRemovePostAttachmentEvent,
+		poststypes.EventTypeAnswerPoll:           m.parseAnswerPollEvent,
 	})
 }
 
