@@ -4,12 +4,34 @@ import (
 	"context"
 	"fmt"
 
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/forbole/juno/v5/types/utils"
+
 	"github.com/desmos-labs/athena/types"
 
 	"github.com/forbole/juno/v5/node/remote"
 
 	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 )
+
+// GetReportIDFromEvent returns the report ID from the given event
+func GetReportIDFromEvent(event abci.Event) (uint64, error) {
+	attribute, err := utils.FindAttributeByKey(event, reportstypes.AttributeKeyReportID)
+	if err != nil {
+		return 0, err
+	}
+	return reportstypes.ParseReportID(attribute.Value)
+}
+
+func GetReasonIDFromEvent(event abci.Event) (uint32, error) {
+	attribute, err := utils.FindAttributeByKey(event, reportstypes.AttributeKeyReasonID)
+	if err != nil {
+		return 0, err
+	}
+	return reportstypes.ParseReasonID(attribute.Value)
+}
+
+// -------------------------------------------------------------------------------------------------------------------
 
 // updateReport updates the stored data for the given report at the specified height
 func (m *Module) updateReport(height int64, subspaceID uint64, reportID uint64) error {
