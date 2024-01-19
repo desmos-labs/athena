@@ -15,6 +15,7 @@ func (m *Module) HandleTx(tx *juno.Tx) error {
 		reportstypes.EventTypeDeleteReport:          m.parseDeleteReportEvent,
 		reportstypes.EventTypeAddReason:             m.parseAddReasonEvent,
 		reportstypes.EventTypeSupportStandardReason: m.parseSupportStandardReasonEvent,
+		reportstypes.EventTypeRemoveReason:          m.parseRemoveReasonEvent,
 	})
 }
 
