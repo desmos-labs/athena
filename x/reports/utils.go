@@ -23,6 +23,7 @@ func GetReportIDFromEvent(event abci.Event) (uint64, error) {
 	return reportstypes.ParseReportID(attribute.Value)
 }
 
+// GetReasonIDFromEvent returns the reason ID from the given event
 func GetReasonIDFromEvent(event abci.Event) (uint32, error) {
 	attribute, err := utils.FindAttributeByKey(event, reportstypes.AttributeKeyReasonID)
 	if err != nil {
