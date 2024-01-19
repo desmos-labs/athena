@@ -4,6 +4,7 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	juno "github.com/forbole/juno/v5/types"
+	"github.com/rs/zerolog/log"
 )
 
 // ParseTxEvents parses the given events using the given parsers
@@ -18,6 +19,8 @@ func ParseTxEvents(tx *juno.Tx, eventsParsers map[string]func(tx *juno.Tx, event
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Str("event", event.Type).Msg("handled event")
 	}
 
 	return nil
