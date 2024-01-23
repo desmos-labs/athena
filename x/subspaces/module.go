@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	_ modules.Module        = &Module{}
-	_ modules.GenesisModule = &Module{}
-	_ modules.MessageModule = &Module{}
+	_ modules.Module            = &Module{}
+	_ modules.GenesisModule     = &Module{}
+	_ modules.TransactionModule = &Module{}
 )
 
 // Module represents the x/fees module handler
