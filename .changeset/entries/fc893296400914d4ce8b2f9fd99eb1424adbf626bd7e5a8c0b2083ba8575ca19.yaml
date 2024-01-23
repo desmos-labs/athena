@@ -1,0 +1,6 @@
+type: feat
+module: none
+pull_request: 395
+description: Updated the parsing of data to rely on emitted events instead of messages
+backward_compatible: true
+date: 2024-01-23T08:06:35.693359413Z
