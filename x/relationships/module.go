@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	_ modules.Module        = &Module{}
-	_ modules.GenesisModule = &Module{}
-	_ modules.MessageModule = &Module{}
+	_ modules.Module            = &Module{}
+	_ modules.GenesisModule     = &Module{}
+	_ modules.TransactionModule = &Module{}
 )
 
-// Module represents the x/profiles module handler
+// Module represents the x/relationships module handler
 type Module struct {
 	cdc            codec.Codec
 	db             Database
