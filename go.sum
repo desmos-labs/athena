@@ -454,8 +454,8 @@ github.com/denis-tingaikin/go-header v0.4.3 h1:tEaZKAlqql6SKCY++utLmkPLd6K8IBM20
 github.com/denis-tingaikin/go-header v0.4.3/go.mod h1:0wOCWuN71D5qIgE2nz9KrKmuYBAC2Mra5RassOIQ2/c=
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f h1:U5y3Y5UE0w7amNe7Z5G/twsBW0KEalRQXZzf8ufSh9I=
 github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f/go.mod h1:xH/i4TFMt8koVQZ6WFms69WAsDWr2XsYL3Hkl7jkoLE=
-github.com/desmos-labs/cosmos-sdk v0.47.5-desmos.2 h1:koEBDdrtaSFWfZX/+I29XAxalluytFiWjItYsAODltg=
-github.com/desmos-labs/cosmos-sdk v0.47.5-desmos.2/go.mod h1:A79th9+rj65SLmXGzBMxjq6OaI22pB77BfgP3+R6lyY=
+github.com/desmos-labs/cosmos-sdk v0.47.7-desmos h1:tVDgBdQiRxMfsI9xiweGx1jYEeymWbVdYxCYYXYbk3k=
+github.com/desmos-labs/cosmos-sdk v0.47.7-desmos/go.mod h1:rHrJgrXEk6AsXiC96iezAzn067FaTMGibYp/g/sbGlk=
 github.com/desmos-labs/desmos/v6 v6.4.0 h1:bB2bruGkwYc0MkEqCXwu5xqV7SHyz7D1wPr3g7fn0JA=
 github.com/desmos-labs/desmos/v6 v6.4.0/go.mod h1:29/fPMUOLI4XgciEgyyhf0dNu7gK3sU/5Au+MLaPYec=
 github.com/dgraph-io/badger/v2 v2.2007.4 h1:TRWBQg8UrlUhaFdco01nO2uXwzKS7zd+HVdwV/GHc4o=
@@ -495,8 +495,8 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7
 github.com/envoyproxy/protoc-gen-validate v1.0.2 h1:QkIBuU5k+x7/QXPvPPnWXWlCdaBFApVqftFV6k087DA=
 github.com/esimonov/ifshort v1.0.4 h1:6SID4yGWfRae/M7hkVDVVyppy8q/v9OuxNdmjLQStBA=
 github.com/esimonov/ifshort v1.0.4/go.mod h1:Pe8zjlRrJ80+q2CxHLfEOfTwxCZ4O+MuhcHcfgNWTk0=
-github.com/ethereum/go-ethereum v1.10.21 h1:5lqsEx92ZaZzRyOqBEXux4/UR06m296RGzN3ol3teJY=
-github.com/ethereum/go-ethereum v1.10.21/go.mod h1:EYFyF19u3ezGLD4RqOkLq+ZCXzYbLoNDdZlMt7kyKFg=
+github.com/ethereum/go-ethereum v1.10.22 h1:HbEgsDo1YTGIf4KB/NNpn+XH+PiNJXUZ9ksRxiqWyMc=
+github.com/ethereum/go-ethereum v1.10.22/go.mod h1:EYFyF19u3ezGLD4RqOkLq+ZCXzYbLoNDdZlMt7kyKFg=
 github.com/ettle/strcase v0.1.1 h1:htFueZyVeE1XNnMEfbqp5r67qAN/4r6ya1ysq8Q+Zcw=
 github.com/ettle/strcase v0.1.1/go.mod h1:hzDLsPC7/lwKyBOywSHEP89nt2pDgdy+No1NBA9o9VY=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=

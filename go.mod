@@ -7,7 +7,7 @@ require (
 	github.com/CosmWasm/wasmd v0.45.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.9.0
 	github.com/cometbft/cometbft v0.37.4
-	github.com/cosmos/cosmos-sdk v0.47.8
+	github.com/cosmos/cosmos-sdk v0.47.9
 	github.com/cosmos/gogoproto v1.4.11
 	github.com/cosmos/ibc-go/v7 v7.3.2
 	github.com/desmos-labs/desmos/v6 v6.4.0
@@ -126,7 +126,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/dvsekhvalnov/jose2go v1.6.0 // indirect
 	github.com/esimonov/ifshort v1.0.4 // indirect
-	github.com/ethereum/go-ethereum v1.10.21 // indirect
+	github.com/ethereum/go-ethereum v1.10.22 // indirect
 	github.com/ettle/strcase v0.1.1 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
@@ -376,4 +376,4 @@ require (
 )
 
 // Our cosmos-sdk branch is: https://github.com/desmos-labs/cosmos-sdk v0.47.x-desmos
-replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.47.5-desmos.2
+replace github.com/cosmos/cosmos-sdk => github.com/desmos-labs/cosmos-sdk v0.47.7-desmos
