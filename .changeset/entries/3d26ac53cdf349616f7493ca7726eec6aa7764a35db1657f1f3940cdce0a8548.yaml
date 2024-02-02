@@ -1,0 +1,6 @@
+type: deps
+module: none
+pull_request: 405
+description: Updated `github.com/desmos-labs/cosmos-sdk` to `v0.47.7-desmos`
+backward_compatible: true
+date: 2024-02-02T13:29:50.165458091Z
