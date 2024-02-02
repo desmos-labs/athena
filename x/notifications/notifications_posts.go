@@ -7,8 +7,8 @@ import (
 
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
-	"github.com/desmos-labs/athena/types"
-	notificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder"
+	"github.com/desmos-labs/athena/v2/types"
+	notificationsbuilder "github.com/desmos-labs/athena/v2/x/notifications/builder"
 )
 
 func (m *Module) getPostNotificationData(originalPost types.Post, reply types.Post, builder notificationsbuilder.PostNotificationBuilder) types.NotificationData {

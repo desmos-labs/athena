@@ -7,8 +7,8 @@ import (
 
 	"github.com/lib/pq"
 
-	dbtypes "github.com/desmos-labs/athena/database/types"
-	"github.com/desmos-labs/athena/types"
+	dbtypes "github.com/desmos-labs/athena/v2/database/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // SaveSubspace stores the given subspace inside the database

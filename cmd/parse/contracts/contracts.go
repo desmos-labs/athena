@@ -3,9 +3,9 @@ package contracts
 import (
 	"fmt"
 
-	"github.com/desmos-labs/athena/x/subspaces"
+	"github.com/desmos-labs/athena/v2/x/subspaces"
 
-	contractsbuilder "github.com/desmos-labs/athena/x/contracts/builder"
+	contractsbuilder "github.com/desmos-labs/athena/v2/x/contracts/builder"
 
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
@@ -14,7 +14,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/v2/database"
 )
 
 // contractsCmd returns a Cobra command that allows to refresh the smart contracts data for a single subspace

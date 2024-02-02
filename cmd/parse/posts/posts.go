@@ -12,9 +12,9 @@ import (
 	"github.com/forbole/juno/v5/types/config"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/athena/database"
-	"github.com/desmos-labs/athena/x/posts"
-	"github.com/desmos-labs/athena/x/subspaces"
+	"github.com/desmos-labs/athena/v2/database"
+	"github.com/desmos-labs/athena/v2/x/posts"
+	"github.com/desmos-labs/athena/v2/x/subspaces"
 )
 
 // postsCmd returns a Cobra command that allows to refresh all the posts

@@ -5,7 +5,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // IsMsgSendTip tries reading the given MsgExecuteContract as if

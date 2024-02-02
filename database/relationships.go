@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // SaveRelationship allows to save a relationship between the sender and receiver on the given subspace

@@ -4,7 +4,7 @@ import (
 	juno "github.com/forbole/juno/v5/types"
 	"github.com/rs/zerolog/log"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // SendTransactionNotifications notifies the user involved in the transaction

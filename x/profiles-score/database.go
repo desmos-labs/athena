@@ -1,8 +1,8 @@
 package profilesscore
 
 import (
-	"github.com/desmos-labs/athena/types"
-	"github.com/desmos-labs/athena/x/profiles"
+	"github.com/desmos-labs/athena/v2/types"
+	"github.com/desmos-labs/athena/v2/x/profiles"
 )
 
 type Database interface {

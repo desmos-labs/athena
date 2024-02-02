@@ -1,7 +1,7 @@
 package profiles
 
 import (
-	"github.com/desmos-labs/athena/x/filters"
+	"github.com/desmos-labs/athena/v2/x/filters"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
@@ -13,7 +13,7 @@ import (
 
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // HandleMsgExec implements modules.AuthzMessageModule

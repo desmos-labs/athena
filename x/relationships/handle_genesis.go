@@ -7,7 +7,7 @@ import (
 
 	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // HandleGenesis implements modules.GenesisModule

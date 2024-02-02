@@ -3,7 +3,7 @@ package subspaces
 import (
 	"fmt"
 
-	contractsbuilder "github.com/desmos-labs/athena/x/contracts/builder"
+	contractsbuilder "github.com/desmos-labs/athena/v2/x/contracts/builder"
 
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
@@ -12,13 +12,13 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/athena/database"
-	"github.com/desmos-labs/athena/x/posts"
-	"github.com/desmos-labs/athena/x/profiles"
-	"github.com/desmos-labs/athena/x/reactions"
-	"github.com/desmos-labs/athena/x/relationships"
-	"github.com/desmos-labs/athena/x/reports"
-	"github.com/desmos-labs/athena/x/subspaces"
+	"github.com/desmos-labs/athena/v2/database"
+	"github.com/desmos-labs/athena/v2/x/posts"
+	"github.com/desmos-labs/athena/v2/x/profiles"
+	"github.com/desmos-labs/athena/v2/x/reactions"
+	"github.com/desmos-labs/athena/v2/x/relationships"
+	"github.com/desmos-labs/athena/v2/x/reports"
+	"github.com/desmos-labs/athena/v2/x/subspaces"
 )
 
 // subspaceCmd returns a Cobra command that allows to refresh a single subspace and all the data within it

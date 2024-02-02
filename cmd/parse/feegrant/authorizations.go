@@ -6,9 +6,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/athena/x/feegrant"
+	"github.com/desmos-labs/athena/v2/x/feegrant"
 
-	"github.com/desmos-labs/athena/database"
+	"github.com/desmos-labs/athena/v2/database"
 )
 
 // allowancesCmd returns a Cobra command that allows to refresh all the allowances

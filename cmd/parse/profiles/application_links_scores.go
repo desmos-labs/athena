@@ -6,8 +6,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/athena/database"
-	profilesscorebuilder "github.com/desmos-labs/athena/x/profiles-score/builder"
+	"github.com/desmos-labs/athena/v2/database"
+	profilesscorebuilder "github.com/desmos-labs/athena/v2/x/profiles-score/builder"
 )
 
 // applicationLinksScoresCmd returns a Cobra command that allows to fix the application links scores for all the profiles

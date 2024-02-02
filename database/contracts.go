@@ -3,8 +3,8 @@ package database
 import (
 	"fmt"
 
-	"github.com/desmos-labs/athena/types"
-	contracts "github.com/desmos-labs/athena/x/contracts/base"
+	"github.com/desmos-labs/athena/v2/types"
+	contracts "github.com/desmos-labs/athena/v2/x/contracts/base"
 )
 
 var (

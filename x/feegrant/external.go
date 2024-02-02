@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/desmos-labs/desmos/v6/app"
 
-	"github.com/desmos-labs/athena/utils"
+	"github.com/desmos-labs/athena/v2/utils"
 )
 
 // RefreshFeeGrants refreshes all the fee grants

@@ -1,6 +1,6 @@
 package reports
 
-import "github.com/desmos-labs/athena/types"
+import "github.com/desmos-labs/athena/v2/types"
 
 type Database interface {
 	SaveReport(report types.Report) error

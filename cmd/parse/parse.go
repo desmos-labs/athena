@@ -7,15 +7,15 @@ import (
 	parseblocks "github.com/forbole/juno/v5/cmd/parse/blocks"
 	parsegenesis "github.com/forbole/juno/v5/cmd/parse/genesis"
 
-	parseauthz "github.com/desmos-labs/athena/cmd/parse/authz"
-	parsecontracts "github.com/desmos-labs/athena/cmd/parse/contracts"
-	parsefeegrant "github.com/desmos-labs/athena/cmd/parse/feegrant"
-	parseposts "github.com/desmos-labs/athena/cmd/parse/posts"
-	parseprofiles "github.com/desmos-labs/athena/cmd/parse/profiles"
-	parsereactions "github.com/desmos-labs/athena/cmd/parse/reactions"
-	parserelationships "github.com/desmos-labs/athena/cmd/parse/relationships"
-	parsereports "github.com/desmos-labs/athena/cmd/parse/reports"
-	parsesubspaces "github.com/desmos-labs/athena/cmd/parse/subspaces"
+	parseauthz "github.com/desmos-labs/athena/v2/cmd/parse/authz"
+	parsecontracts "github.com/desmos-labs/athena/v2/cmd/parse/contracts"
+	parsefeegrant "github.com/desmos-labs/athena/v2/cmd/parse/feegrant"
+	parseposts "github.com/desmos-labs/athena/v2/cmd/parse/posts"
+	parseprofiles "github.com/desmos-labs/athena/v2/cmd/parse/profiles"
+	parsereactions "github.com/desmos-labs/athena/v2/cmd/parse/reactions"
+	parserelationships "github.com/desmos-labs/athena/v2/cmd/parse/relationships"
+	parsereports "github.com/desmos-labs/athena/v2/cmd/parse/reports"
+	parsesubspaces "github.com/desmos-labs/athena/v2/cmd/parse/subspaces"
 )
 
 // NewParseCmd returns the Cobra command allowing to parse some data without having to re-sync the whole database

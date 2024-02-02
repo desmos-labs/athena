@@ -3,9 +3,9 @@ package github
 import (
 	"time"
 
-	"github.com/desmos-labs/athena/x/profiles-score/scorers/utils"
+	"github.com/desmos-labs/athena/v2/x/profiles-score/scorers/utils"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 var (
