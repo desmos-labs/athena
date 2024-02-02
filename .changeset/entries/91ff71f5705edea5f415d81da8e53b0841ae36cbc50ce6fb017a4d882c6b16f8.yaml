@@ -1,0 +1,6 @@
+type: feat
+module: none
+pull_request: 403
+description: Added support for profile counters
+backward_compatible: false
+date: 2024-02-02T13:12:01.044826647Z
