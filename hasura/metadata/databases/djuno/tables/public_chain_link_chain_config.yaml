@@ -1,14 +1,14 @@
 table:
-  name: chain_link_chain_config
   schema: public
+  name: chain_link_chain_config
 array_relationships:
   - name: chain_links
     using:
       foreign_key_constraint_on:
         column: chain_config_id
         table:
-          name: chain_link
           schema: public
+          name: chain_link
 select_permissions:
   - role: anonymous
     permission:

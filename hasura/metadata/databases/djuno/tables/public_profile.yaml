@@ -1,70 +1,52 @@
 table:
-  name: profile
   schema: public
+  name: profile
 array_relationships:
   - name: applications_links
     using:
       manual_configuration:
+        remote_table:
+          schema: public
+          name: application_link
+        insertion_order: null
         column_mapping:
           address: user_address
-        insertion_order: null
-        remote_table:
-          name: application_link
-          schema: public
   - name: chain_links
     using:
       manual_configuration:
-        column_mapping:
-          address: user_address
-        insertion_order: null
         remote_table:
+          schema: public
           name: chain_link
-          schema: public
-  - name: default_chain_links
-    using:
-      manual_configuration:
+        insertion_order: null
         column_mapping:
           address: user_address
-        insertion_order: null
-        remote_table:
-          name: default_chain_link
-          schema: public
-  - name: followage
-    using:
-      manual_configuration:
-        column_mapping:
-          address: counterparty_address
-        insertion_order: null
-        remote_table:
-          name: user_relationship
-          schema: public
-  - name: following
-    using:
-      manual_configuration:
-        column_mapping:
-          address: creator_address
-        insertion_order: null
-        remote_table:
-          name: user_relationship
-          schema: public
   - name: incoming_dtag_transfer_requests
     using:
       manual_configuration:
+        remote_table:
+          schema: public
+          name: dtag_transfer_requests
+        insertion_order: null
         column_mapping:
           address: receiver_address
-        insertion_order: null
-        remote_table:
-          name: dtag_transfer_requests
-          schema: public
   - name: outgoing_dtag_transfer_requests
     using:
       manual_configuration:
+        remote_table:
+          schema: public
+          name: dtag_transfer_requests
+        insertion_order: null
         column_mapping:
           address: sender_address
-        insertion_order: null
-        remote_table:
-          name: dtag_transfer_requests
-          schema: public
+computed_fields:
+  - name: is_user_following
+    definition:
+      function:
+        schema: public
+        name: is_user_following_profile
+      session_argument: hasura_session
+      table_argument: profile_row
+    comment: A computed field that tells whether the current Hasura user is following this profile
 select_permissions:
   - role: anonymous
     permission:
@@ -76,5 +58,23 @@ select_permissions:
         - dtag
         - nickname
         - profile_pic
+      computed_fields:
+        - is_user_following
       filter: {}
       limit: 20
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+        - address
+        - bio
+        - cover_pic
+        - creation_time
+        - dtag
+        - nickname
+        - profile_pic
+      computed_fields:
+        - is_user_following
+      filter: {}
+      limit: 100
+      allow_aggregations: true

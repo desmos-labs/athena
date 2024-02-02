@@ -1,10 +1,6 @@
 table:
-  name: application_link_oracle_request
   schema: public
-object_relationships:
-  - name: application_link
-    using:
-      foreign_key_constraint_on: application_link_id
+  name: application_link_oracle_request
 select_permissions:
   - role: anonymous
     permission:

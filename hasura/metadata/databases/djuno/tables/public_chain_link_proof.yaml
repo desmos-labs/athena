@@ -1,6 +1,6 @@
 table:
-  name: chain_link_proof
   schema: public
+  name: chain_link_proof
 object_relationships:
   - name: chain_link
     using:

@@ -1,6 +1,6 @@
 table:
-  name: profiles_params
   schema: public
+  name: profiles_params
 select_permissions:
   - role: anonymous
     permission:

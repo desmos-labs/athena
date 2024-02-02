@@ -1,32 +1,25 @@
 table:
-  name: application_link
   schema: public
+  name: application_link
 object_relationships:
   - name: oracle_request
     using:
       manual_configuration:
+        remote_table:
+          schema: public
+          name: application_link_oracle_request
+        insertion_order: null
         column_mapping:
           id: application_link_id
-        insertion_order: null
-        remote_table:
-          name: application_link_oracle_request
-          schema: public
   - name: profile
     using:
       manual_configuration:
+        remote_table:
+          schema: public
+          name: profile
+        insertion_order: null
         column_mapping:
           user_address: address
-        insertion_order: null
-        remote_table:
-          name: profile
-          schema: public
-  - name: score
-    using:
-      foreign_key_constraint_on:
-        column: application_link_row_id
-        table:
-          name: application_link_score
-          schema: public
 select_permissions:
   - role: anonymous
     permission:
