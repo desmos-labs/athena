@@ -1,6 +1,16 @@
 table:
   schema: public
   name: profile
+object_relationships:
+  - name: counters
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: profile_counters
+        insertion_order: null
+        column_mapping:
+          address: profile_address
 array_relationships:
   - name: applications_links
     using:

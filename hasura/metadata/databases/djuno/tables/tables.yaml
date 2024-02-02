@@ -8,6 +8,7 @@
 - "!include public_dtag_transfer_requests.yaml"
 - "!include public_poll_answer.yaml"
 - "!include public_profile.yaml"
+- "!include public_profile_counters.yaml"
 - "!include public_profiles_params.yaml"
 - "!include public_user_block.yaml"
 - "!include public_user_relationship.yaml"
