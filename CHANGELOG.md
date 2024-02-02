@@ -1,3 +1,35 @@
+## v2.0.0
+
+With this version of Athena, we are introducing a new PostgreSQL table named `profile_counters` that will be used to
+store the number of relationships, blocks, chain links and application links associated to a user. This is done to
+improve the performance of queries that need to count the number of these objects without having to scan the entire
+database.
+
+Please note that this change requires a new database table to be created. To do so, you can use the following SQL
+statement:
+
+```sql
+CREATE TABLE profile_counters
+(
+    row_id                  SERIAL NOT NULL PRIMARY KEY,
+
+    profile_address         TEXT   NOT NULL,
+    relationships_count     BIGINT NOT NULL DEFAULT 0,
+    blocks_count            BIGINT NOT NULL DEFAULT 0,
+    chain_links_count       BIGINT NOT NULL DEFAULT 0,
+    application_links_count BIGINT NOT NULL DEFAULT 0,
+    CONSTRAINT unique_profile_counters UNIQUE (profile_address)
+);
+```
+
+If you also want to track such table inside Hasura, you can run the following commands to import the updated Hasura
+metadata into your endpoint:
+
+```shell
+$ cd hasura
+$ hasura metadata apply --endpoint <your-hasura-endpoint> --admin-secret <your-admin-secret>
+```
+
 ## Athena v1.0.0
 
 We are excited to announce the release of Athena v1.0.0, marking a significant milestone in the evolution of our
