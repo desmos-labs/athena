@@ -4,34 +4,68 @@ import (
 	"encoding/hex"
 	"time"
 
-	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
-
-	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
-
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 
 	"github.com/desmos-labs/athena/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
-	dbtypes "github.com/desmos-labs/athena/database/types"
-
 	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
 )
 
-func (suite *DbTestSuite) TestDesmosDb_SaveUserIfNotExisting() {
-	err := suite.database.SaveUserIfNotExisting("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", 1)
-	suite.Require().NoError(err, "storing of address should return no error")
+func (suite *DbTestSuite) TestSaveUserIfNotExisting() {
+	testCases := []struct {
+		name      string
+		setup     func()
+		address   string
+		shouldErr bool
+		check     func()
+	}{
+		{
+			name:      "non existing user returns no error",
+			address:   "cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d",
+			shouldErr: false,
+			check: func() {
+				user, err := suite.database.GetUserByAddress("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
+				suite.Require().NoError(err)
+				suite.Require().Equal("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", user.GetAddress().String())
+			},
+		},
+		{
+			name: "existing user returns no error",
+			setup: func() {
+				err := suite.database.SaveUserIfNotExisting("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", 1)
+				suite.Require().NoError(err)
+			},
+			address:   "cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d",
+			shouldErr: false,
+			check: func() {
+				user, err := suite.database.GetUserByAddress("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
+				suite.Require().NoError(err)
+				suite.Require().Equal("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", user.GetAddress().String())
+			},
+		},
+	}
 
-	err = suite.database.SaveUserIfNotExisting("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", 1)
-	suite.Require().NoError(err, "storing address second time should return no error")
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+			if tc.setup != nil {
+				tc.setup()
+			}
 
-	user, err := suite.database.GetUserByAddress("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d")
-	suite.Require().NoError(err)
-
-	suite.Require().Equal("cosmos1qpzgtwec63yhxz9hesj8ve0j3ytzhhqaqxrc5d", user.GetAddress().String())
+			err := suite.database.SaveUserIfNotExisting(tc.address, 1)
+			if tc.shouldErr {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+				tc.check()
+			}
+		})
+	}
 }
+
+// --------------------------------------------------------------------------------------------------------------------
 
 func (suite *DbTestSuite) verifyEqual(expected, actual *profilestypes.Profile) {
 	suite.Require().Equal(expected.Account, actual.Account)
@@ -42,349 +76,449 @@ func (suite *DbTestSuite) verifyEqual(expected, actual *profilestypes.Profile) {
 	suite.Require().True(expected.CreationDate.Equal(actual.CreationDate))
 }
 
-func (suite *DbTestSuite) TestDesmosDb_SaveProfile() {
-	addr, err := sdk.AccAddressFromBech32("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+func (suite *DbTestSuite) updateProfile(profile *profilestypes.Profile, update *profilestypes.ProfileUpdate) *profilestypes.Profile {
+	updated, err := profile.Update(update)
 	suite.Require().NoError(err)
-
-	original, err := profilestypes.NewProfile(
-		"original-moniker",
-		"",
-		"",
-		profilestypes.NewPictures("", ""),
-		time.Time{},
-		authtypes.NewBaseAccountWithAddress(addr),
-	)
-	suite.Require().NoError(err)
-
-	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(original, 10))
-	suite.Require().NoError(err)
-
-	// Verify the storing
-	stored, err := suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
-	suite.Require().NoError(err)
-	suite.verifyEqual(original, stored)
-
-	// ----------------------------------------------------------------------------------------------------------------
-
-	// Try updating with a lower height
-	updated, err := original.Update(profilestypes.NewProfileUpdate(
-		"new-dtag",
-		"new-moniker",
-		"new-bio",
-		profilestypes.NewPictures(profilestypes.DoNotModify, profilestypes.DoNotModify)),
-	)
-	suite.Require().NoError(err)
-
-	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(updated, 9))
-	suite.Require().NoError(err)
-
-	// Verify the data
-	stored, err = suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
-	suite.Require().NoError(err)
-	suite.verifyEqual(original, stored)
-
-	// ----------------------------------------------------------------------------------------------------------------
-
-	// Try updating with same height
-	updated, err = original.Update(profilestypes.NewProfileUpdate(
-		"new-dtag",
-		"new-moniker",
-		"new-bio",
-		profilestypes.NewPictures(profilestypes.DoNotModify, profilestypes.DoNotModify)),
-	)
-	suite.Require().NoError(err)
-
-	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(updated, 10))
-	suite.Require().NoError(err)
-
-	// Verify the data
-	stored, err = suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
-	suite.Require().NoError(err)
-	suite.verifyEqual(updated, stored)
-
-	// ----------------------------------------------------------------------------------------------------------------
-
-	// Try updating with higher height
-	updated, err = original.Update(profilestypes.NewProfileUpdate(
-		"new-dtag-2",
-		"new-moniker-2",
-		"new-bio-2",
-		profilestypes.NewPictures(profilestypes.DoNotModify, profilestypes.DoNotModify)),
-	)
-	suite.Require().NoError(err)
-
-	// Save the data
-	err = suite.database.SaveProfile(types.NewProfile(updated, 11))
-	suite.Require().NoError(err)
-
-	// Verify the data
-	stored, err = suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
-	suite.Require().NoError(err)
-	suite.verifyEqual(updated, stored)
+	return updated
 }
 
-// --------------------------------------------------------------------------------------------------------------------
-
-func (suite *DbTestSuite) saveRelationship() types.Relationship {
-	err := suite.database.SaveUserIfNotExisting("cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s", 1)
-	suite.Require().NoError(err)
-
-	err = suite.database.SaveUserIfNotExisting("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr", 1)
-	suite.Require().NoError(err)
-
-	err = suite.database.SaveSubspace(types.NewSubspace(subspacestypes.NewSubspace(
-		0,
-		"Test subspace",
-		"",
-		"",
-		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
-		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
-		time.Now(),
-		sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100000))),
-	), 1))
-	suite.Require().NoError(err)
-
-	relationship := types.NewRelationship(
-		relationshipstypes.NewRelationship(
-			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
-			"cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr",
-			0,
-		),
-		10,
-	)
-
-	// Save the relationship
-	err = suite.database.SaveRelationship(relationship)
-	suite.Require().NoError(err)
-
-	return relationship
-}
-
-func (suite *DbTestSuite) TestDesmosDb_SaveRelationship() {
-	relationship := suite.saveRelationship()
-
-	err := suite.database.SaveRelationship(relationship)
-	suite.Require().NoError(err, "double inserting the same relationship should return no error")
-
-	var rows []dbtypes.RelationshipRow
-	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_relationship")
-	suite.Require().NoError(err)
-
-	suite.Require().Len(rows, 1)
-	suite.Require().True(rows[0].Equal(dbtypes.NewRelationshipRow(
-		relationship.Creator,
-		relationship.Counterparty,
-		relationship.SubspaceID,
-		relationship.Height,
-	)))
-}
-
-func (suite *DbTestSuite) TestDesmosDb_DeleteRelationship() {
-	relationship := suite.saveRelationship()
-
-	err := suite.database.DeleteRelationship(relationship)
-	suite.Require().NoError(err, "removing existing relationship should return no error")
-
-	var rows []dbtypes.RelationshipRow
-	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_relationship")
-	suite.Require().NoError(err)
-
-	suite.Require().Len(rows, 0)
-
-	err = suite.database.DeleteRelationship(relationship)
-	suite.Require().NoError(err, "deleting non existent relationship should return no error")
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-func (suite *DbTestSuite) saveBlockage() types.Blockage {
-	err := suite.database.SaveUserIfNotExisting("cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s", 1)
-	suite.Require().NoError(err)
-
-	err = suite.database.SaveUserIfNotExisting("cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr", 1)
-	suite.Require().NoError(err)
-
-	err = suite.database.SaveSubspace(types.NewSubspace(subspacestypes.NewSubspace(
-		0,
-		"Test subspace",
-		"",
-		"",
-		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
-		"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
-		time.Now(),
-		nil,
-	), 1))
-	suite.Require().NoError(err)
-
-	blockage := types.NewBlockage(
-		relationshipstypes.NewUserBlock(
-			"cosmos1jsdja3rsp4lyfup3pc2r05uzusc2e6x3zl285s",
-			"cosmos1u0gz4g865yjadxm2hsst388c462agdz7araedr",
-			"this is my blocking reason",
-			0,
-		),
-		1,
-	)
-
-	// Save the blockage
-	err = suite.database.SaveUserBlock(blockage)
-	suite.Require().NoError(err)
-
-	return blockage
-}
-
-func (suite *DbTestSuite) TestDesmosDB_SaveUserBlockage() {
-	blockage := suite.saveBlockage()
-
-	err := suite.database.SaveUserBlock(blockage)
-	suite.Require().NoError(err, "double inserting blockage should return no error")
-
-	var rows []dbtypes.BlockageRow
-	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_block")
-	suite.Require().NoError(err)
-
-	suite.Require().Len(rows, 1)
-	suite.Require().True(rows[0].Equal(dbtypes.NewBlockageRow(
-		blockage.Blocker,
-		blockage.Blocked,
-		blockage.Reason,
-		blockage.SubspaceID,
-		blockage.Height,
-	)))
-}
-
-func (suite *DbTestSuite) TestDesmosDB_RemoveUserBlockage() {
-	blockage := suite.saveBlockage()
-
-	err := suite.database.DeleteBlockage(blockage)
-	suite.Require().NoError(err)
-
-	var rows []dbtypes.BlockageRow
-	err = suite.database.SQL.Select(&rows, "SELECT * FROM user_block")
-	suite.Require().NoError(err)
-
-	suite.Require().Len(rows, 0)
-
-	err = suite.database.DeleteBlockage(blockage)
-	suite.Require().NoError(err, "deleting non existing blockage should return no error")
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-func (suite *DbTestSuite) TestDesmosDB_SaveChainLink() {
-	bz, err := sdk.GetFromBech32("desmospub1addwnpepqvczf60q448expz77knqhwfpw8nyrrx38vyzu7nmc0ks2vf2pdqh63tcdmy", "desmospub")
-	suite.Require().NoError(err)
-
-	pubKey, err := legacy.PubKeyFromBytes(bz)
-	suite.Require().NoError(err)
-
-	signature, err := hex.DecodeString("74657874")
-	suite.Require().NoError(err)
-
-	chainLink := types.NewChainLink(
-		profilestypes.NewChainLink(
-			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
-			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
-			profilestypes.NewProof(pubKey, &profilestypes.SingleSignature{ValueType: 1, Signature: signature}, "text"),
-			profilestypes.NewChainConfig("desmos"),
-			time.Now(),
-		),
-		10,
-	)
-	err = suite.database.SaveUserIfNotExisting("cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f", 10)
-	suite.Require().NoError(err)
-
-	err = suite.database.SaveChainLink(chainLink)
-	suite.Require().NoError(err)
-}
-
-func (suite *DbTestSuite) TestDesmosDB_DeleteChainLink() {
-	bz, err := sdk.GetFromBech32("desmospub1addwnpepqvczf60q448expz77knqhwfpw8nyrrx38vyzu7nmc0ks2vf2pdqh63tcdmy", "desmospub")
-	suite.Require().NoError(err)
-
-	pubKey, err := legacy.PubKeyFromBytes(bz)
-	suite.Require().NoError(err)
-
-	signature, err := hex.DecodeString("74657874")
-	suite.Require().NoError(err)
-
-	chainLink := types.NewChainLink(
-		profilestypes.NewChainLink(
-			"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
-			profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
-			profilestypes.NewProof(pubKey, &profilestypes.SingleSignature{ValueType: 1, Signature: signature}, "text"),
-			profilestypes.NewChainConfig("desmos"),
-			time.Now(),
-		),
-		10,
-	)
-	err = suite.database.SaveUserIfNotExisting("cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f", 10)
-	suite.Require().NoError(err)
-
-	err = suite.database.SaveChainLink(chainLink)
-	suite.Require().NoError(err)
-
-	err = suite.database.DeleteChainLink(
-		"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
-		"desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu",
-		"desmos",
-		10,
-	)
-	suite.Require().NoError(err)
-
-	var count int
-	err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link").Scan(&count)
-	suite.Require().NoError(err)
-	suite.Require().Zero(count)
-
-	err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_proof").Scan(&count)
-	suite.Require().NoError(err)
-	suite.Require().Zero(count)
-
-	err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_chain_config").Scan(&count)
-	suite.Require().NoError(err)
-	suite.Require().Equal(1, count)
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-func (suite *DbTestSuite) TestDesmosDB_DeleteApplicationLink() {
-	user := "cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47"
-	err := suite.database.SaveUserIfNotExisting(user, 1)
-	suite.Require().NoError(err)
-
-	applicationLink := types.NewApplicationLink(
-		profilestypes.NewApplicationLink(
-			user,
-			profilestypes.NewData("twitter", "twitteruser"),
-			profilestypes.ApplicationLinkStateInitialized,
-			profilestypes.NewOracleRequest(
-				0,
-				1,
-				profilestypes.NewOracleRequestCallData(
-					"twitter",
-					"7B22757365726E616D65223A22526963636172646F4D222C22676973745F6964223A223732306530303732333930613930316262383065353966643630643766646564227D",
+func (suite *DbTestSuite) TestSaveProfile() {
+	testCases := []struct {
+		name      string
+		setup     func()
+		profile   *profilestypes.Profile
+		height    int64
+		shouldErr bool
+		check     func()
+	}{
+		{
+			name:      "non existing profile is stored properly",
+			profile:   suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f"),
+			height:    10,
+			shouldErr: false,
+			check: func() {
+				stored, err := suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				suite.Require().NoError(err)
+				suite.verifyEqual(suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f"), stored)
+			},
+		},
+		{
+			name: "updating with a lower height does nothing",
+			setup: func() {
+				profile := suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				err := suite.database.SaveProfile(types.NewProfile(profile, 10))
+				suite.Require().NoError(err)
+			},
+			profile: suite.updateProfile(
+				suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f"),
+				profilestypes.NewProfileUpdate(
+					"NewDTag",
+					"New Nickname",
+					"This is my new biography",
+					profilestypes.NewPictures(profilestypes.DoNotModify, profilestypes.DoNotModify),
 				),
-				"client_id",
 			),
-			nil,
-			time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
-			time.Date(2021, 1, 1, 00, 00, 00, 000, time.UTC),
-		),
-		100,
-	)
+			height:    9,
+			shouldErr: false,
+			check: func() {
+				stored, err := suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				suite.Require().NoError(err)
 
-	err = suite.database.SaveApplicationLink(applicationLink)
-	suite.Require().NoError(err)
+				// Make sure the profile has not been updated
+				suite.Require().Equal("TestUser", stored.DTag)
+				suite.Require().Equal("Test User", stored.Nickname)
+				suite.Require().Equal("This is a test user", stored.Bio)
+			},
+		},
+		{
+			name: "updating with the same height updates the profile",
+			setup: func() {
+				profile := suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				err := suite.database.SaveProfile(types.NewProfile(profile, 10))
+				suite.Require().NoError(err)
+			},
+			profile: suite.updateProfile(
+				suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f"),
+				profilestypes.NewProfileUpdate(
+					"NewDTag",
+					"New Nickname",
+					"This is my new biography",
+					profilestypes.NewPictures(profilestypes.DoNotModify, profilestypes.DoNotModify),
+				),
+			),
+			height: 10,
+			check: func() {
+				stored, err := suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				suite.Require().NoError(err)
 
-	var count int
-	err = suite.database.SQL.QueryRow("SELECT COUNT(*) FROM application_link").Scan(&count)
-	suite.Require().NoError(err)
-	suite.Require().Equal(1, count)
+				// Make sure the profile has been updated
+				suite.Require().Equal("NewDTag", stored.DTag)
+				suite.Require().Equal("New Nickname", stored.Nickname)
+				suite.Require().Equal("This is my new biography", stored.Bio)
+			},
+		},
+		{
+			name: "updating with a higher height updates the profile",
+			setup: func() {
+				profile := suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				err := suite.database.SaveProfile(types.NewProfile(profile, 10))
+				suite.Require().NoError(err)
+			},
+			profile: suite.updateProfile(
+				suite.buildProfile("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f"),
+				profilestypes.NewProfileUpdate(
+					"NewDTag",
+					"New Nickname",
+					"This is my new biography",
+					profilestypes.NewPictures(profilestypes.DoNotModify, profilestypes.DoNotModify),
+				),
+			),
+			height: 11,
+			check: func() {
+				stored, err := suite.database.GetUserByAddress("cosmos15c66kjz44zm58xqlcqjwftan4tnaeq7rtmhn4f")
+				suite.Require().NoError(err)
 
-	err = suite.database.DeleteApplicationLink(user, "twitter", "twitteruser", 100)
-	suite.Require().NoError(err)
+				// Make sure the profile has been updated
+				suite.Require().Equal("NewDTag", stored.DTag)
+				suite.Require().Equal("New Nickname", stored.Nickname)
+				suite.Require().Equal("This is my new biography", stored.Bio)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+			if tc.setup != nil {
+				tc.setup()
+			}
+
+			err := suite.database.SaveProfile(types.NewProfile(tc.profile, tc.height))
+			if tc.shouldErr {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+				tc.check()
+			}
+		})
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+func (suite *DbTestSuite) TestSaveChainLink() {
+	testCases := []struct {
+		name           string
+		setup          func()
+		buildChainLink func() types.ChainLink
+		shouldErr      bool
+		check          func()
+	}{
+		{
+			name: "non existing chain link is stored properly",
+			setup: func() {
+				err := suite.database.SaveUserIfNotExisting("cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f", 10)
+				suite.Require().NoError(err)
+			},
+			buildChainLink: func() types.ChainLink {
+				bz, err := sdk.GetFromBech32("desmospub1addwnpepqvczf60q448expz77knqhwfpw8nyrrx38vyzu7nmc0ks2vf2pdqh63tcdmy", "desmospub")
+				suite.Require().NoError(err)
+
+				pubKey, err := legacy.PubKeyFromBytes(bz)
+				suite.Require().NoError(err)
+
+				signature, err := hex.DecodeString("74657874")
+				suite.Require().NoError(err)
+
+				return types.NewChainLink(
+					profilestypes.NewChainLink(
+						"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+						profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
+						profilestypes.NewProof(pubKey, &profilestypes.SingleSignature{ValueType: 1, Signature: signature}, "text"),
+						profilestypes.NewChainConfig("desmos"),
+						time.Now(),
+					),
+					10,
+				)
+			},
+			shouldErr: false,
+			check: func() {
+				// Make sure the chain link has been stored
+				var count int
+				err := suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Equal(1, count)
+
+				err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_proof").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Equal(1, count)
+
+				err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_chain_config").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Equal(1, count)
+
+				// Make sure the chain link count has been updated
+				var chainLinkCount int
+				err = suite.database.SQL.Get(&chainLinkCount, "SELECT chain_links_count FROM profile_counters WHERE profile_address = $1", "cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f")
+				suite.Require().NoError(err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+			if tc.setup != nil {
+				tc.setup()
+			}
+
+			err := suite.database.SaveChainLink(tc.buildChainLink())
+			if tc.shouldErr {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+				tc.check()
+			}
+		})
+	}
+}
+
+func (suite *DbTestSuite) TestDeleteChainLink() {
+	testCases := []struct {
+		name            string
+		setup           func()
+		user            string
+		externalAddress string
+		chainName       string
+		height          int64
+		shouldErr       bool
+		check           func()
+	}{
+		{
+			name: "existing chain link is deleted properly",
+			setup: func() {
+				err := suite.database.SaveUserIfNotExisting("cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f", 10)
+				suite.Require().NoError(err)
+
+				bz, err := sdk.GetFromBech32("desmospub1addwnpepqvczf60q448expz77knqhwfpw8nyrrx38vyzu7nmc0ks2vf2pdqh63tcdmy", "desmospub")
+				suite.Require().NoError(err)
+
+				pubKey, err := legacy.PubKeyFromBytes(bz)
+				suite.Require().NoError(err)
+
+				signature, err := hex.DecodeString("74657874")
+				suite.Require().NoError(err)
+
+				err = suite.database.SaveChainLink(types.NewChainLink(
+					profilestypes.NewChainLink(
+						"cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+						profilestypes.NewBech32Address("desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu", "desmos"),
+						profilestypes.NewProof(pubKey, &profilestypes.SingleSignature{ValueType: 1, Signature: signature}, "text"),
+						profilestypes.NewChainConfig("desmos"),
+						time.Now(),
+					),
+					10,
+				))
+				suite.Require().NoError(err)
+			},
+			user:            "cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f",
+			externalAddress: "desmos13yp2fq3tslq6mmtq4628q38xzj75ethzela9uu",
+			chainName:       "desmos",
+			height:          10,
+			shouldErr:       false,
+			check: func() {
+				// Make sure the chain link has been deleted
+				var count int
+				err := suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Zero(count)
+
+				err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_proof").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Zero(count)
+
+				// The chain config should not be deleted as this is something that is shared among all the chain links
+				err = suite.database.SQL.QueryRow("SELECT COUNT(id) FROM chain_link_chain_config").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Equal(1, count)
+
+				// Make sure the chain link count has been updated
+				var chainLinkCount int
+				err = suite.database.SQL.Get(&chainLinkCount, "SELECT chain_links_count FROM profile_counters WHERE profile_address = $1", "cosmos10clxpupsmddtj7wu7g0wdysajqwp890mva046f")
+				suite.Require().NoError(err)
+				suite.Require().Zero(chainLinkCount)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+			if tc.setup != nil {
+				tc.setup()
+			}
+
+			err := suite.database.DeleteChainLink(tc.user, tc.externalAddress, tc.chainName, tc.height)
+			if tc.shouldErr {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+				tc.check()
+			}
+		})
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+func (suite *DbTestSuite) TestSaveApplicationLink() {
+	testCase := []struct {
+		name            string
+		setup           func()
+		applicationLink types.ApplicationLink
+		shouldErr       bool
+		check           func()
+	}{
+		{
+			name: "non existing application link is stored properly",
+			setup: func() {
+				err := suite.database.SaveUserIfNotExisting("cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47", 1)
+				suite.Require().NoError(err)
+			},
+			applicationLink: types.NewApplicationLink(
+				profilestypes.NewApplicationLink(
+					"cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47",
+					profilestypes.NewData("twitter", "twitteruser"),
+					profilestypes.ApplicationLinkStateInitialized,
+					profilestypes.NewOracleRequest(
+						0,
+						1,
+						profilestypes.NewOracleRequestCallData(
+							"twitter",
+							"7B22757365726E616D65223A22526963636172646F4D222C22676973745F6964223A223732306530303732333930613930316262383065353966643630643766646564227D",
+						),
+						"client_id",
+					),
+					nil,
+					time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+					time.Date(2021, 1, 1, 00, 00, 00, 000, time.UTC),
+				),
+				100,
+			),
+			shouldErr: false,
+			check: func() {
+				// Make sure the application link has been stored
+				var count int
+				err := suite.database.SQL.QueryRow("SELECT COUNT(id) FROM application_link").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Equal(1, count)
+
+				// Make sure the application link count has been updated
+				var applicationLinkCount int
+				err = suite.database.SQL.Get(&applicationLinkCount, "SELECT application_links_count FROM profile_counters WHERE profile_address = $1", "cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47")
+				suite.Require().NoError(err)
+				suite.Require().Equal(1, applicationLinkCount)
+			},
+		},
+	}
+
+	for _, tc := range testCase {
+		tc := tc
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+			if tc.setup != nil {
+				tc.setup()
+			}
+
+			err := suite.database.SaveApplicationLink(tc.applicationLink)
+			if tc.shouldErr {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+				tc.check()
+			}
+		})
+	}
+}
+
+func (suite *DbTestSuite) TestDeleteApplicationLink() {
+	testCases := []struct {
+		name        string
+		setup       func()
+		user        string
+		application string
+		username    string
+		height      int64
+		shouldErr   bool
+		check       func()
+	}{
+		{
+			name: "existing application link is deleted properly",
+			setup: func() {
+				err := suite.database.SaveUserIfNotExisting("cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47", 1)
+				suite.Require().NoError(err)
+
+				err = suite.database.SaveApplicationLink(types.NewApplicationLink(
+					profilestypes.NewApplicationLink(
+						"cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47",
+						profilestypes.NewData("twitter", "twitteruser"),
+						profilestypes.ApplicationLinkStateInitialized,
+						profilestypes.NewOracleRequest(
+							0,
+							1,
+							profilestypes.NewOracleRequestCallData(
+								"twitter",
+								"7B22757365726E616D65223A22526963636172646F4D222C22676973745F6964223A223732306530303732333930613930316262383065353966643630643766646564227D",
+							),
+							"client_id",
+						),
+						nil,
+						time.Date(2020, 1, 1, 00, 00, 00, 000, time.UTC),
+						time.Date(2021, 1, 1, 00, 00, 00, 000, time.UTC),
+					),
+					100,
+				))
+				suite.Require().NoError(err)
+			},
+			user:        "cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47",
+			application: "twitter",
+			username:    "twitteruser",
+			height:      100,
+			shouldErr:   false,
+			check: func() {
+				// Make sure the application link has been deleted
+				var count int
+				err := suite.database.SQL.QueryRow("SELECT COUNT(id) FROM application_link").Scan(&count)
+				suite.Require().NoError(err)
+				suite.Require().Zero(count)
+
+				// Make sure the application link count has been updated
+				var applicationLinkCount int
+				err = suite.database.SQL.Get(&applicationLinkCount, "SELECT application_links_count FROM profile_counters WHERE profile_address = $1", "cosmos1y54exmx84cqtasvjnskf9f63djuuj68p7hqf47")
+				suite.Require().NoError(err)
+				suite.Require().Zero(applicationLinkCount)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+			if tc.setup != nil {
+				tc.setup()
+			}
+
+			err := suite.database.DeleteApplicationLink(tc.user, tc.application, tc.username, tc.height)
+			if tc.shouldErr {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+				tc.check()
+			}
+		})
+	}
 }
