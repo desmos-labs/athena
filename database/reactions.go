@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // SaveReaction stores the given reaction inside the database

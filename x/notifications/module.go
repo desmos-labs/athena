@@ -10,8 +10,8 @@ import (
 	"github.com/forbole/juno/v5/types/config"
 	"google.golang.org/api/option"
 
-	notificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder"
-	notificationssender "github.com/desmos-labs/athena/x/notifications/sender"
+	notificationsbuilder "github.com/desmos-labs/athena/v2/x/notifications/builder"
+	notificationssender "github.com/desmos-labs/athena/v2/x/notifications/sender"
 )
 
 var (

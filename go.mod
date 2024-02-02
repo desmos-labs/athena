@@ -1,4 +1,4 @@
-module github.com/desmos-labs/athena
+module github.com/desmos-labs/athena/v2
 
 go 1.20
 

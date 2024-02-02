@@ -7,8 +7,8 @@ import (
 	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 
-	dbtypes "github.com/desmos-labs/athena/database/types"
-	"github.com/desmos-labs/athena/types"
+	dbtypes "github.com/desmos-labs/athena/v2/database/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 func (suite *DbTestSuite) TestSaveRelationship() {

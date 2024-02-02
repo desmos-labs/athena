@@ -8,7 +8,7 @@ import (
 
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 
-	"github.com/desmos-labs/athena/utils"
+	"github.com/desmos-labs/athena/v2/utils"
 
 	"github.com/rs/zerolog/log"
 
@@ -17,7 +17,7 @@ import (
 
 	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // RefreshPostsData refreshes all the posts' data for the given subspace

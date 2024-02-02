@@ -13,8 +13,8 @@ import (
 
 	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
 
-	"github.com/desmos-labs/athena/types"
-	"github.com/desmos-labs/athena/utils"
+	"github.com/desmos-labs/athena/v2/types"
+	"github.com/desmos-labs/athena/v2/utils"
 )
 
 // RefreshSubspacesData refreshes all the subspaces user data

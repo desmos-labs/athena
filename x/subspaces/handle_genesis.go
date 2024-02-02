@@ -3,7 +3,7 @@ package subspaces
 import (
 	"encoding/json"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 
 	tmtypes "github.com/cometbft/cometbft/types"
 

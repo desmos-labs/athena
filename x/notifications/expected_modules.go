@@ -3,7 +3,7 @@ package notifications
 import (
 	juno "github.com/forbole/juno/v5/types"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 type ProfilesModule interface {

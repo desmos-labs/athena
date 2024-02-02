@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // GetTokens returns the tokens to be used in order to send the notification to the devices of the given recipient

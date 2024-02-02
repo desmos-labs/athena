@@ -1,7 +1,7 @@
 package twitter
 
 import (
-	scorersutils "github.com/desmos-labs/athena/x/profiles-score/scorers/utils"
+	scorersutils "github.com/desmos-labs/athena/v2/x/profiles-score/scorers/utils"
 )
 
 type Config struct {

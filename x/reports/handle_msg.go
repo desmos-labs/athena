@@ -3,7 +3,7 @@ package reports
 import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	"github.com/desmos-labs/athena/x/filters"
+	"github.com/desmos-labs/athena/v2/x/filters"
 
 	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 

@@ -11,9 +11,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/desmos-labs/athena/database"
-	"github.com/desmos-labs/athena/x/reactions"
-	"github.com/desmos-labs/athena/x/subspaces"
+	"github.com/desmos-labs/athena/v2/database"
+	"github.com/desmos-labs/athena/v2/x/reactions"
+	"github.com/desmos-labs/athena/v2/x/subspaces"
 )
 
 // paramsCmd returns a Cobra command that allows to refresh all the reactions params

@@ -3,8 +3,8 @@ package notifications
 import (
 	"github.com/rs/zerolog/log"
 
-	"github.com/desmos-labs/athena/types"
-	notificationsbuilder "github.com/desmos-labs/athena/x/notifications/builder"
+	"github.com/desmos-labs/athena/v2/types"
+	notificationsbuilder "github.com/desmos-labs/athena/v2/x/notifications/builder"
 )
 
 func (m *Module) getReactionNotificationData(post types.Post, reaction types.Reaction, builder notificationsbuilder.ReactionNotificationBuilder) types.NotificationData {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/forbole/juno/v5/node/remote"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 

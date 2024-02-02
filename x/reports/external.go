@@ -10,7 +10,7 @@ import (
 
 	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // RefreshReportsData refreshes all the reports data for the given subspace

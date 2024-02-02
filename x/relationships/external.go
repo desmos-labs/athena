@@ -9,7 +9,7 @@ import (
 	"github.com/forbole/juno/v5/node/remote"
 	"github.com/rs/zerolog/log"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // RefreshRelationshipsData refreshes all the relationships data for the given subspace

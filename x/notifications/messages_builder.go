@@ -5,7 +5,7 @@ import (
 
 	"firebase.google.com/go/v4/messaging"
 
-	"github.com/desmos-labs/athena/types"
+	"github.com/desmos-labs/athena/v2/types"
 )
 
 // BuildMessage builds the notification message that should be sent based on the given recipient, notification and data

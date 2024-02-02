@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/gogoproto/proto"
 
-	"github.com/desmos-labs/athena/utils"
+	"github.com/desmos-labs/athena/v2/utils"
 )
 
 // RefreshAuthorizations refreshes all the authorizations data
