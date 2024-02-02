@@ -73,15 +73,15 @@ coverage:
 	@echo "Viewing test coverage..."
 	@go tool cover --html=coverage.out
 
-stop-docker-test:
-	@echo "Stopping Docker container..."
+stop-test-db:
+	@echo "Stopping test database..."
 	@docker stop athena-test-db || true && docker rm athena-test-db || true
 
-start-docker-test: stop-docker-test
-	@echo "Starting Docker container..."
+start-test-db: stop-test-db
+	@echo "Starting test database..."
 	@docker run --name athena-test-db -e POSTGRES_USER=athena -e POSTGRES_PASSWORD=password -e POSTGRES_DB=athena -d -p 6432:5432 postgres
 
-test-unit: start-docker-test
+test-unit: start-test-db
 	@echo "Executing unit tests..."
 	@go test -mod=readonly -v -coverprofile coverage.txt ./...
 

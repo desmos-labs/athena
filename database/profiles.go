@@ -139,15 +139,22 @@ WHERE sender_address = $1 AND receiver_address = $2 AND height <= $3`
 
 // SaveChainLink allows to store inside the db the provided chain link
 func (db *Db) SaveChainLink(link types.ChainLink) error {
+	// Use a single transaction for the whole process
+	tx, err := db.SQL.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	// Unpack the address data
 	var address profilestypes.AddressData
-	err := db.cdc.UnpackAny(link.Address, &address)
+	err = db.cdc.UnpackAny(link.Address, &address)
 	if err != nil {
 		return fmt.Errorf("error while reading link address as AddressData: %s", err)
 	}
 
 	// Insert the chain config
-	chainConfigID, err := db.saveChainLinkChainConfig(link.ChainConfig)
+	chainConfigID, err := db.saveChainLinkChainConfig(tx, link.ChainConfig)
 	if err != nil {
 		return err
 	}
@@ -165,15 +172,30 @@ WHERE chain_link.height <= excluded.height
 RETURNING id`
 
 	var chainLinkID int64
-	err = db.SQL.
-		QueryRow(stmt, link.User, address.GetValue(), chainConfigID, link.CreationTime, link.Height).
-		Scan(&chainLinkID)
+	err = tx.QueryRow(stmt, link.User, address.GetValue(), chainConfigID, link.CreationTime, link.Height).Scan(&chainLinkID)
 	if err != nil {
 		return err
 	}
 
 	// Insert the proof
-	return db.saveChainLinkProof(chainLinkID, link.Proof, link.Height)
+	err = db.saveChainLinkProof(tx, chainLinkID, link.Proof, link.Height)
+	if err != nil {
+		return err
+	}
+
+	// Update the chain links count of the user
+	stmt = `
+INSERT INTO profile_counters (profile_address, chain_links_count)
+VALUES ($1, 1)
+ON CONFLICT (profile_address)
+DO UPDATE SET chain_links_count = profile_counters.chain_links_count + 1;
+`
+	_, err = tx.Exec(stmt, link.User)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 // getChainLinkID returns the id of the chain link for the given user, with the given chain config and external address
@@ -186,7 +208,7 @@ func (db *Db) getChainLinkID(userAddress string, chainConfigID int64, externalAd
 }
 
 // saveChainLinkProof stores the given proof as associated with the chain link having the given id
-func (db *Db) saveChainLinkProof(chainLinkID int64, proof profilestypes.Proof, height int64) error {
+func (db *Db) saveChainLinkProof(tx *sql.Tx, chainLinkID int64, proof profilestypes.Proof, height int64) error {
 	publicKeyBz, err := db.cdc.MarshalJSON(proof.PubKey)
 	if err != nil {
 		return fmt.Errorf("error serializing chain link proof public key: %s", err)
@@ -215,12 +237,12 @@ WHERE chain_link_proof.height <= excluded.height`
 		return fmt.Errorf("error serializing chain link signature: %s", err)
 	}
 
-	_, err = db.SQL.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, string(signatureBz), height)
+	_, err = tx.Exec(stmt, chainLinkID, string(publicKeyBz), plainText, string(signatureBz), height)
 	return err
 }
 
 // saveChainLinkChainConfig stores the given chain config and returns the row id
-func (db *Db) saveChainLinkChainConfig(config profilestypes.ChainConfig) (int64, error) {
+func (db *Db) saveChainLinkChainConfig(tx *sql.Tx, config profilestypes.ChainConfig) (int64, error) {
 	stmt := `
 INSERT INTO chain_link_chain_config (name) 
 VALUES ($1)
@@ -229,7 +251,7 @@ ON CONFLICT ON CONSTRAINT unique_chain_config DO UPDATE
 RETURNING id`
 
 	var id int64
-	err := db.SQL.QueryRow(stmt, config.Name).Scan(&id)
+	err := tx.QueryRow(stmt, config.Name).Scan(&id)
 	return id, err
 }
 
@@ -245,21 +267,62 @@ func (db *Db) getChainLinkConfigID(name string) (int64, error) {
 // DeleteChainLink removes from the database the chain link made for the given user and having the provided
 // external address and linked to the chain with the given name
 func (db *Db) DeleteChainLink(user string, externalAddress string, chainName string, height int64) error {
+	tx, err := db.SQL.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Delete the chain link
 	stmt := `
 DELETE FROM chain_link 
 WHERE user_address = $1 
   AND external_address = $2
   AND chain_config_id = (SELECT id FROM chain_link_chain_config WHERE name = $3)
   AND height <= $4`
-	_, err := db.SQL.Exec(stmt, user, externalAddress, chainName, height)
-	return err
+	_, err = tx.Exec(stmt, user, externalAddress, chainName, height)
+	if err != nil {
+		return err
+	}
+
+	// Update the chain links count of the user
+	stmt = `
+INSERT INTO profile_counters (profile_address, chain_links_count)
+VALUES ($1, 0)
+ON CONFLICT (profile_address)
+DO UPDATE SET chain_links_count = profile_counters.chain_links_count - 1;
+`
+	_, err = tx.Exec(stmt, user)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 // DeleteAllChainLinks deletes all the chain links having a height lower than the given one
 func (db *Db) DeleteAllChainLinks(height int64) error {
+	tx, err := db.SQL.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Delete the chain links
 	stmt := `DELETE FROM chain_link WHERE height <= $1`
-	_, err := db.SQL.Exec(stmt, height)
-	return err
+	_, err = tx.Exec(stmt, height)
+	if err != nil {
+		return err
+	}
+
+	// Reset the chain links count of all the users
+	stmt = `UPDATE profile_counters SET chain_links_count = 0 WHERE TRUE`
+	_, err = tx.Exec(stmt)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 // SaveDefaultChainLink saves the given chain link as a default chain link
@@ -318,6 +381,13 @@ func (db *Db) getApplicationLinkRowID(address string, application string, userna
 
 // SaveApplicationLink stores the given application link inside the database
 func (db *Db) SaveApplicationLink(link types.ApplicationLink) error {
+	// Use a single transaction for the whole process
+	tx, err := db.SQL.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	// Save the link
 	stmt := `
 INSERT INTO application_link (user_address, application, username, state, result, creation_time, expiration_time, height) 
@@ -344,20 +414,43 @@ RETURNING id`
 	}
 
 	var linkID int64
-	err := db.SQL.QueryRow(stmt,
-		link.User, link.Data.Application, link.Data.Username, link.State.String(),
-		result, link.CreationTime, link.ExpirationTime, link.Height,
+	err = tx.QueryRow(stmt,
+		link.User,
+		link.Data.Application,
+		link.Data.Username,
+		link.State.String(),
+		result,
+		link.CreationTime,
+		link.ExpirationTime,
+		link.Height,
 	).Scan(&linkID)
 	if err != nil {
 		return err
 	}
 
 	// Save the oracle request
-	return db.saveOracleRequest(linkID, link.OracleRequest, link.Height)
+	err = db.saveOracleRequest(tx, linkID, link.OracleRequest, link.Height)
+	if err != nil {
+		return err
+	}
+
+	// Update the application links count of the user
+	stmt = `
+INSERT INTO profile_counters (profile_address, application_links_count)
+VALUES ($1, 1)
+ON CONFLICT (profile_address)
+DO UPDATE SET application_links_count = profile_counters.application_links_count + 1;
+`
+	_, err = tx.Exec(stmt, link.User)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 // saveOracleRequest stores the given oracle request associating it with the link having the provided id
-func (db *Db) saveOracleRequest(linkID int64, request profilestypes.OracleRequest, height int64) error {
+func (db *Db) saveOracleRequest(tx *sql.Tx, linkID int64, request profilestypes.OracleRequest, height int64) error {
 	stmt := `
 INSERT INTO application_link_oracle_request (application_link_id, request_id, script_id, call_data, client_id, height) 
 VALUES ($1, $2, $3, $4, $5, $6)
@@ -375,7 +468,7 @@ WHERE application_link_oracle_request.height <= excluded.height`
 		return fmt.Errorf("error while serializing oracle request call data: %s", err)
 	}
 
-	_, err = db.SQL.Exec(stmt,
+	_, err = tx.Exec(stmt,
 		linkID,
 		fmt.Sprintf("%d", request.ID),
 		fmt.Sprintf("%d", request.OracleScriptID),
@@ -412,19 +505,60 @@ func (db *Db) GetApplicationLinkInfos() ([]types.ApplicationLinkInfo, error) {
 // DeleteApplicationLink allows to delete the application link associated to the given user,
 // having the given application and username values
 func (db *Db) DeleteApplicationLink(user, application, username string, height int64) error {
+	tx, err := db.SQL.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Delete the link
 	stmt := `
 DELETE FROM application_link 
 WHERE user_address = $1 
   AND application = $2 
   AND username = $3 
   AND height <= $4`
-	_, err := db.SQL.Exec(stmt, user, application, username, height)
-	return err
+	_, err = tx.Exec(stmt, user, application, username, height)
+	if err != nil {
+		return err
+	}
+
+	// Update the application links count of the user
+	stmt = `
+	INSERT INTO profile_counters (profile_address, application_links_count)
+VALUES ($1, 0)
+ON CONFLICT (profile_address)
+DO UPDATE SET application_links_count = profile_counters.application_links_count - 1;
+`
+	_, err = tx.Exec(stmt, user)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 // DeleteAllApplicationLinks deletes all the application links that have a height equal or lower to the one given
 func (db *Db) DeleteAllApplicationLinks(height int64) error {
+	tx, err := db.SQL.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Delete the application links
 	stmt := `DELETE FROM application_link WHERE height <= $1`
-	_, err := db.SQL.Exec(stmt, height)
-	return err
+	_, err = tx.Exec(stmt, height)
+	if err != nil {
+		return err
+	}
+
+	// Reset the application links count of all the users
+	stmt = `UPDATE profile_counters SET application_links_count = 0 WHERE TRUE`
+	_, err = tx.Exec(stmt)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
