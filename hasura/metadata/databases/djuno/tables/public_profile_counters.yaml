@@ -1,3 +1,24 @@
 table:
   schema: public
   name: profile_counters
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - application_links_count
+        - blocks_count
+        - chain_links_count
+        - profile_address
+        - relationships_count
+      filter: {}
+      limit: 20
+  - role: user
+    permission:
+      columns:
+        - application_links_count
+        - blocks_count
+        - chain_links_count
+        - profile_address
+        - relationships_count
+      filter: {}
+      limit: 100
