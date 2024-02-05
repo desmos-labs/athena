@@ -65,6 +65,14 @@ computed_fields:
       session_argument: hasura_session
       table_argument: profile_row
     comment: Computed field that tells whether the given profile has blocked the current Hasura user
+  - name: is_user_followed_by
+    definition:
+      function:
+        schema: public
+        name: is_user_followed_by_profile
+      session_argument: hasura_session
+      table_argument: profile_row
+    comment: A computed field that tells whether the given Hasura user is followed by this profile
   - name: is_user_following
     definition:
       function:
