@@ -49,6 +49,22 @@ array_relationships:
         column_mapping:
           address: sender_address
 computed_fields:
+  - name: has_user_blocked
+    definition:
+      function:
+        schema: public
+        name: has_user_blocked_profile
+      session_argument: hasura_session
+      table_argument: profile_row
+    comment: Computed field that tells whether the current Hasura user has blocked this profile
+  - name: is_user_blocked_by
+    definition:
+      function:
+        schema: public
+        name: is_user_blocked_by_profile
+      session_argument: hasura_session
+      table_argument: profile_row
+    comment: Computed field that tells whether the given profile has blocked the current Hasura user
   - name: is_user_following
     definition:
       function:
