@@ -8,7 +8,7 @@ import (
 
 	"github.com/forbole/juno/v5/node/remote"
 
-	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v7/x/reports/types"
 )
 
 // updateReport updates the stored data for the given report at the specified height

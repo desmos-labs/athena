@@ -1,7 +1,7 @@
 package main
 
 import (
-	desmosapp "github.com/desmos-labs/desmos/v6/app"
+	desmosapp "github.com/desmos-labs/desmos/v7/app"
 	junocmd "github.com/forbole/juno/v5/cmd"
 	initcmd "github.com/forbole/juno/v5/cmd/init"
 	migratecmd "github.com/forbole/juno/v5/cmd/migrate"

@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v7/x/profiles/types"
 )
 
 // ProfileRow represents a single PostgreSQL row containing the data of a profile

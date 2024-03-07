@@ -3,7 +3,7 @@ package reactions
 import (
 	"encoding/json"
 
-	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v7/x/reactions/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 

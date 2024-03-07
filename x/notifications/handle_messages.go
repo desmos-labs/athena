@@ -3,9 +3,9 @@ package notifications
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
-	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
-	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
+	reactionstypes "github.com/desmos-labs/desmos/v7/x/reactions/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v7/x/relationships/types"
 	juno "github.com/forbole/juno/v5/types"
 
 	"github.com/desmos-labs/athena/v2/x/filters"
@@ -49,7 +49,7 @@ func (m *Module) handleMsgCreateRelationship(tx *juno.Tx, msg *relationshipstype
 // handleMsgCreatePost handles a MsgCreatePost message and sends out the various related notifications
 func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
 	// Get the post id
-	event, err := tx.FindEventByType(index, poststypes.EventTypeCreatePost)
+	event, err := tx.FindEventByType(index, poststypes.EventTypeCreatedPost)
 	if err != nil {
 		return err
 	}

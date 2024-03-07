@@ -1,7 +1,7 @@
 package types
 
 import (
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
 )
 
 type Post struct {

@@ -1,7 +1,7 @@
 package types
 
 import (
-	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v7/x/reactions/types"
 )
 
 type Reaction struct {

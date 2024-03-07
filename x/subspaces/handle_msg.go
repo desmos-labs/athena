@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	juno "github.com/forbole/juno/v5/types"
 
-	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
+	subspacestypes "github.com/desmos-labs/desmos/v7/x/subspaces/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 )
@@ -84,7 +84,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 // handleMsgCreateSubspace handles a MsgCreateSubspace
 func (m *Module) handleMsgCreateSubspace(tx *juno.Tx, index int) error {
 	// Get the subspace id
-	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreateSubspace)
+	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreatedSubspace)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func (m *Module) handleMsgDeleteSubspace(tx *juno.Tx, msg *subspacestypes.MsgDel
 // handleMsgCreateSection handles a MsgCreateSection
 func (m *Module) handleMsgCreateSection(tx *juno.Tx, index int, msg *subspacestypes.MsgCreateSection) error {
 	// Get the subspace id
-	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreateSection)
+	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreatedSection)
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func (m *Module) handleMsgDeleteSection(tx *juno.Tx, msg *subspacestypes.MsgDele
 // handleMsgCreateUserGroup handles a MsgCreateUserGroup
 func (m *Module) handleMsgCreateUserGroup(tx *juno.Tx, index int, msg *subspacestypes.MsgCreateUserGroup) error {
 	// Get the group id
-	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreateUserGroup)
+	event, err := tx.FindEventByType(index, subspacestypes.EventTypeCreatedUserGroup)
 	if err != nil {
 		return err
 	}

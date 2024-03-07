@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"google.golang.org/grpc"
 
-	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v7/x/relationships/types"
 
 	"github.com/forbole/juno/v5/modules"
 )

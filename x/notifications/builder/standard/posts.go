@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"firebase.google.com/go/v4/messaging"
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 	notificationsbuilder "github.com/desmos-labs/athena/v2/x/notifications/builder"

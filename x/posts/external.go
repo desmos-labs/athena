@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
+	subspacestypes "github.com/desmos-labs/desmos/v7/x/subspaces/types"
 
 	"github.com/desmos-labs/athena/v2/utils"
 
@@ -15,7 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/juno/v5/node/remote"
 
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 )
@@ -168,29 +169,29 @@ func (m *Module) QueryPostsTxs(height int64, subspaceID uint64) ([]*coretypes.Re
 	queries := []string{
 		// MsgCreatePost
 		fmt.Sprintf("%s.%s='%d' AND tx.height <= %d",
-			poststypes.EventTypeCreatePost,
-			poststypes.AttributeKeySubspaceID,
+			poststypes.EventTypeCreatedPost,
+			subspacestypes.AttributeKeySubspaceID,
 			subspaceID,
 			height,
 		),
 		// MsgEditPost
 		fmt.Sprintf("%s.%s='%d' AND tx.height <= %d",
-			poststypes.EventTypeEditPost,
-			poststypes.AttributeKeySubspaceID,
+			poststypes.EventTypeEditedPost,
+			subspacestypes.AttributeKeySubspaceID,
 			subspaceID,
 			height,
 		),
 		// MsgAddPostAttachment
 		fmt.Sprintf("%s.%s='%d' AND tx.height <= %d",
-			poststypes.EventTypeAddPostAttachment,
-			poststypes.AttributeKeySubspaceID,
+			poststypes.EventTypeAddedPostAttachment,
+			subspacestypes.AttributeKeySubspaceID,
 			subspaceID,
 			height,
 		),
 		// MsgRemovePostAttachment
 		fmt.Sprintf("%s.%s='%d' AND tx.height <= %d",
-			poststypes.EventTypeRemovePostAttachment,
-			poststypes.AttributeKeySubspaceID,
+			poststypes.EventTypeRemovedPostAttachment,
+			subspacestypes.AttributeKeySubspaceID,
 			subspaceID,
 			height,
 		),

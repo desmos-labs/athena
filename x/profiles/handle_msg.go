@@ -11,7 +11,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	juno "github.com/forbole/juno/v5/types"
 
-	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v7/x/profiles/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 )
@@ -91,7 +91,7 @@ func (m *Module) handleMsgDeleteProfile(tx *juno.Tx, msg *profilestypes.MsgDelet
 
 // handleMsgRequestDTagTransfer handles a MsgRequestDTagTransfer storing the request into the database
 func (m *Module) handleMsgRequestDTagTransfer(tx *juno.Tx, index int, msg *profilestypes.MsgRequestDTagTransfer) error {
-	event, err := tx.FindEventByType(index, profilestypes.EventTypeDTagTransferRequest)
+	event, err := tx.FindEventByType(index, profilestypes.EventTypeRequestedDTagTransfer)
 	if err != nil {
 		return err
 	}

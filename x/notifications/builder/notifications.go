@@ -1,7 +1,7 @@
 package builder
 
 import (
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 	notificationscontext "github.com/desmos-labs/athena/v2/x/notifications/context"

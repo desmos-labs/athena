@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/juno/v5/node/remote"
 
-	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v7/x/reactions/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 )

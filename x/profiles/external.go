@@ -12,7 +12,7 @@ import (
 	authttypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/forbole/juno/v5/node/remote"
 
-	profilestypes "github.com/desmos-labs/desmos/v6/x/profiles/types"
+	profilestypes "github.com/desmos-labs/desmos/v7/x/profiles/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 )

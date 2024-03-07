@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
-	"github.com/desmos-labs/desmos/v6/app"
+	"github.com/desmos-labs/desmos/v7/app"
 
 	"github.com/desmos-labs/athena/v2/utils"
 )

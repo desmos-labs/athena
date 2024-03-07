@@ -9,8 +9,8 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
-	subspacestypes "github.com/desmos-labs/desmos/v6/x/subspaces/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
+	subspacestypes "github.com/desmos-labs/desmos/v7/x/subspaces/types"
 	juno "github.com/forbole/juno/v5/types"
 
 	"github.com/desmos-labs/athena/v2/types"

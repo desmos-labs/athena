@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/athena/v2/x/filters"
 
-	reportstypes "github.com/desmos-labs/desmos/v6/x/reports/types"
+	reportstypes "github.com/desmos-labs/desmos/v7/x/reports/types"
 
 	"github.com/rs/zerolog/log"
 
@@ -49,7 +49,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 // handleMsgCreateReport handles a MsgCreateReport
 func (m *Module) handleMsgCreateReport(tx *juno.Tx, index int, msg *reportstypes.MsgCreateReport) error {
-	event, err := tx.FindEventByType(index, reportstypes.EventTypeCreateReport)
+	event, err := tx.FindEventByType(index, reportstypes.EventTypeCreatedReport)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (m *Module) handleMsgDeleteReport(tx *juno.Tx, msg *reportstypes.MsgDeleteR
 
 // handleMsgAddReason handles a MsgAddReason
 func (m *Module) handleMsgAddReason(tx *juno.Tx, index int, msg *reportstypes.MsgAddReason) error {
-	event, err := tx.FindEventByType(index, reportstypes.EventTypeAddReason)
+	event, err := tx.FindEventByType(index, reportstypes.EventTypeAddedReportingReason)
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (m *Module) handleMsgAddReason(tx *juno.Tx, index int, msg *reportstypes.Ms
 
 // handleMsgSupportStandardReason handles a MsgSupportStandardReason
 func (m *Module) handleMsgSupportStandardReason(tx *juno.Tx, index int, msg *reportstypes.MsgSupportStandardReason) error {
-	event, err := tx.FindEventByType(index, reportstypes.EventTypeSupportStandardReason)
+	event, err := tx.FindEventByType(index, reportstypes.EventTypeSupportedStandardReason)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/athena/v2/x/filters"
 
-	poststypes "github.com/desmos-labs/desmos/v6/x/posts/types"
+	poststypes "github.com/desmos-labs/desmos/v7/x/posts/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 
@@ -54,7 +54,7 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 
 // handleMsgCreatePost handles a MsgCreatePost
 func (m *Module) handleMsgCreatePost(tx *juno.Tx, index int, msg *poststypes.MsgCreatePost) error {
-	event, err := tx.FindEventByType(index, poststypes.EventTypeCreatePost)
+	event, err := tx.FindEventByType(index, poststypes.EventTypeCreatedPost)
 	if err != nil {
 		return err
 	}

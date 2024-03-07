@@ -5,7 +5,7 @@ import (
 
 	"github.com/desmos-labs/athena/v2/x/filters"
 
-	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v7/x/reactions/types"
 
 	"github.com/rs/zerolog/log"
 
@@ -72,7 +72,7 @@ func (m *Module) handleMsgRemoveReaction(tx *juno.Tx, msg *reactionstypes.MsgRem
 
 // handleMsgAddRegisteredReaction handles a MsgAddRegisteredReaction
 func (m *Module) handleMsgAddRegisteredReaction(tx *juno.Tx, index int, msg *reactionstypes.MsgAddRegisteredReaction) error {
-	event, err := tx.FindEventByType(index, reactionstypes.EventTypeAddRegisteredReaction)
+	event, err := tx.FindEventByType(index, reactionstypes.EventTypeAddedReaction)
 	if err != nil {
 		return err
 	}

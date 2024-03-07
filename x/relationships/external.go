@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	relationshipstypes "github.com/desmos-labs/desmos/v6/x/relationships/types"
+	relationshipstypes "github.com/desmos-labs/desmos/v7/x/relationships/types"
 	"github.com/forbole/juno/v5/node/remote"
 	"github.com/rs/zerolog/log"
 

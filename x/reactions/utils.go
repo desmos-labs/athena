@@ -7,13 +7,13 @@ import (
 
 	"github.com/forbole/juno/v5/node/remote"
 
-	reactionstypes "github.com/desmos-labs/desmos/v6/x/reactions/types"
+	reactionstypes "github.com/desmos-labs/desmos/v7/x/reactions/types"
 
 	"github.com/desmos-labs/athena/v2/types"
 )
 
 func (m *Module) GetReactionID(tx *juno.Tx, index int) (uint32, error) {
-	event, err := tx.FindEventByType(index, reactionstypes.EventTypeAddReaction)
+	event, err := tx.FindEventByType(index, reactionstypes.EventTypeAddedReaction)
 	if err != nil {
 		return 0, err
 	}
