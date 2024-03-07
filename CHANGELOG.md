@@ -1,3 +1,7 @@
+## v2.1.0
+### Dependencies
+- Bumped `github.com/desmos-labs/desmos` to `v7.0.0`
+
 ## v2.0.0
 
 With this version of Athena, we are introducing a new PostgreSQL table named `profile_counters` that will be used to
